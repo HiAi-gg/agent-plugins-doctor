@@ -20,7 +20,7 @@
     },
     "packages/cli": {
       "name": "@agent-plugin-doctor/cli",
-      "version": "0.1.0",
+      "version": "0.0.1",
       "bin": {
         "agent-plugin-doctor": "./bin/agent-plugin-doctor",
       },
@@ -39,7 +39,7 @@
     },
     "packages/compatibility": {
       "name": "@agent-plugin-doctor/compatibility",
-      "version": "0.1.0",
+      "version": "0.0.1",
       "dependencies": {
         "@agent-plugin-doctor/core": "workspace:*",
       },
@@ -49,14 +49,14 @@
     },
     "packages/core": {
       "name": "@agent-plugin-doctor/core",
-      "version": "0.1.0",
+      "version": "0.0.1",
       "devDependencies": {
         "typescript": "^5.9.0",
       },
     },
     "packages/parser": {
       "name": "@agent-plugin-doctor/parser",
-      "version": "0.1.0",
+      "version": "0.0.1",
       "dependencies": {
         "@agent-plugin-doctor/core": "workspace:*",
         "ajv": "^8.17.0",
@@ -68,7 +68,7 @@
     },
     "packages/report": {
       "name": "@agent-plugin-doctor/report",
-      "version": "0.1.0",
+      "version": "0.0.1",
       "dependencies": {
         "@agent-plugin-doctor/core": "workspace:*",
         "chalk": "^5.4.0",
@@ -79,7 +79,7 @@
     },
     "packages/rules": {
       "name": "@agent-plugin-doctor/rules",
-      "version": "0.1.0",
+      "version": "0.0.1",
       "dependencies": {
         "@agent-plugin-doctor/compatibility": "workspace:*",
         "@agent-plugin-doctor/core": "workspace:*",

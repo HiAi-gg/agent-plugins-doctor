@@ -153,7 +153,7 @@ describe('core <-> parser type compatibility', () => {
   test('the repo root itself loads as a plugin (self-hosting contract)', async () => {
     const plugin: Plugin = await loadPlugin(REPO_ROOT);
     expect(plugin.manifest.name).toBe('agent-plugin-doctor');
-    expect(plugin.manifest.version).toBe('0.1.0');
+    expect(plugin.manifest.version).toBe('0.0.1');
     expect(plugin.manifest.license).toBe('MIT');
     expect(plugin.skills).toHaveLength(1);
     expect(plugin.skills[0].name).toBe('doctor');
