@@ -24,10 +24,11 @@ function makeTempDir(): string {
 describe('resolvePluginPath', () => {
   test('resolves a valid plugin-relative path against the root', () => {
     const root = makeTempDir();
+    const realRoot = realpathSync(root);
     try {
       writeFileSync(join(root, 'skill.md'), 'body');
       const result = resolvePluginPath(root, './skill.md');
-      expect(isWithinPath(result, root)).toBe(true);
+      expect(isWithinPath(result, realRoot)).toBe(true);
       expect(result.endsWith('/skill.md')).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });
@@ -36,11 +37,12 @@ describe('resolvePluginPath', () => {
 
   test('resolves paths in nested directories', () => {
     const root = makeTempDir();
+    const realRoot = realpathSync(root);
     try {
       mkdirSync(join(root, 'skills'), { recursive: true });
       writeFileSync(join(root, 'skills', 'summarize.md'), 'body');
       const result = resolvePluginPath(root, './skills/summarize.md');
-      expect(isWithinPath(result, root)).toBe(true);
+      expect(isWithinPath(result, realRoot)).toBe(true);
       expect(result.endsWith('/skills/summarize.md')).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });
@@ -59,11 +61,12 @@ describe('resolvePluginPath', () => {
 
   test('resolves with a relative plugin root', () => {
     const root = makeTempDir();
+    const realRoot = realpathSync(root);
     try {
       writeFileSync(join(root, 'a.md'), 'x');
       const relRoot = relative(process.cwd(), root);
       const result = resolvePluginPath(relRoot, './a.md');
-      expect(isWithinPath(result, root)).toBe(true);
+      expect(isWithinPath(result, realRoot)).toBe(true);
       expect(result.endsWith('/a.md')).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });

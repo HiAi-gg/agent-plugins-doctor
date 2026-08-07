@@ -44,6 +44,7 @@
 - **No rule currently emits `range`**: all 29 rules attach `file` but never `range`, so "line numbers" in diagnostics are only available where a range is set (none today). Integration tests assert `file` correctness and validate `range` shape defensively when present.
 - **Prettier vs Doctor canonical JSON conflict**: prettier collapses short JSON arrays onto one line; Doctor's `canonicalJson` (JSON.stringify 2-space) expands them. Any self-hosted `plugin.json` must be prettier-ignored or `check .` reports DOC-7001.
 - **resolvePluginPath is transitive**: resolving a file against an already-realpath'd directory (e.g., extension.json against the resolved extension dir) preserves containment against the plugin root.
+- **tmpdir() may be a symlink on macOS** (`/var/folders/...` → `/private/var/folders/...`): `resolvePluginPath` returns the REAL path (`realpathSync`), so tests that compare with `isWithinPath(result, root)` against the lexical `mkdtempSync` root FAIL on macOS. Tests must compare against `realpathSync(root)` (e.g. `const realRoot = realpathSync(root)`), as in the three `resolvePluginPath` tests in `packages/core/tests/path.test.ts`.
 
 ## Patterns
 
