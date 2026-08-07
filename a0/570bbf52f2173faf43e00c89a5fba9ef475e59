@@ -1,0 +1,19 @@
+MEMORY.md
+  s_4fcd5979b2496f::t_db66947e8f774c 66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "a0570bbf52f2173faf43e00c89a5fba9ef475e59",
+  "prompts": {},
+  "sessions": {
+    "s_4fcd5979b2496f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_022162578ffezcNVr3XX0PKCWo",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
