@@ -1,0 +1,9 @@
+# Force LF line endings on every platform.
+#
+# The parser, formatting rules (DOC-7001/DOC-7002), and the byte-exact
+# fixture contracts all assume LF. Without this file, git on Windows
+# checks out text files with CRLF (core.autocrlf), which made the CLI
+# report "file uses CRLF line endings" / "not formatted with 2-space
+# indentation" on every fixture and broke 10 tests on windows-latest CI.
+# Binary files are unaffected (text=auto only converts detected text).
+* text=auto eol=lf

@@ -17,6 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   uses the platform separator (`path.sep`) and tolerates parents that already
   end with one, restoring the full suite (128 tests) on Windows while leaving
   POSIX behavior byte-identical. Cross-platform regression test added.
+- **Windows: CRLF line endings broke formatting/line-ending rules** — git
+  checks out text files with CRLF on Windows by default, so fixtures reported
+  DOC-7001 (JSON formatting) and DOC-7002 (CRLF line endings) and self-hosting
+  failed. Added `.gitattributes` (`* text=auto eol=lf`) to force LF on every
+  platform; binary files are unaffected.
+- **Windows: benchmark and e2e timing budgets too tight** — cold starts on
+  Windows runners are ~1.5-2x slower (1-skill load was 136ms vs a 100ms
+  budget) and 18 sequential CLI spawns exceeded the default 5s test timeout
+  (exit 143 = killed). Widened benchmark budgets (250/500/2000/3000ms) and
+  raised the fixture exit-code e2e test timeout to 60s.
 
 ## [0.0.1] - 2026-08-07
 

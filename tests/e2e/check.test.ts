@@ -29,18 +29,23 @@ const FIXTURE_EXITS: Record<string, number> = {
 };
 
 describe('e2e check command', () => {
-  test('every fixture exits with its documented exit code', async () => {
-    for (const [fixture, expected] of Object.entries(FIXTURE_EXITS)) {
-      const result = await runCli([
-        'check',
-        fixturePath(fixture),
-        '--no-color',
-      ]);
-      expect(result.exitCode, `check ${fixture}: ${result.stderr.trim()}`).toBe(
-        expected,
-      );
-    }
-  });
+  test(
+    'every fixture exits with its documented exit code',
+    async () => {
+      for (const [fixture, expected] of Object.entries(FIXTURE_EXITS)) {
+        const result = await runCli([
+          'check',
+          fixturePath(fixture),
+          '--no-color',
+        ]);
+        expect(
+          result.exitCode,
+          `check ${fixture}: ${result.stderr.trim()}`,
+        ).toBe(expected);
+      }
+    },
+    { timeout: 60_000 },
+  ); // 18 sequential CLI spawns; Windows spawns are slow (~300ms each)
 
   test('self-hosting: the repository validates itself cleanly', async () => {
     const result = await runCli(['check', '.', '--no-color'], REPO_ROOT);
