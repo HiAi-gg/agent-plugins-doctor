@@ -1,0 +1,23 @@
+MEMORY.md
+  s_c25523998168fa::t_05716d855230d3 47
+packages/core/tests/path.test.ts
+  s_c25523998168fa::t_1b61b3789787a5 64,69
+  s_c25523998168fa::t_e9e8f8b0973085 27,31
+  s_c25523998168fa::t_f4dd1bd637d5bf 40,45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f4a8e8dac2ea534f0d84a92c227726a9201a87bf",
+  "prompts": {},
+  "sessions": {
+    "s_c25523998168fa": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_023240b88ffel6uYSca6gPI9vU",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
