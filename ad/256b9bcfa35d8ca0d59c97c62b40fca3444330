@@ -1,0 +1,23 @@
+plugin.json
+  s_1a4eb2564ff4ae::t_a708c6e772e971 4
+tests/integration/core-parser.test.ts
+  s_1a4eb2564ff4ae::t_108667b00bdb30 156
+packages/cli/src/index.ts
+  s_1a4eb2564ff4ae::t_215d4b1140f151 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ad256b9bcfa35d8ca0d59c97c62b40fca3444330",
+  "prompts": {},
+  "sessions": {
+    "s_1a4eb2564ff4ae": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0232a8528ffer8DWUOSD7EiAzI",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
