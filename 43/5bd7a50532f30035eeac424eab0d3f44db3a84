@@ -1,0 +1,294 @@
+packages/rules/src/rules/skill/name-match.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 4
+packages/cli/tests/helpers.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1,14
+packages/cli/src/utils/run.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 12-14,20-21
+tests/integration/builder-contract.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 10,15
+  s_4fcd5979b2496f::t_5720c647291a85 11-14
+packages/rules/src/rule.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 9
+skills/doctor/SKILL.md
+  s_4fcd5979b2496f::t_d92d22298612d4 5,15,18-19,23,43,46,49,52,55,82,85,88,91
+.github/ISSUE_TEMPLATE/feature_request.md
+  s_4fcd5979b2496f::t_d92d22298612d4 30
+tests/fixtures/warning-plugin/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 17,33
+packages/rules/src/rules/mcp/header-validation.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 4
+tests/fixtures/edge-cases/empty-plugin/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 17
+tests/fixtures/security-plugin/symlink-escape/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 22
+packages/cli/package.json
+  s_4fcd5979b2496f::t_d92d22298612d4 2,15,24,27-28,37-41
+packages/rules/tests/helpers.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1,13,20
+tests/e2e/helpers.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 2,19
+tests/integration/diagnostic-scanning.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 12-13,18
+docs/DUPLICATION_ANALYSIS.md
+  s_4fcd5979b2496f::t_d92d22298612d4 36
+packages/cli/src/commands/fix.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 10-11,16
+packages/parser/src/plugin-loader.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 12,16
+packages/report/src/json.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 13
+packages/rules/src/rules/manifest/schema-match.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 4-5
+docs/BUILDER_REAL_INTEGRATION.md
+  s_4fcd5979b2496f::t_d92d22298612d4 118
+packages/rules/tests/engine.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 2-3
+tests/integration/autofix-idempotence.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 28-31
+examples/builder-integration/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 21-24,49
+packages/core/src/diagnostics.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 73
+examples/builder-integration/package.json
+  s_4fcd5979b2496f::t_d92d22298612d4 11-15
+packages/rules/package.json
+  s_4fcd5979b2496f::t_d92d22298612d4 2,21,24-25,34-36
+packages/report/src/human.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 21
+packages/rules/tests/fixes.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 2
+.github/ISSUE_TEMPLATE/bug_report.md
+  s_4fcd5979b2496f::t_d92d22298612d4 18
+packages/cli/src/index.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1-2,28
+packages/cli/src/bin.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 5,7
+packages/rules/src/rules/mcp/reserved-env-keys.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3
+package.json
+  s_4fcd5979b2496f::t_d92d22298612d4 2,18,21,23,44-49
+packages/rules/src/rules/manifest/required-fields.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3
+docs/RULE_ENGINE.md
+  s_4fcd5979b2496f::t_d92d22298612d4 175,289,301,304
+packages/rules/src/util.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 10,14
+tests/fixtures/security-plugin/path-traversal/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 19
+packages/rules/src/rules/manifest/author-strictness.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 7
+packages/compatibility/src/deprecations.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1
+packages/core/package.json
+  s_4fcd5979b2496f::t_d92d22298612d4 2,21,24-25
+tests/fixtures/minimal-plugin/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 16
+packages/compatibility/package.json
+  s_4fcd5979b2496f::t_d92d22298612d4 2,21,24-25,34
+docs/ARCHITECTURE.md
+  s_4fcd5979b2496f::t_d92d22298612d4 41,51,65,75,84,90
+tests/fixtures/edge-cases/max-skills/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 18
+packages/compatibility/src/index.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1
+docs/BUILDER_INTEGRATION.md
+  s_4fcd5979b2496f::t_d92d22298612d4 43-48,60-65,98-99,114,123,137,149,158,198,204,235-238,256,285
+  s_4fcd5979b2496f::t_f3f36ace26169f 41-42
+packages/report/src/index.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1,4
+packages/report/src/util.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3
+packages/cli/src/commands/check.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 4-5
+packages/rules/src/rules/security/symlink-escape.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 9
+packages/parser/src/mcp-config.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3
+packages/rules/src/rules/skill/allowed-tools-format.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 7
+tests/fixtures/allowed-tools-canonical/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 20
+examples/builder-integration/parse-frontmatter.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 9-11
+packages/report/tests/helpers.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1,3,11
+tests/fixtures/builder-generated/real-builder/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 35
+tests/fixtures/vendor-extensions/invalid-extensions/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 20
+README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 5,12,15,18,47,64,78,90,102-104,207
+packages/parser/tests/skill-frontmatter.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 2
+packages/rules/src/rules/structure/skill-directory-name.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 8-9
+docs/REPOSITORY_AUDIT.md
+  s_4fcd5979b2496f::t_d92d22298612d4 193
+examples/builder-integration/validate-after-generate.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 13-16
+tests/integration/fix-pipeline.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 6,12
+docs/DIAGNOSTICS.md
+  s_4fcd5979b2496f::t_d92d22298612d4 64
+tests/fixtures/builder-generated/from-migrate-claude/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 25,31
+tests/fixtures/invalid-plugin/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 21
+packages/report/package.json
+  s_4fcd5979b2496f::t_d92d22298612d4 2,21,24-25,34
+packages/report/tests/markdown.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 2,59,130
+tests/fixtures/legacy-plugin/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 14
+packages/rules/src/rules/manifest/unknown-fields.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 7
+tests/fixtures/builder-generated/from-create/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 21,27
+tests/e2e/external-install.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 4,9,13,125,133
+tests/fixtures/security-plugin/embedded-secrets/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 18
+checkpoint.md
+  s_4fcd5979b2496f::t_d92d22298612d4 73
+docs/SPEC_SUPPORT.md
+  s_4fcd5979b2496f::t_d92d22298612d4 23
+packages/rules/src/fixes.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 10-11
+.github/PULL_REQUEST_TEMPLATE.md
+  s_4fcd5979b2496f::t_d92d22298612d4 33
+packages/parser/src/skill-frontmatter.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 5
+packages/rules/src/engine.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 12-13,77
+packages/rules/src/rules/manifest/name-length.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3
+tests/fixtures/edge-cases/unicode-names/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 16
+packages/cli/tests/exit-codes.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 2
+tests/fixtures/future-spec/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 15
+packages/rules/src/rules/format/frontmatter-style.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 5
+packages/cli/src/commands/compatibility.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 4,8-10
+tests/fixtures/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 6,67-70
+packages/cli/src/commands/report.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 6-7
+tests/integration/core-parser.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1-2,19-20,28,166
+CONTRIBUTING.md
+  s_4fcd5979b2496f::t_d92d22298612d4 13,23,48,54-55,64,133-134
+packages/compatibility/src/types.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1,5
+packages/parser/src/plugin-manifest.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 2
+packages/report/src/types.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1,3
+packages/rules/src/rules/compatibility/deprecated-fields.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 8
+packages/cli/src/utils/exit-codes.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1,14-15
+tests/integration/full-pipeline.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 10-12,17-18
+packages/report/tests/integration.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 2
+docs/AUTOFIX_AUDIT.md
+  s_4fcd5979b2496f::t_d92d22298612d4 191
+plugin.json
+  s_4fcd5979b2496f::t_d92d22298612d4 3,10-11
+packages/core/src/index.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1
+tests/e2e/check.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 62
+scripts/publish.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3,37,68
+tests/integration/builder-real.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 10-12
+packages/rules/tests/incremental.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 5
+tests/fixtures/builder-generated/from-init/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 20,26
+tests/integration/api-stability.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 10-15
+PUBLISHING.md
+  s_4fcd5979b2496f::t_d92d22298612d4 4,15-20,91-96,104-105,109
+docs/EXTENSIBILITY.md
+  s_4fcd5979b2496f::t_5720c647291a85 9-10
+  s_4fcd5979b2496f::t_d92d22298612d4 11-15,215,372
+docs/V0_0_2_HARDENING.md
+  s_4fcd5979b2496f::t_d92d22298612d4 15
+packages/rules/src/registry.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 5
+docs/RELEASING.md
+  s_4fcd5979b2496f::t_d92d22298612d4 50,121-122,132
+tests/fixtures/vendor-extensions/valid-extensions/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 20
+packages/rules/src/rules/skill/description-length.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3
+tests/integration/rules-parser.test.ts
+  s_4fcd5979b2496f::t_5720c647291a85 7-10
+  s_4fcd5979b2496f::t_d92d22298612d4 6,15
+packages/rules/src/rules/compatibility/spec-version.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3
+tests/fixtures/builder-generated/from-migrate-cursor/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 20,26
+docs/SDK.md
+  s_4fcd5979b2496f::t_5720c647291a85 15-16
+  s_4fcd5979b2496f::t_d92d22298612d4 17-22,27-31,41,61,119,271,301,339,407,480,500,530,555,568,599-600,634,678,748,763,785,905,917,961,1058,1075,1117,1151-1154,1185-1189,1219-1220,1259,1284
+packages/parser/package.json
+  s_4fcd5979b2496f::t_d92d22298612d4 2,21,24-25,34
+AGENTS.md
+  s_4fcd5979b2496f::t_d92d22298612d4 13-18,47,56,90
+packages/compatibility/src/checker.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 10
+tests/fixtures/edge-cases/huge-description/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 19
+tests/fixtures/complex-plugin/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 23
+tests/integration/allowed-tools.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 10-11
+packages/rules/src/index.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1
+packages/parser/src/index.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 1
+packages/rules/src/rules/format/json-formatting.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 4
+tests/fixtures/builder-generated/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 31
+packages/rules/src/rules/skill/compatibility-length.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3
+packages/compatibility/tests/checker.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 2-3
+tests/fixtures/allowed-tools-invalid/README.md
+  s_4fcd5979b2496f::t_d92d22298612d4 19
+packages/rules/tests/scan-validation.test.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 7
+packages/rules/src/rules/manifest/name-pattern.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 3-4
+tests/benchmarks/benchmark.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 19-21
+packages/report/src/markdown.ts
+  s_4fcd5979b2496f::t_d92d22298612d4 13,164
+MEMORY.md
+  s_4fcd5979b2496f::t_d92d22298612d4 5,14,20-21,24,26,28,37,58,65
+CHANGELOG.md
+  s_4fcd5979b2496f::t_d92d22298612d4 19,73,76,101,104,124,196,230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "435bd7a50532f30035eeac424eab0d3f44db3a84",
+  "prompts": {},
+  "sessions": {
+    "s_4fcd5979b2496f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_022162578ffezcNVr3XX0PKCWo",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
