@@ -8,7 +8,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, relative } from 'node:path';
+import { join, normalize, relative, sep } from 'node:path';
 import {
   isAbsolutePath,
   isValidPluginPath,
@@ -29,7 +29,7 @@ describe('resolvePluginPath', () => {
       writeFileSync(join(root, 'skill.md'), 'body');
       const result = resolvePluginPath(root, './skill.md');
       expect(isWithinPath(result, realRoot)).toBe(true);
-      expect(result.endsWith('/skill.md')).toBe(true);
+      expect(result.endsWith(join('skill.md'))).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -43,7 +43,7 @@ describe('resolvePluginPath', () => {
       writeFileSync(join(root, 'skills', 'summarize.md'), 'body');
       const result = resolvePluginPath(root, './skills/summarize.md');
       expect(isWithinPath(result, realRoot)).toBe(true);
-      expect(result.endsWith('/skills/summarize.md')).toBe(true);
+      expect(result.endsWith(join('skills', 'summarize.md'))).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -67,7 +67,7 @@ describe('resolvePluginPath', () => {
       const relRoot = relative(process.cwd(), root);
       const result = resolvePluginPath(relRoot, './a.md');
       expect(isWithinPath(result, realRoot)).toBe(true);
-      expect(result.endsWith('/a.md')).toBe(true);
+      expect(result.endsWith(join('a.md'))).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -158,7 +158,7 @@ describe('resolvePluginPath', () => {
       writeFileSync(join(root, 'target.md'), 'body');
       symlinkSync(join(root, 'target.md'), join(root, 'alias.md'));
       const result = resolvePluginPath(root, './alias.md');
-      expect(result.endsWith('/target.md')).toBe(true);
+      expect(result.endsWith(join('target.md'))).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -182,7 +182,7 @@ describe('resolvePluginPath', () => {
       const result = resolvePluginPath(root, './broken.md');
       // Lexically still inside the root — no escape, no throw.
       expect(isWithinPath(result, root)).toBe(true);
-      expect(result.endsWith('/broken.md')).toBe(true);
+      expect(result.endsWith(join('broken.md'))).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });
       rmSync(outside, { recursive: true, force: true });
@@ -216,6 +216,14 @@ describe('isWithinPath', () => {
     expect(isWithinPath('/', '/')).toBe(true);
     expect(isWithinPath('/etc', '/')).toBe(true);
     expect(isWithinPath('/usr/local', '/')).toBe(true);
+  });
+
+  test('handles a parent that already ends with a separator', () => {
+    // Pins cross-platform containment: on Windows node:path produces
+    // backslash-separated paths, so the prefix must use the platform
+    // separator and must not double it when the parent ends with one.
+    expect(isWithinPath('/a/b/c', '/a/b/')).toBe(true);
+    expect(isWithinPath('/a/b/c', '/a/b' + sep)).toBe(true);
   });
 
   test('handles redundant separators and dot segments', () => {
@@ -262,8 +270,11 @@ describe('isValidPluginPath', () => {
 
 describe('normalizePath and isAbsolutePath', () => {
   test('normalizePath collapses redundant segments', () => {
-    expect(normalizePath('/a//b/../c')).toBe('/a/c');
-    expect(normalizePath('a/./b')).toBe('a/b');
+    // normalizePath wraps node:path.normalize, which is platform-specific
+    // ('/a/c' on POSIX, '\a\c' on Windows); compare against the platform
+    // result so the assertion holds everywhere.
+    expect(normalizePath('/a//b/../c')).toBe(normalize('/a//b/../c'));
+    expect(normalizePath('a/./b')).toBe(normalize('a/./b'));
   });
 
   test('isAbsolutePath detects absolute paths', () => {

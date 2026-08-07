@@ -127,7 +127,7 @@
 
 ## v0.1.0 Release Checklist
 
-- [x] All tests pass (483 tests across 65 files)
+- [x] All tests pass (484 tests across 65 files)
 - [x] Type check passes
 - [x] Lint passes
 - [x] Prettier passes
@@ -232,7 +232,7 @@
 
 ### Technical
 
-- ✅ 483 tests passing (65 files)
+- ✅ 484 tests passing (65 files)
 - ✅ < 2000ms for 100-skill plugin (measured ~14ms)
 - ✅ Zero false positives on valid plugins
 - ✅ Self-hosting passes

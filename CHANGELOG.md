@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **Windows: plugin loading failed with "Path escapes plugin root"** —
+  `isWithinPath` appended a hardcoded `/` to the parent path, but
+  `node:path` produces backslash-separated paths on Windows
+  (e.g. `C:\plugin\skill.md`), so every contained path was rejected and
+  `resolvePluginPath` threw for all valid plugins. The containment check now
+  uses the platform separator (`path.sep`) and tolerates parents that already
+  end with one, restoring the full suite (128 tests) on Windows while leaving
+  POSIX behavior byte-identical. Cross-platform regression test added.
+
 ## [0.0.1] - 2026-08-07
 
 Initial release of Agent Plugin Doctor: the canonical validation, diagnostics,

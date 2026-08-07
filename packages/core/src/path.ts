@@ -1,7 +1,7 @@
 // Path security utilities
 // Security boundary: enforces containment and prevents traversal
 
-import { resolve, normalize, isAbsolute } from 'node:path';
+import { resolve, normalize, isAbsolute, sep } from 'node:path';
 import { realpathSync } from 'node:fs';
 
 /**
@@ -64,13 +64,23 @@ export function isWithinPath(child: string, parent: string): boolean {
     return true;
   }
 
-  // When the parent is the filesystem root ('/'), every absolute path is
-  // contained; appending '/' would produce '//' and break the prefix check.
-  if (normalizedParent === '/') {
-    return normalizedChild.startsWith('/');
+  // When the parent is the filesystem root ('/' on POSIX, '\' on Windows),
+  // every absolute child is contained; appending a separator would produce a
+  // doubled separator ('//' or '\\') and break the prefix check.
+  if (normalizedParent === sep) {
+    return normalizedChild.startsWith(sep);
   }
 
-  return normalizedChild.startsWith(normalizedParent + '/');
+  // Append the PLATFORM separator ('/' on POSIX, '\' on Windows), not a
+  // hardcoded '/'. node:path normalize()/resolve() return backslash-separated
+  // paths on Windows (e.g. 'C:\plugin\skill.md'), so a '/' suffix would reject
+  // every contained path there and break plugin loading entirely. Parents that
+  // already end with a separator (drive roots like 'C:\') are used as-is so
+  // children on that drive are contained; everything else behaves exactly as
+  // on POSIX.
+  return normalizedChild.startsWith(
+    normalizedParent.endsWith(sep) ? normalizedParent : normalizedParent + sep,
+  );
 }
 
 /**

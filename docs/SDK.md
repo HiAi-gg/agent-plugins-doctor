@@ -272,7 +272,9 @@ resolvePluginPath('/tmp/my-plugin', '../etc/passwd');
 #### `isWithinPath(child: string, parent: string): boolean`
 
 True when `child` is `parent` or a descendant of it. Normalized paths, so
-redundant separators and `..` segments are handled.
+redundant separators and `..` segments are handled. Cross-platform: the
+prefix check uses the platform separator, so Windows backslash paths
+(e.g. `C:\plugin\skill.md` within `C:\plugin`) are contained correctly.
 
 #### `normalizePath(p: string): string`
 
