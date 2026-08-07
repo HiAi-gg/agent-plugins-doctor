@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "cursor-migrated-plugin",
+  "version": "0.1.0",
+  "description": "Migrated from a Cursor project's agent rules",
+  "author": {
+    "name": "Cursor User",
+    "email": "cursor-user@example.com"
+  },
+  "homepage": "https://example.com/cursor-migrated-plugin",
+  "license": "MIT"
+}

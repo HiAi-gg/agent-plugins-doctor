@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "secret-server": {
+      "type": "stdio",
+      "command": "./server.js",
+      "env": {
+        "API_KEY": "sk-1234567890abcdef",
+        "SECRET_TOKEN": "ghp_abcdefghijklmnopqrstuvwxyz123456"
+      }
+    }
+  }
+}

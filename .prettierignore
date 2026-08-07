@@ -1,0 +1,10 @@
+# Vendored official schemas must remain byte-exact canonical copies
+packages/parser/src/schemas/
+
+# Test fixtures are byte-exact inputs: tests may assert exact file content
+# (including deliberate formatting quirks), so formatting is not applied.
+tests/fixtures/
+
+# The self-hosting manifest must stay in Doctor's canonical JSON form
+# (JSON.stringify 2-space, which expands arrays); prettier collapses them.
+plugin.json

@@ -1,0 +1,4 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/0.9.0/plugin.schema.json",
+  "name": "legacy-plugin"
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "Invalid-Name",
+  "version": "not-a-version",
+  "author": {
+    "name": "Test",
+    "invalidField": "should not be here"
+  },
+  "unknownField": "this field is not allowed"
+}

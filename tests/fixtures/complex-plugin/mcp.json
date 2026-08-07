@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "local-server": {
+      "type": "stdio",
+      "command": "./server.js",
+      "args": ["--port", "3000"],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "remote-api": {
+      "type": "streamable-http",
+      "url": "https://api.example.com/mcp",
+      "headers": {
+        "X-API-Version": "1.0"
+      }
+    }
+  }
+}

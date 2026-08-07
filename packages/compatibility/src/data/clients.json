@@ -1,0 +1,74 @@
+{
+  "clients": [
+    {
+      "id": "vscode",
+      "name": "VS Code",
+      "supportedSpecVersions": ["1.0.0"],
+      "capabilities": {
+        "skills": true,
+        "mcpStdio": true,
+        "mcpStreamableHttp": true,
+        "mcpLegacySse": true,
+        "extensions": true
+      },
+      "evidence": "docs",
+      "source": "https://code.visualstudio.com/docs/agent-customization/agent-plugins"
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "supportedSpecVersions": ["1.0.0"],
+      "capabilities": {
+        "skills": true,
+        "mcpStdio": true,
+        "mcpStreamableHttp": true,
+        "mcpLegacySse": true,
+        "extensions": true
+      },
+      "evidence": "docs",
+      "source": "https://cursor.com/docs/plugins"
+    },
+    {
+      "id": "copilot",
+      "name": "GitHub Copilot",
+      "supportedSpecVersions": ["1.0.0"],
+      "capabilities": {
+        "skills": true,
+        "mcpStdio": true,
+        "mcpStreamableHttp": true,
+        "mcpLegacySse": true,
+        "extensions": true
+      },
+      "evidence": "docs",
+      "source": "https://docs.github.com/en/copilot/concepts/agents/about-plugins"
+    },
+    {
+      "id": "codex",
+      "name": "ChatGPT & Codex",
+      "supportedSpecVersions": ["1.0.0"],
+      "capabilities": {
+        "skills": true,
+        "mcpStdio": true,
+        "mcpStreamableHttp": true,
+        "mcpLegacySse": false,
+        "extensions": true
+      },
+      "evidence": "docs",
+      "source": "https://developers.openai.com/plugins"
+    },
+    {
+      "id": "kiro",
+      "name": "Kiro",
+      "supportedSpecVersions": ["1.0.0"],
+      "capabilities": {
+        "skills": true,
+        "mcpStdio": true,
+        "mcpStreamableHttp": true,
+        "mcpLegacySse": true,
+        "extensions": true
+      },
+      "evidence": "docs",
+      "source": "https://kiro.dev/docs/powers/"
+    }
+  ]
+}

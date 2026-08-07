@@ -1,0 +1,20 @@
+{
+  "name": "builder-integration-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Example: how the Builder tool integrates with Agent Plugin Doctor",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@agent-plugin-doctor/core": "workspace:*",
+    "@agent-plugin-doctor/parser": "workspace:*",
+    "@agent-plugin-doctor/rules": "workspace:*",
+    "@agent-plugin-doctor/report": "workspace:*",
+    "@agent-plugin-doctor/cli": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}

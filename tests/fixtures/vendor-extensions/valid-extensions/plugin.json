@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "valid-extensions",
+  "extensions": {
+    "com.example.feature1": {
+      "enabled": true
+    },
+    "org.example.feature2": {
+      "mode": "beta"
+    }
+  }
+}

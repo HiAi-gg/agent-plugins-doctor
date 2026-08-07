@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "complex-plugin",
+  "version": "1.0.0",
+  "description": "A complex plugin demonstrating all features",
+  "author": {
+    "name": "Test Author",
+    "email": "test@example.com",
+    "url": "https://example.com"
+  },
+  "homepage": "https://example.com/complex-plugin",
+  "repository": "https://github.com/example/complex-plugin",
+  "license": "MIT",
+  "keywords": ["test", "example", "complex"],
+  "extensions": {
+    "com.example.client": {
+      "feature": "enabled"
+    }
+  }
+}

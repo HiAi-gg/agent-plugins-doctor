@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "claude-migrated-plugin",
+  "version": "1.0.0",
+  "description": "Migrated from a Claude Code project with MCP servers",
+  "author": {
+    "name": "Claude Code User"
+  },
+  "license": "MIT"
+}

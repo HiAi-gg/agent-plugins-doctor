@@ -1,0 +1,19 @@
+{
+  "name": "@agent-plugin-doctor/report",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "bun build ./src/index.ts --outdir ./dist",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@agent-plugin-doctor/core": "workspace:*",
+    "chalk": "^5.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}
