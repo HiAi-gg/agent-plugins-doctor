@@ -45,6 +45,7 @@
 - **Prettier vs Doctor canonical JSON conflict**: prettier collapses short JSON arrays onto one line; Doctor's `canonicalJson` (JSON.stringify 2-space) expands them. Any self-hosted `plugin.json` must be prettier-ignored or `check .` reports DOC-7001.
 - **resolvePluginPath is transitive**: resolving a file against an already-realpath'd directory (e.g., extension.json against the resolved extension dir) preserves containment against the plugin root.
 - **tmpdir() may be a symlink on macOS** (`/var/folders/...` → `/private/var/folders/...`): `resolvePluginPath` returns the REAL path (`realpathSync`), so tests that compare with `isWithinPath(result, root)` against the lexical `mkdtempSync` root FAIL on macOS. Tests must compare against `realpathSync(root)` (e.g. `const realRoot = realpathSync(root)`), as in the three `resolvePluginPath` tests in `packages/core/tests/path.test.ts`.
+- **Fixture files must be tracked by git**: rules like `structure-extra-files` read the fixture directory LIVE at runtime (`readdirSync`), so any file a test's DOC contract depends on (e.g. `complex-plugin/notes.log` → DOC-5003) MUST be committed. `notes.log` was silently excluded by `.gitignore` `*.log`, so fresh checkouts/CI lost it and `rule exclude filter drops rules` failed inconsistently. Fix: targeted negation `!tests/fixtures/complex-plugin/notes.log` in `.gitignore` + commit the file. When adding a fixture file, verify `git check-ignore` does NOT match it.
 
 ## Patterns
 
