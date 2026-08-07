@@ -1,6 +1,9 @@
 node_modules/
 dist/
 *.log
+# The complex-plugin fixture intentionally ships a stray root file so the
+# structure-extra-files rule (DOC-5003) has something to report; keep it tracked.
+!tests/fixtures/complex-plugin/notes.log
 .DS_Store
 .env
 .env.local
