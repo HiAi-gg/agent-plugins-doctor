@@ -1,0 +1,38 @@
+docs/SDK.md
+  s_7b4473a691ee9d::t_770510283ca3fd 275-277
+packages/core/tests/path.test.ts
+  s_7b4473a691ee9d::t_ec94b239894ae1 185
+  s_7b4473a691ee9d::t_82a12cf1f9f06d 221-228
+  s_7b4473a691ee9d::t_6f03696d4e15a4 70
+  s_7b4473a691ee9d::t_b974bde21807e5 32
+  s_7b4473a691ee9d::t_5a7df1a915f0b5 11
+  s_7b4473a691ee9d::t_8996b790162605 273-277
+  s_7b4473a691ee9d::t_309b1de6a33955 161
+  s_7b4473a691ee9d::t_2fdcd3f2841700 46
+CHANGELOG.md
+  s_7b4473a691ee9d::t_a34d9d014167d5 8-20
+docs/ROADMAP.md
+  s_7b4473a691ee9d::t_2e104b71493bed 235
+  s_7b4473a691ee9d::t_1edcc38070f55c 130
+MEMORY.md
+  s_7b4473a691ee9d::t_0bd49d0b95713d 49
+packages/core/src/path.ts
+  s_7b4473a691ee9d::t_439ef91da1328d 4
+  s_7b4473a691ee9d::t_e266f8fa5d4901 67-71,74-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "3b340bff8da1ef568da718aaf5dbbdf8d6973dbd",
+  "prompts": {},
+  "sessions": {
+    "s_7b4473a691ee9d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_022fa39c6ffe31XKpIaUqP5kPc",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
