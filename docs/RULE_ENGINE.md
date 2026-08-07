@@ -172,7 +172,7 @@ interface Fix {
 ```typescript
 // packages/rules/src/rules/manifest/my-rule.ts
 import type { Rule, RuleContext } from '../../rule.js';
-import type { Diagnostic } from '@agent-plugin-doctor/core';
+import type { Diagnostic } from '@agent-plugins-doctor/core';
 
 export const myRule: Rule = {
   id: 'my-rule',
@@ -286,7 +286,7 @@ cached reloads are faster than cold loads by construction. The target of
 Users can register custom rules:
 
 ```typescript
-import { createDefaultRegistry } from '@agent-plugin-doctor/rules';
+import { createDefaultRegistry } from '@agent-plugins-doctor/rules';
 
 const registry = createDefaultRegistry();
 registry.register(myCustomRule);
@@ -298,10 +298,10 @@ Users can filter rules on the CLI:
 
 ```bash
 # Run only specific rules
-agent-plugin-doctor check . --rule DOC-1001,DOC-1002
+agent-plugins-doctor check . --rule DOC-1001,DOC-1002
 
 # Exclude specific rules
-agent-plugin-doctor check . --exclude-rule DOC-7001
+agent-plugins-doctor check . --exclude-rule DOC-7001
 ```
 
 Worked examples for all extension points (rules, spec versions, report

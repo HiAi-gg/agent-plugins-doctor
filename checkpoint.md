@@ -70,7 +70,7 @@ self-hosting exit 0).
 - bun run typecheck: exit 0 all 6 packages
 - bun run lint: exit 0
 - bunx prettier --check .: all files pass
-- Self-hosting: ./packages/cli/bin/agent-plugin-doctor check . → exit 0
+- Self-hosting: ./packages/cli/bin/agent-plugins-doctor check . → exit 0
 - Manual CLI: malformed plugin.json → DOC-1008, exit 1 (not 3); missing dir →
   "Failed to load plugin: Plugin root does not exist", exit 3; report/fix/
   compatibility on bad plugin → exit 1; fix leaves files untouched

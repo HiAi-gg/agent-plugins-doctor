@@ -9,13 +9,13 @@
 // and the merged validation result.
 
 import { describe, expect, test } from 'bun:test';
-import type { Diagnostic } from '@agent-plugin-doctor/core';
-import { scanPlugin } from '@agent-plugin-doctor/parser';
+import type { Diagnostic } from '@agent-plugins-doctor/core';
+import { scanPlugin } from '@agent-plugins-doctor/parser';
 import {
   createDefaultRegistry,
   ValidationEngine,
   validatePlugin,
-} from '@agent-plugin-doctor/rules';
+} from '@agent-plugins-doctor/rules';
 import { canonicalJson, cleanup, makeTempDir, writeTree } from './helpers.js';
 
 const PLUGIN_SCHEMA =

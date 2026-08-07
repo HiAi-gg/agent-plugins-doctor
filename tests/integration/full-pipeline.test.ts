@@ -7,15 +7,15 @@ import type {
   CompatibilityResult,
   Diagnostic,
   ValidationResult,
-} from '@agent-plugin-doctor/core';
-import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
+} from '@agent-plugins-doctor/core';
+import { checkCompatibility } from '@agent-plugins-doctor/compatibility';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
 import {
   createDefaultRegistry,
   ValidationEngine,
   validatePlugin,
-} from '@agent-plugin-doctor/rules';
-import { generateReport } from '@agent-plugin-doctor/report';
+} from '@agent-plugins-doctor/rules';
+import { generateReport } from '@agent-plugins-doctor/report';
 import { toCoreCompatibility } from '../../packages/cli/src/utils/run.js';
 import {
   canonicalJson,

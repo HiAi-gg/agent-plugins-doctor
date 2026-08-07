@@ -6,7 +6,7 @@
 
 import { realpathSync } from 'node:fs';
 import { join } from 'node:path';
-import { isWithinPath } from '@agent-plugin-doctor/core';
+import { isWithinPath } from '@agent-plugins-doctor/core';
 import type { Rule } from '../../rule.js';
 import { makeDiagnostic } from '../../util.js';
 

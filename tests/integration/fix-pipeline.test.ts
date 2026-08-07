@@ -3,13 +3,13 @@
 // does), and verify improvement, dry-run safety, and idempotence.
 
 import { describe, expect, test } from 'bun:test';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
 import {
   applyFixes,
   createDefaultRegistry,
   ValidationEngine,
   validatePlugin,
-} from '@agent-plugin-doctor/rules';
+} from '@agent-plugins-doctor/rules';
 import {
   canonicalJson,
   cleanup,

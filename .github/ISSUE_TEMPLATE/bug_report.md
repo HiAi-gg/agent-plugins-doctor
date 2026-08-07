@@ -15,7 +15,7 @@ A clear and concise description of what the bug is.
 Steps to reproduce the behavior:
 
 1. Create a plugin with '...'
-2. Run 'agent-plugin-doctor check ...'
+2. Run 'agent-plugins-doctor check ...'
 3. See error
 
 ## Expected Behavior

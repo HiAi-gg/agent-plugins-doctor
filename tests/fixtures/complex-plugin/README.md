@@ -20,7 +20,7 @@ streamable-http), two skills, a vendor extension, and agent instructions.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/complex-plugin
+agent-plugins-doctor check tests/fixtures/complex-plugin
 ```
 
 Exit code: `0`

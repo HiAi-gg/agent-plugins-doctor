@@ -3,7 +3,7 @@
 Self-contained test plugins covering the validation scenarios exercised by
 unit, integration, E2E, self-hosting, builder-compatibility, and documentation
 tests. Every fixture directory is an independent plugin: it can be passed
-directly to `agent-plugin-doctor check <fixture>`.
+directly to `agent-plugins-doctor check <fixture>`.
 
 ## Fixture index
 
@@ -64,10 +64,10 @@ emits.
 
 ```bash
 # From the repository root:
-./packages/cli/bin/agent-plugin-doctor check tests/fixtures/minimal-plugin      # 0
-./packages/cli/bin/agent-plugin-doctor check tests/fixtures/invalid-plugin      # 1
-./packages/cli/bin/agent-plugin-doctor check tests/fixtures/security-plugin/embedded-secrets  # 2
-./packages/cli/bin/agent-plugin-doctor check tests/fixtures/complex-plugin      # 0
+./packages/cli/bin/agent-plugins-doctor check tests/fixtures/minimal-plugin      # 0
+./packages/cli/bin/agent-plugins-doctor check tests/fixtures/invalid-plugin      # 1
+./packages/cli/bin/agent-plugins-doctor check tests/fixtures/security-plugin/embedded-secrets  # 2
+./packages/cli/bin/agent-plugins-doctor check tests/fixtures/complex-plugin      # 0
 ```
 
 All credentials in the security fixtures are fake.

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import { applyFixes } from '../src/fixes.js';
 import { unknownFieldsRule } from '../src/rules/manifest/unknown-fields.js';
 import { jsonFormattingRule } from '../src/rules/format/json-formatting.js';

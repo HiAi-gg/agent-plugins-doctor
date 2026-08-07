@@ -10,7 +10,7 @@ import type {
   Diagnostic,
   Severity,
   ValidationResult,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 import type { ReportFormatter } from './types.js';
 import {
   normalizeFilePath,
@@ -161,7 +161,7 @@ export class MarkdownReportFormatter implements ReportFormatter {
       count === 1 ? '1 fix available.' : `${count} fixes available.`;
     return [
       '## Fixes',
-      `${available} Run \`agent-plugin-doctor fix\` to apply.`,
+      `${available} Run \`agent-plugins-doctor fix\` to apply.`,
     ].join('\n');
   }
 

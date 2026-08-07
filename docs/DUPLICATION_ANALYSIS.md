@@ -33,7 +33,7 @@ duplication.)
 
 **After:** Doctor provides a single canonical implementation:
 
-- `@agent-plugin-doctor/parser` → `parseSkillFrontmatter()`
+- `@agent-plugins-doctor/parser` → `parseSkillFrontmatter()`
 - Uses gray-matter for robust YAML parsing
 - Handles all edge cases (quoted strings, multiline, colons)
 

@@ -1,7 +1,7 @@
-// @agent-plugin-doctor/report
+// @agent-plugins-doctor/report
 // Formatted reports (human / JSON / Markdown) from validation results.
 
-import type { ValidationResult } from '@agent-plugin-doctor/core';
+import type { ValidationResult } from '@agent-plugins-doctor/core';
 import type { ReportFormat, ReportFormatter, ReportOptions } from './types.js';
 import { HumanReportFormatter } from './human.js';
 import { JsonReportFormatter } from './json.js';

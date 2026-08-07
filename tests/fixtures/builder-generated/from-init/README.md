@@ -17,13 +17,13 @@ at init time; those are added by `create`, `migrate`, or the user.
 ## Integration contract
 
 This fixture must load with `loadPlugin` and validate with `validatePlugin`
-producing zero error/critical diagnostics, and `agent-plugin-doctor check .`
+producing zero error/critical diagnostics, and `agent-plugins-doctor check .`
 must exit `0`.
 
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/builder-generated/from-init
+agent-plugins-doctor check tests/fixtures/builder-generated/from-init
 ```
 
 Exit code: `0`

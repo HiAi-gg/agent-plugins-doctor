@@ -1,7 +1,7 @@
 // DOC-7001: JSON files must be formatted with 2-space indentation and a
 // trailing newline. Informational, with an automatic reformat fix.
 
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import { canonicalJson, makeDiagnostic, readTextFile } from '../../util.js';
 

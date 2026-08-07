@@ -59,7 +59,7 @@ describe('e2e check command', () => {
   test('self-hosting: the repository validates itself cleanly', async () => {
     const result = await runCli(['check', '.', '--no-color'], REPO_ROOT);
     expect(result.stdout).toContain('Agent Plugin Doctor');
-    expect(result.stdout).toContain('Plugin: agent-plugin-doctor');
+    expect(result.stdout).toContain('Plugin: agent-plugins-doctor');
     expect(result.stdout).toContain('Result: No issues found');
     expect(result.stdout).toContain('Compatibility:');
     expect(result.exitCode).toBe(0);

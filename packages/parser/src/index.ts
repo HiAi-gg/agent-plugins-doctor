@@ -1,4 +1,4 @@
-// @agent-plugin-doctor/parser
+// @agent-plugins-doctor/parser
 // Filesystem loading and parsing for Agent Plugins
 
 export * from './plugin-manifest.js';

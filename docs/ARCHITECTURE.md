@@ -38,7 +38,7 @@ rules → compatibility → core
 
 ### Package Responsibilities
 
-**@agent-plugin-doctor/core**
+**@agent-plugins-doctor/core**
 
 - Canonical domain types (`Plugin`, `PluginManifest`, `Skill`, `McpServer`,
   `McpConfig`, `Extension`, `Diagnostic`, `ValidationResult`, …)
@@ -48,7 +48,7 @@ rules → compatibility → core
 - Diagnostic system types (`Severity`, `RuleCategory`, `Fix`, `FixKind`)
 - No dependencies on other Doctor packages
 
-**@agent-plugin-doctor/parser**
+**@agent-plugins-doctor/parser**
 
 - Filesystem loading and parsing (`loadPlugin`, `parsePluginManifest`,
   `parseMcpConfig`, `parseSkillFrontmatter`)
@@ -62,7 +62,7 @@ rules → compatibility → core
   `walkPluginFiles` (bounded traversal — see Performance Considerations)
 - Dependencies: core
 
-**@agent-plugin-doctor/rules**
+**@agent-plugins-doctor/rules**
 
 - Modular validation engine (`ValidationEngine`, `validatePlugin`)
 - 29 rules across 7 categories (spec, skills, mcp, security, structure,
@@ -72,7 +72,7 @@ rules → compatibility → core
 - Incremental validation (`validateIncremental`)
 - Dependencies: core, parser, compatibility
 
-**@agent-plugin-doctor/compatibility**
+**@agent-plugins-doctor/compatibility**
 
 - Client profile registry (`ClientProfileRegistry`,
   `createDefaultClientRegistry`)
@@ -81,13 +81,13 @@ rules → compatibility → core
   GitHub Copilot, ChatGPT & Codex, Kiro)
 - Dependencies: core
 
-**@agent-plugin-doctor/report**
+**@agent-plugins-doctor/report**
 
 - Report generation (`generateReport`, `getFormatter`)
 - Formatter registry pattern: human, JSON, Markdown
 - Dependencies: core
 
-**@agent-plugin-doctor/cli**
+**@agent-plugins-doctor/cli**
 
 - Command-line interface (commander-based)
 - Commands: `check`, `fix`, `report`, `compatibility`

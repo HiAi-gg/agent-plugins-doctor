@@ -1,5 +1,5 @@
 {
-  "name": "@agent-plugin-doctor/core",
+  "name": "@agent-plugins-doctor/core",
   "version": "0.0.2",
   "description": "Canonical types, spec constants, and path utilities for Agent Plugin Doctor",
   "type": "module",
@@ -18,11 +18,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/HiAi-gg/agent-plugin-doctor.git",
+    "url": "https://github.com/HiAi-gg/agent-plugins-doctor.git",
     "directory": "packages/core"
   },
-  "bugs": "https://github.com/HiAi-gg/agent-plugin-doctor/issues",
-  "homepage": "https://github.com/HiAi-gg/agent-plugin-doctor#readme",
+  "bugs": "https://github.com/HiAi-gg/agent-plugins-doctor/issues",
+  "homepage": "https://github.com/HiAi-gg/agent-plugins-doctor#readme",
   "license": "MIT",
   "scripts": {
     "typecheck": "tsc --noEmit",

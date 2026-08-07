@@ -12,23 +12,23 @@ on.
 
 ## Overview
 
-| Package                              | Purpose                                                     | Key exports                                                                                                 |
-| ------------------------------------ | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `@agent-plugin-doctor/core`          | Canonical types, spec constants, diagnostics, path security | `resolveSpecVersion`, `resolvePluginPath`, `isWithinPath`, all domain types                                 |
-| `@agent-plugin-doctor/parser`        | Filesystem loading and parsing                              | `loadPlugin`, `scanPlugin`, `parsePluginManifest`, `parseMcpConfig`, `parseSkillFrontmatter`, error classes |
-| `@agent-plugin-doctor/rules`         | Validation engine, rule registry, auto-fixes                | `validatePlugin`, `applyFixes`, `createDefaultRegistry`, `ValidationEngine`                                 |
-| `@agent-plugin-doctor/compatibility` | Client-compatibility checking                               | `checkCompatibility`, `createDefaultClientRegistry`, `CompatibilityChecker`, `CompatibilityLevel`           |
-| `@agent-plugin-doctor/report`        | Report rendering                                            | `generateReport`, `getFormatter` (`human` \| `json` \| `markdown`)                                          |
-| `@agent-plugin-doctor/cli`           | CLI wrapper and the exit-code contract                      | `createProgram`, `main`, `computeExitCode`, `EXIT_CODES`                                                    |
+| Package                               | Purpose                                                     | Key exports                                                                                                 |
+| ------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `@agent-plugins-doctor/core`          | Canonical types, spec constants, diagnostics, path security | `resolveSpecVersion`, `resolvePluginPath`, `isWithinPath`, all domain types                                 |
+| `@agent-plugins-doctor/parser`        | Filesystem loading and parsing                              | `loadPlugin`, `scanPlugin`, `parsePluginManifest`, `parseMcpConfig`, `parseSkillFrontmatter`, error classes |
+| `@agent-plugins-doctor/rules`         | Validation engine, rule registry, auto-fixes                | `validatePlugin`, `applyFixes`, `createDefaultRegistry`, `ValidationEngine`                                 |
+| `@agent-plugins-doctor/compatibility` | Client-compatibility checking                               | `checkCompatibility`, `createDefaultClientRegistry`, `CompatibilityChecker`, `CompatibilityLevel`           |
+| `@agent-plugins-doctor/report`        | Report rendering                                            | `generateReport`, `getFormatter` (`human` \| `json` \| `markdown`)                                          |
+| `@agent-plugins-doctor/cli`           | CLI wrapper and the exit-code contract                      | `createProgram`, `main`, `computeExitCode`, `EXIT_CODES`                                                    |
 
 The typical pipeline:
 
 ```ts
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
-import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
-import { generateReport } from '@agent-plugin-doctor/report';
-import { computeExitCode } from '@agent-plugin-doctor/cli';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { validatePlugin } from '@agent-plugins-doctor/rules';
+import { checkCompatibility } from '@agent-plugins-doctor/compatibility';
+import { generateReport } from '@agent-plugins-doctor/report';
+import { computeExitCode } from '@agent-plugins-doctor/cli';
 
 const plugin = await loadPlugin('./my-plugin');
 const result = await validatePlugin(plugin);
@@ -38,7 +38,7 @@ const exitCode = computeExitCode(result.diagnostics);
 
 ---
 
-## 1. `@agent-plugin-doctor/core`
+## 1. `@agent-plugins-doctor/core`
 
 Canonical types, specification constants, the diagnostic system, and path
 security utilities. Every other package builds on this one; it has no
@@ -58,7 +58,7 @@ Maps a `$schema` URL to its spec version.
 - **Errors** None (returns `null` instead).
 
 ```ts
-import { resolveSpecVersion } from '@agent-plugin-doctor/core';
+import { resolveSpecVersion } from '@agent-plugins-doctor/core';
 
 const spec = resolveSpecVersion(
   'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',
@@ -116,7 +116,7 @@ import {
   NAME_MAX_LENGTH,
   NAME_PATTERN,
   PLUGIN_SCHEMA_URL,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 ```
 
 ### 1.3 Domain types
@@ -268,7 +268,7 @@ root and enforces containment.
   operations can target not-yet-existing files.
 
 ```ts
-import { resolvePluginPath } from '@agent-plugin-doctor/core';
+import { resolvePluginPath } from '@agent-plugins-doctor/core';
 
 const p = resolvePluginPath('/tmp/my-plugin', './skills/summarize/SKILL.md');
 // p -> the real, contained absolute path
@@ -298,7 +298,7 @@ True when the path is absolute (wraps `node:path.isAbsolute`).
 
 ---
 
-## 2. `@agent-plugin-doctor/parser`
+## 2. `@agent-plugins-doctor/parser`
 
 Filesystem loading and parsing. This is the single canonical implementation —
 it replaces Builder's seven regex-based frontmatter parsers. Loader behavior
@@ -336,7 +336,7 @@ Loads a complete plugin from a directory.
   - `SchemaValidationError` — manifest violates the vendored schema.
 
 ```ts
-import { loadPlugin } from '@agent-plugin-doctor/parser';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
 
 const { plugin, parseDiagnostics } = await loadPlugin('./my-plugin');
 console.log(
@@ -404,7 +404,7 @@ without executing any plugin code. Malformed input is a validation error
   with `ruleId: "parser"`.
 
 ```ts
-import { scanPlugin } from '@agent-plugin-doctor/parser';
+import { scanPlugin } from '@agent-plugins-doctor/parser';
 
 const { plugin, diagnostics, loaded } = await scanPlugin('./my-plugin');
 console.log(plugin?.manifest.name, loaded.skills, loaded.skillsFailed);
@@ -477,7 +477,7 @@ Parses SKILL.md content into frontmatter and body, using gray-matter.
   is malformed, or `name`/`description` are missing.
 
 ```ts
-import { parseSkillFrontmatter } from '@agent-plugin-doctor/parser';
+import { parseSkillFrontmatter } from '@agent-plugins-doctor/parser';
 
 const parsed = parseSkillFrontmatter(md, 'skills/summarize/SKILL.md');
 console.log(parsed.frontmatter.name, parsed.body);
@@ -497,7 +497,7 @@ unchanged files across repeated `loadPlugin` calls.
 - `size: number` — number of cached entries.
 
 ```ts
-import { ParsedFileCache, loadPlugin } from '@agent-plugin-doctor/parser';
+import { ParsedFileCache, loadPlugin } from '@agent-plugins-doctor/parser';
 
 const cache = new ParsedFileCache();
 await loadPlugin('./my-plugin', { cache }); // parses everything once
@@ -527,7 +527,7 @@ Constants: `TRAVERSAL_MAX_DEPTH` (10), `TRAVERSAL_MAX_FILES` (1000),
 `TRAVERSAL_SKIP_DIRS` (`.git`, `node_modules`).
 
 ```ts
-import { walkPluginFiles } from '@agent-plugin-doctor/parser';
+import { walkPluginFiles } from '@agent-plugins-doctor/parser';
 
 const { files, truncated } = walkPluginFiles(plugin.rootDir);
 if (truncated) console.warn('plugin tree exceeded traversal bounds');
@@ -552,7 +552,7 @@ interface SchemaValidationErrorDetail {
 ```
 
 ```ts
-import { SchemaValidationError } from '@agent-plugin-doctor/parser';
+import { SchemaValidationError } from '@agent-plugins-doctor/parser';
 
 try {
   await loadPlugin(dir);
@@ -565,7 +565,7 @@ try {
 
 ---
 
-## 3. `@agent-plugin-doctor/rules`
+## 3. `@agent-plugins-doctor/rules`
 
 The validation engine, rule registry, and auto-fix engine. 29 rules across 7
 categories run by default. See [DIAGNOSTICS.md](DIAGNOSTICS.md) for the rule
@@ -596,8 +596,8 @@ Validates a plugin with the default registry. Accepts either a loaded
 - **Errors** None (invalid plugins are reported, not thrown).
 
 ```ts
-import { validatePlugin } from '@agent-plugin-doctor/rules';
-import { scanPlugin } from '@agent-plugin-doctor/parser';
+import { validatePlugin } from '@agent-plugins-doctor/rules';
+import { scanPlugin } from '@agent-plugins-doctor/parser';
 
 // Strict mode: a loaded plugin.
 const result = await validatePlugin(plugin, { strict: true });
@@ -631,7 +631,7 @@ rules unaffected by the changed files.
 - **Errors** None (invalid plugins are reported, not thrown).
 
 ```ts
-import { validateIncremental } from '@agent-plugin-doctor/rules';
+import { validateIncremental } from '@agent-plugins-doctor/rules';
 
 const result = await validateIncremental(plugin, previousResult, [
   'skills/summarize/SKILL.md',
@@ -675,7 +675,7 @@ categories, in manifest → skills → mcp → security → structure → compat
 → format order.
 
 ```ts
-import { createDefaultRegistry } from '@agent-plugin-doctor/rules';
+import { createDefaultRegistry } from '@agent-plugins-doctor/rules';
 
 const registry = createDefaultRegistry();
 console.log(registry.getAll().length); // 29
@@ -745,7 +745,7 @@ Applies every fix attached to the given diagnostics.
 - **Errors** None (failures are reported per-fix).
 
 ```ts
-import { applyFixes } from '@agent-plugin-doctor/rules';
+import { applyFixes } from '@agent-plugins-doctor/rules';
 
 const outcome = await applyFixes(plugin.rootDir, result.diagnostics, {
   dryRun: true, // preview without touching disk
@@ -760,7 +760,7 @@ validation. Produces exit code 3.
 
 ---
 
-## 4. `@agent-plugin-doctor/compatibility`
+## 4. `@agent-plugins-doctor/compatibility`
 
 Client-compatibility checking against verified Agent Plugins client profiles.
 The default registry is seeded from `src/data/clients.json` (5 verified
@@ -782,7 +782,7 @@ Checks a plugin against every client in the registry.
   `compatible` field is `true` only for `FULL`.
 
 ```ts
-import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
+import { checkCompatibility } from '@agent-plugins-doctor/compatibility';
 
 const compat = checkCompatibility(plugin);
 console.log(compat.summary); // { total: 5, compatible: 4, incompatible: 1 }
@@ -902,7 +902,7 @@ populate this list.
 
 ---
 
-## 5. `@agent-plugin-doctor/report`
+## 5. `@agent-plugins-doctor/report`
 
 Report rendering from a `ValidationResult`. Three formats: `human`
 (terminal), `json` (CI), and `markdown` (documentation).
@@ -914,7 +914,7 @@ Renders a validation result.
 - **Throws** `Error` for an unknown format.
 
 ```ts
-import { generateReport } from '@agent-plugin-doctor/report';
+import { generateReport } from '@agent-plugins-doctor/report';
 
 const human = generateReport(result, { format: 'human' });
 const json = generateReport(result, { format: 'json' });
@@ -958,7 +958,7 @@ do not import them from the package entry point.
 
 ## 6. Type definitions
 
-The canonical interfaces live in `@agent-plugin-doctor/core`:
+The canonical interfaces live in `@agent-plugins-doctor/core`:
 
 ```ts
 export interface Plugin {
@@ -1055,7 +1055,7 @@ export interface Extension {
 
 ---
 
-## 7. `@agent-plugin-doctor/cli`
+## 7. `@agent-plugins-doctor/cli`
 
 The command-line tool and the exit-code contract. Programmatic consumers
 import the exit-code contract from here so their process codes always match
@@ -1072,7 +1072,7 @@ Derives the process exit code from diagnostics.
 - `0` — otherwise.
 
 ```ts
-import { computeExitCode, EXIT_CODES } from '@agent-plugin-doctor/cli';
+import { computeExitCode, EXIT_CODES } from '@agent-plugins-doctor/cli';
 
 const code = computeExitCode(result.diagnostics);
 if (code === EXIT_CODES.SPEC_ERRORS) {
@@ -1114,7 +1114,7 @@ The singleton program instance used by the binary.
 ### 7.6 `main(): Promise<void>`
 
 Parses `process.argv` and runs the CLI, setting `process.exitCode` after the
-async handlers complete. Invoked by `bin/agent-plugin-doctor`.
+async handlers complete. Invoked by `bin/agent-plugins-doctor`.
 
 ---
 
@@ -1148,10 +1148,10 @@ error (exit 1). The same merge can be done manually with the strict
 `loadPlugin` (skills that failed to load):
 
 ```ts
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin, computeSummary } from '@agent-plugin-doctor/rules';
-import { generateReport } from '@agent-plugin-doctor/report';
-import { computeExitCode } from '@agent-plugin-doctor/cli';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { validatePlugin, computeSummary } from '@agent-plugins-doctor/rules';
+import { generateReport } from '@agent-plugins-doctor/report';
+import { computeExitCode } from '@agent-plugins-doctor/cli';
 
 try {
   const { plugin, parseDiagnostics } = await loadPlugin(dir);
@@ -1182,11 +1182,11 @@ consumers that want the same classification).
 ### Full pipeline with fixes
 
 ```ts
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin, applyFixes } from '@agent-plugin-doctor/rules';
-import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
-import { generateReport } from '@agent-plugin-doctor/report';
-import { computeExitCode } from '@agent-plugin-doctor/cli';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { validatePlugin, applyFixes } from '@agent-plugins-doctor/rules';
+import { checkCompatibility } from '@agent-plugins-doctor/compatibility';
+import { generateReport } from '@agent-plugins-doctor/report';
+import { computeExitCode } from '@agent-plugins-doctor/cli';
 
 // 1. Load
 const { plugin, parseDiagnostics } = await loadPlugin('./my-plugin');
@@ -1216,8 +1216,8 @@ import {
   createDefaultRegistry,
   validatePlugin,
   type Rule,
-} from '@agent-plugin-doctor/rules';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
+} from '@agent-plugins-doctor/rules';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
 
 const customRule: Rule = {
   id: 'example-no-todo',
@@ -1256,7 +1256,7 @@ const result = await validatePlugin(plugin); // default registry; pass your own
 import {
   ClientProfileRegistry,
   CompatibilityChecker,
-} from '@agent-plugin-doctor/compatibility';
+} from '@agent-plugins-doctor/compatibility';
 
 const registry = new ClientProfileRegistry();
 registry.register({
@@ -1281,7 +1281,7 @@ const compat = new CompatibilityChecker(registry).check(plugin);
 ### Machine-readable report for CI
 
 ```ts
-import { generateReport } from '@agent-plugin-doctor/report';
+import { generateReport } from '@agent-plugins-doctor/report';
 
 const json = generateReport(result, { format: 'json' });
 // Stable key order; counts always { error, warning, info, critical };

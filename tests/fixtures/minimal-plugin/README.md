@@ -13,7 +13,7 @@ no extensions.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/minimal-plugin
+agent-plugins-doctor check tests/fixtures/minimal-plugin
 ```
 
 Exit code: `0`

@@ -61,7 +61,7 @@ contained within the plugin root; security rules never produce fixes.
 ## Diagnostic Reachability
 
 Every code is classified by whether it can be produced by the public CLI
-(`agent-plugin-doctor check <dir>`, which loads a plugin from disk through
+(`agent-plugins-doctor check <dir>`, which loads a plugin from disk through
 `scanPlugin`) or only by the SDK (`validatePlugin()` called with an in-memory
 `Plugin` object).
 

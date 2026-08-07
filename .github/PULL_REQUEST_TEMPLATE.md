@@ -30,7 +30,7 @@ Describe the tests you ran:
 - [ ] Unit tests pass (`bun test`)
 - [ ] Type check passes (`bun run typecheck`)
 - [ ] Lint passes (`bun run lint`)
-- [ ] Self-hosting passes (`./packages/cli/bin/agent-plugin-doctor check .`)
+- [ ] Self-hosting passes (`./packages/cli/bin/agent-plugins-doctor check .`)
 - [ ] Added new tests for new functionality
 
 ## Documentation

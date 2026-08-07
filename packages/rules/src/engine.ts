@@ -9,8 +9,8 @@ import type {
   ValidationOptions,
   ValidationResult,
   ValidationSummary,
-} from '@agent-plugin-doctor/core';
-import type { ScanResult } from '@agent-plugin-doctor/parser';
+} from '@agent-plugins-doctor/core';
+import type { ScanResult } from '@agent-plugins-doctor/parser';
 import type { Rule, RuleContext } from './rule.js';
 import type { RuleRegistry } from './registry.js';
 import { applyFixes } from './fixes.js';
@@ -74,7 +74,7 @@ export class ValidationEngine {
       diagnostics: this.sortDiagnostics(diagnostics),
       summary,
       compatible,
-      // Phase 6: populated by @agent-plugin-doctor/compatibility
+      // Phase 6: populated by @agent-plugins-doctor/compatibility
       compatibility: [],
       elapsedMs: Date.now() - started,
     };

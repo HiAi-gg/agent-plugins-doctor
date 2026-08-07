@@ -1,4 +1,4 @@
-// Exit code contract for the agent-plugin-doctor CLI.
+// Exit code contract for the agent-plugins-doctor CLI.
 //
 // Priority: 3 > 2 > 1 > 0. When multiple conditions apply, the highest code
 // wins. Tool/runtime failures (exceptions) produce 3 and are handled at the
@@ -11,8 +11,8 @@
 // error) — never exit 3. Only true tool failures (inaccessible root,
 // internal rule failure DOC-0000) produce exit 3.
 
-import type { Diagnostic } from '@agent-plugin-doctor/core';
-import { INTERNAL_ERROR_CODE } from '@agent-plugin-doctor/rules';
+import type { Diagnostic } from '@agent-plugins-doctor/core';
+import { INTERNAL_ERROR_CODE } from '@agent-plugins-doctor/rules';
 
 export const EXIT_CODES = {
   SUCCESS: 0, // Valid, no errors

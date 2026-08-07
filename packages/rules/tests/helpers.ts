@@ -1,4 +1,4 @@
-// Shared test helpers for @agent-plugin-doctor/rules
+// Shared test helpers for @agent-plugins-doctor/rules
 
 import {
   existsSync,
@@ -10,14 +10,14 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { v1 } from '@agent-plugin-doctor/core';
+import { v1 } from '@agent-plugins-doctor/core';
 import type {
   Diagnostic,
   McpConfig,
   Plugin,
   PluginManifest,
   Skill,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 import type { Rule } from '../src/rule.js';
 
 export const PLUGIN_SCHEMA = v1.PLUGIN_SCHEMA_URL;

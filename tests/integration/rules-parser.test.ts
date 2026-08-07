@@ -3,13 +3,16 @@
 // missing components gracefully, honor rule filters, and compute exit codes.
 
 import { describe, expect, test } from 'bun:test';
-import type { ValidationResult } from '@agent-plugin-doctor/core';
-import { loadPlugin, SchemaValidationError } from '@agent-plugin-doctor/parser';
+import type { ValidationResult } from '@agent-plugins-doctor/core';
+import {
+  loadPlugin,
+  SchemaValidationError,
+} from '@agent-plugins-doctor/parser';
 import {
   createDefaultRegistry,
   ValidationEngine,
   validatePlugin,
-} from '@agent-plugin-doctor/rules';
+} from '@agent-plugins-doctor/rules';
 import { isPluginLoadError } from '../../packages/cli/src/utils/run.js';
 import {
   canonicalJson,

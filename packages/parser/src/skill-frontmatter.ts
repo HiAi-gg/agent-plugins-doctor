@@ -2,7 +2,7 @@ import matter from 'gray-matter';
 import type {
   AllowedToolsValue,
   SkillFrontmatter,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 import { ParseError } from './errors.js';
 
 export interface ParsedSkill {

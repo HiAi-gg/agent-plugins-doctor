@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import type { Plugin } from '@agent-plugin-doctor/core';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import type { Plugin } from '@agent-plugins-doctor/core';
 import {
   ValidationEngine,
   INTERNAL_ERROR_CODE,

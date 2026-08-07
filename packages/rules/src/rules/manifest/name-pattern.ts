@@ -1,7 +1,7 @@
 // DOC-1002: plugin name must match the spec's NAME_PATTERN and be ≤ 64 chars.
 
-import { NAME_MAX_LENGTH, NAME_PATTERN } from '@agent-plugin-doctor/core';
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import { NAME_MAX_LENGTH, NAME_PATTERN } from '@agent-plugins-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import {
   findJsonMemberSpans,

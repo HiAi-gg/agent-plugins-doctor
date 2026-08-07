@@ -6,9 +6,9 @@
 // implementation: robust YAML parsing (gray-matter), required-field
 // validation, and body extraction — no regex, no edge-case drift.
 
-import { parseSkillFrontmatter } from '@agent-plugin-doctor/parser';
-import type { ParsedSkill } from '@agent-plugin-doctor/parser';
-import type { AllowedToolsValue } from '@agent-plugin-doctor/core';
+import { parseSkillFrontmatter } from '@agent-plugins-doctor/parser';
+import type { ParsedSkill } from '@agent-plugins-doctor/parser';
+import type { AllowedToolsValue } from '@agent-plugins-doctor/core';
 
 export interface ParsedSkillResult {
   name: string;

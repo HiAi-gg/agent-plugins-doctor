@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import type { ErrorObject } from 'ajv';
-import type { McpConfig, McpServer } from '@agent-plugin-doctor/core';
+import type { McpConfig, McpServer } from '@agent-plugins-doctor/core';
 import { ParseError, SchemaValidationError } from './errors.js';
 import {
   getMcpConfigValidator,

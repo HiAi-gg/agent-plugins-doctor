@@ -7,9 +7,12 @@
 // 2=security-critical, 3=tool failure) matches Builder's expectations.
 
 import { describe, expect, test } from 'bun:test';
-import { computeExitCode } from '@agent-plugin-doctor/cli';
-import { loadPlugin, parseSkillFrontmatter } from '@agent-plugin-doctor/parser';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
+import { computeExitCode } from '@agent-plugins-doctor/cli';
+import {
+  loadPlugin,
+  parseSkillFrontmatter,
+} from '@agent-plugins-doctor/parser';
+import { validatePlugin } from '@agent-plugins-doctor/rules';
 import { fixturePath } from './helpers.js';
 
 // Every Builder command's output must validate cleanly (exit 0).

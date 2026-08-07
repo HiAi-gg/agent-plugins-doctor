@@ -1,8 +1,8 @@
-// Compatibility domain types for @agent-plugin-doctor/compatibility
+// Compatibility domain types for @agent-plugins-doctor/compatibility
 // A client profile describes what a verified Agent Plugins client supports.
 // Evidence level records how the profile was verified (docs vs runtime).
 
-import type { Plugin } from '@agent-plugin-doctor/core';
+import type { Plugin } from '@agent-plugins-doctor/core';
 
 export interface ClientProfile {
   id: string;

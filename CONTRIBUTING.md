@@ -10,7 +10,7 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 
 ### Reporting Bugs
 
-1. Check if the bug is already reported in [Issues](https://github.com/HiAi-gg/agent-plugin-doctor/issues)
+1. Check if the bug is already reported in [Issues](https://github.com/HiAi-gg/agent-plugins-doctor/issues)
 2. If not, create a new issue with:
    - Clear title and description
    - Steps to reproduce
@@ -20,7 +20,7 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 
 ### Suggesting Features
 
-1. Check if the feature is already requested in [Issues](https://github.com/HiAi-gg/agent-plugin-doctor/issues)
+1. Check if the feature is already requested in [Issues](https://github.com/HiAi-gg/agent-plugins-doctor/issues)
 2. If not, create a new issue with:
    - Clear title and description
    - Use case and benefits
@@ -45,14 +45,14 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 - **Update documentation** — Update README, AGENTS.md, or docs/ as needed
 - **Follow coding standards** — Use TypeScript strict mode, ES modules, existing code style
 - **No breaking changes** — Unless discussed and approved
-- **Self-hosting must pass** — `./packages/cli/bin/agent-plugin-doctor check .` must exit 0
+- **Self-hosting must pass** — `./packages/cli/bin/agent-plugins-doctor check .` must exit 0
 
 ## Development Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/HiAi-gg/agent-plugin-doctor.git
-cd agent-plugin-doctor
+git clone https://github.com/HiAi-gg/agent-plugins-doctor.git
+cd agent-plugins-doctor
 
 # Install dependencies
 bun install
@@ -61,7 +61,7 @@ bun install
 bun test
 
 # Run the CLI
-./packages/cli/bin/agent-plugin-doctor --help
+./packages/cli/bin/agent-plugins-doctor --help
 ```
 
 ## Project Structure
@@ -130,7 +130,7 @@ Update documentation when you change behavior.
 ## Questions?
 
 - Check [docs/](docs/) for detailed documentation
-- Ask in [Discussions](https://github.com/HiAi-gg/agent-plugin-doctor/discussions)
-- Open an [Issue](https://github.com/HiAi-gg/agent-plugin-doctor/issues)
+- Ask in [Discussions](https://github.com/HiAi-gg/agent-plugins-doctor/discussions)
+- Open an [Issue](https://github.com/HiAi-gg/agent-plugins-doctor/issues)
 
 Thank you for contributing!

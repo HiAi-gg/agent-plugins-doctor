@@ -16,7 +16,7 @@ A plugin that pushes description-length limits.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/edge-cases/huge-description
+agent-plugins-doctor check tests/fixtures/edge-cases/huge-description
 ```
 
 Exit code: `1`

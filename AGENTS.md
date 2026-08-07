@@ -10,12 +10,12 @@ Agent Plugin Doctor is the canonical validation, diagnostics, and security-audit
 
 Doctor is a Bun workspaces monorepo with 6 packages:
 
-- `@agent-plugin-doctor/core` — Canonical types, spec constants, path utilities
-- `@agent-plugin-doctor/parser` — Filesystem loading and parsing
-- `@agent-plugin-doctor/rules` — Validation engine with 29 rules
-- `@agent-plugin-doctor/compatibility` — Client compatibility checking
-- `@agent-plugin-doctor/report` — Report generation (human, JSON, Markdown)
-- `@agent-plugin-doctor/cli` — Command-line interface
+- `@agent-plugins-doctor/core` — Canonical types, spec constants, path utilities
+- `@agent-plugins-doctor/parser` — Filesystem loading and parsing
+- `@agent-plugins-doctor/rules` — Validation engine with 29 rules
+- `@agent-plugins-doctor/compatibility` — Client compatibility checking
+- `@agent-plugins-doctor/report` — Report generation (human, JSON, Markdown)
+- `@agent-plugins-doctor/cli` — Command-line interface
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture documentation.
 
@@ -44,7 +44,7 @@ bunx prettier --check .
 bun run build
 
 # Run the CLI
-./packages/cli/bin/agent-plugin-doctor check .
+./packages/cli/bin/agent-plugins-doctor check .
 ```
 
 ## Testing Standards
@@ -53,7 +53,7 @@ bun run build
 - Every fixture must have a README explaining its purpose
 - Integration tests verify cross-package compatibility
 - E2E tests use the actual CLI binary
-- Self-hosting test: `./packages/cli/bin/agent-plugin-doctor check .` must exit 0
+- Self-hosting test: `./packages/cli/bin/agent-plugins-doctor check .` must exit 0
 
 ## Coding Standards
 
@@ -87,7 +87,7 @@ Before merging:
 - [ ] Type check passes (`bun run typecheck`)
 - [ ] Lint passes (`bun run lint`)
 - [ ] Prettier check passes (`bunx prettier --check .`)
-- [ ] Self-hosting passes (`./packages/cli/bin/agent-plugin-doctor check .`)
+- [ ] Self-hosting passes (`./packages/cli/bin/agent-plugins-doctor check .`)
 - [ ] Documentation is updated if behavior changed
 
 ## Compatibility Policy

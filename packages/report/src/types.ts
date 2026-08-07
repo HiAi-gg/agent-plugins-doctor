@@ -1,6 +1,6 @@
-// Report types for @agent-plugin-doctor/report
+// Report types for @agent-plugins-doctor/report
 
-import type { ValidationResult } from '@agent-plugin-doctor/core';
+import type { ValidationResult } from '@agent-plugins-doctor/core';
 
 export type ReportFormat = 'human' | 'json' | 'markdown';
 

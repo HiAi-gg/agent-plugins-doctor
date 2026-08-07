@@ -16,7 +16,7 @@ type (a number instead of the canonical space-separated string).
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/allowed-tools-invalid
+agent-plugins-doctor check tests/fixtures/allowed-tools-invalid
 ```
 
 Exit code: `1`

@@ -6,7 +6,7 @@ import type {
   Plugin,
   RuleCategory,
   Severity,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 
 export interface RuleContext {
   plugin: Plugin;

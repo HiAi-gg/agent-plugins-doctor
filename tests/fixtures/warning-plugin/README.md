@@ -14,7 +14,7 @@ Spec §5.2, unknown top-level manifest fields are **reported and ignored**
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/warning-plugin
+agent-plugins-doctor check tests/fixtures/warning-plugin
 ```
 
 Exit code: `0`
@@ -30,7 +30,7 @@ plugin.json contains unknown top-level field "unknownField"
 `--fix` can remove the offending field (1 fix available).
 
 ```
-agent-plugin-doctor check tests/fixtures/warning-plugin --strict
+agent-plugins-doctor check tests/fixtures/warning-plugin --strict
 ```
 
 Exit code: `1` (warning promoted to an error under `--strict`).

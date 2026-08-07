@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Builds all @agent-plugin-doctor packages and publishes them to npm.
+ * Builds all @agent-plugins-doctor packages and publishes them to npm.
  *
  * Usage:
  *   bun run publish:all        # build + publish for real
@@ -34,7 +34,7 @@ function assertVersionsMatch(): void {
   if (unique.size > 1) {
     console.error('Version mismatch — all packages must share one version:');
     for (const { pkg, version } of versions) {
-      console.error(`  @agent-plugin-doctor/${pkg}: ${version}`);
+      console.error(`  @agent-plugins-doctor/${pkg}: ${version}`);
     }
     process.exit(1);
   }
@@ -65,7 +65,7 @@ function describeError(err: unknown): string {
 
 async function publishPackage(pkg: string): Promise<void> {
   const pkgDir = join(rootDir, 'packages', pkg);
-  const name = `@agent-plugin-doctor/${pkg}`;
+  const name = `@agent-plugins-doctor/${pkg}`;
   console.log(`\nPublishing ${name}...`);
 
   try {

@@ -17,7 +17,7 @@ space-separated string form defined by the Agent Skills specification
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/allowed-tools-canonical
+agent-plugins-doctor check tests/fixtures/allowed-tools-canonical
 ```
 
 Exit code: `0`

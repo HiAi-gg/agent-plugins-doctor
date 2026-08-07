@@ -19,7 +19,7 @@ plugin root. The symlink targets the repository root `package.json`
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/security-plugin/symlink-escape
+agent-plugins-doctor check tests/fixtures/security-plugin/symlink-escape
 ```
 
 Exit code: `0`

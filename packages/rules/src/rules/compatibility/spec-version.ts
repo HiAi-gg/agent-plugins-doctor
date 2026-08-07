@@ -1,6 +1,6 @@
 // DOC-6001: the plugin's spec version must be supported.
 
-import { getSpecVersion } from '@agent-plugin-doctor/core';
+import { getSpecVersion } from '@agent-plugins-doctor/core';
 import type { Rule } from '../../rule.js';
 import { makeDiagnostic } from '../../util.js';
 

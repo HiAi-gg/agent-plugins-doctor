@@ -5,7 +5,7 @@
 // ready for future spec versions: register deprecatedFieldsRule() with a map
 // once the spec deprecates fields.
 
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import {
   findJsonMemberSpans,

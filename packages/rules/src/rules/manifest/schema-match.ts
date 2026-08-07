@@ -1,8 +1,8 @@
 // DOC-1007: $schema must match the expected schema URL for the plugin's spec
 // version.
 
-import { getSpecVersion } from '@agent-plugin-doctor/core';
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import { getSpecVersion } from '@agent-plugins-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import {
   findJsonMemberSpans,

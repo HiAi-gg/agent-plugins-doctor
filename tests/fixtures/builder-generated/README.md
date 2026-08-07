@@ -28,7 +28,7 @@ Each fixture maps to one Builder command:
 ```bash
 for dir in tests/fixtures/builder-generated/*/; do
   echo "Testing $dir"
-  ./packages/cli/bin/agent-plugin-doctor check "$dir"
+  ./packages/cli/bin/agent-plugins-doctor check "$dir"
 done
 ```
 

@@ -1,5 +1,5 @@
 {
-  "name": "agent-plugin-doctor",
+  "name": "agent-plugins-doctor",
   "version": "0.0.2",
   "description": "Diagnose and fix Agent Plugins",
   "keywords": [
@@ -15,12 +15,12 @@
   "author": "HiAI",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HiAi-gg/agent-plugin-doctor.git"
+    "url": "https://github.com/HiAi-gg/agent-plugins-doctor.git"
   },
   "bugs": {
-    "url": "https://github.com/HiAi-gg/agent-plugin-doctor/issues"
+    "url": "https://github.com/HiAi-gg/agent-plugins-doctor/issues"
   },
-  "homepage": "https://github.com/HiAi-gg/agent-plugin-doctor#readme",
+  "homepage": "https://github.com/HiAi-gg/agent-plugins-doctor#readme",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -41,11 +41,11 @@
     "eslint": "^9.0.0",
     "@eslint/js": "^9.0.0",
     "typescript-eslint": "^8.0.0",
-    "@agent-plugin-doctor/core": "workspace:*",
-    "@agent-plugin-doctor/parser": "workspace:*",
-    "@agent-plugin-doctor/rules": "workspace:*",
-    "@agent-plugin-doctor/report": "workspace:*",
-    "@agent-plugin-doctor/compatibility": "workspace:*",
-    "@agent-plugin-doctor/cli": "workspace:*"
+    "@agent-plugins-doctor/core": "workspace:*",
+    "@agent-plugins-doctor/parser": "workspace:*",
+    "@agent-plugins-doctor/rules": "workspace:*",
+    "@agent-plugins-doctor/report": "workspace:*",
+    "@agent-plugins-doctor/compatibility": "workspace:*",
+    "@agent-plugins-doctor/cli": "workspace:*"
   }
 }

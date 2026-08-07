@@ -17,7 +17,7 @@ A plugin with two vendor extensions: `com.example.feature1` and
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/vendor-extensions/valid-extensions
+agent-plugins-doctor check tests/fixtures/vendor-extensions/valid-extensions
 ```
 
 Exit code: `0`

@@ -10,7 +10,7 @@ import type {
   RuleCategory,
   Severity,
   ValidationResult,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 import type { ReportFormatter } from './types.js';
 import { normalizeFilePath } from './util.js';
 

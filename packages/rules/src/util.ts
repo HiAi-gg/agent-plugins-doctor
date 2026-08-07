@@ -7,11 +7,11 @@ import type {
   Diagnostic,
   RuleCategory,
   Severity,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 
 // Reverse-domain namespace, e.g. com.example.client. Two or more dot-separated
 // labels; each label is lowercase alphanumeric with optional interior hyphens.
-// Mirrors the loader's namespace rule in @agent-plugin-doctor/parser.
+// Mirrors the loader's namespace rule in @agent-plugins-doctor/parser.
 export const REVERSE_DOMAIN_PATTERN =
   /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 

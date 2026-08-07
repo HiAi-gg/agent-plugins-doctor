@@ -3,14 +3,14 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "agent-plugin-doctor",
+      "name": "agent-plugins-doctor",
       "devDependencies": {
-        "@agent-plugin-doctor/cli": "workspace:*",
-        "@agent-plugin-doctor/compatibility": "workspace:*",
-        "@agent-plugin-doctor/core": "workspace:*",
-        "@agent-plugin-doctor/parser": "workspace:*",
-        "@agent-plugin-doctor/report": "workspace:*",
-        "@agent-plugin-doctor/rules": "workspace:*",
+        "@agent-plugins-doctor/cli": "workspace:*",
+        "@agent-plugins-doctor/compatibility": "workspace:*",
+        "@agent-plugins-doctor/core": "workspace:*",
+        "@agent-plugins-doctor/parser": "workspace:*",
+        "@agent-plugins-doctor/report": "workspace:*",
+        "@agent-plugins-doctor/rules": "workspace:*",
         "@eslint/js": "^9.0.0",
         "@types/bun": "^1.3.0",
         "eslint": "^9.0.0",
@@ -19,17 +19,17 @@
       },
     },
     "packages/cli": {
-      "name": "@agent-plugin-doctor/cli",
-      "version": "0.0.1",
+      "name": "@agent-plugins-doctor/cli",
+      "version": "0.0.2",
       "bin": {
-        "agent-plugin-doctor": "./bin/agent-plugin-doctor",
+        "agent-plugins-doctor": "./dist/bin.js",
       },
       "dependencies": {
-        "@agent-plugin-doctor/compatibility": "workspace:*",
-        "@agent-plugin-doctor/core": "workspace:*",
-        "@agent-plugin-doctor/parser": "workspace:*",
-        "@agent-plugin-doctor/report": "workspace:*",
-        "@agent-plugin-doctor/rules": "workspace:*",
+        "@agent-plugins-doctor/compatibility": "^0.0.2",
+        "@agent-plugins-doctor/core": "^0.0.2",
+        "@agent-plugins-doctor/parser": "^0.0.2",
+        "@agent-plugins-doctor/report": "^0.0.2",
+        "@agent-plugins-doctor/rules": "^0.0.2",
         "chalk": "^5.4.0",
         "commander": "^13.0.0",
       },
@@ -38,27 +38,27 @@
       },
     },
     "packages/compatibility": {
-      "name": "@agent-plugin-doctor/compatibility",
-      "version": "0.0.1",
+      "name": "@agent-plugins-doctor/compatibility",
+      "version": "0.0.2",
       "dependencies": {
-        "@agent-plugin-doctor/core": "workspace:*",
+        "@agent-plugins-doctor/core": "^0.0.2",
       },
       "devDependencies": {
         "typescript": "^5.9.0",
       },
     },
     "packages/core": {
-      "name": "@agent-plugin-doctor/core",
-      "version": "0.0.1",
+      "name": "@agent-plugins-doctor/core",
+      "version": "0.0.2",
       "devDependencies": {
         "typescript": "^5.9.0",
       },
     },
     "packages/parser": {
-      "name": "@agent-plugin-doctor/parser",
-      "version": "0.0.1",
+      "name": "@agent-plugins-doctor/parser",
+      "version": "0.0.2",
       "dependencies": {
-        "@agent-plugin-doctor/core": "workspace:*",
+        "@agent-plugins-doctor/core": "^0.0.2",
         "ajv": "^8.17.0",
         "gray-matter": "^4.0.3",
       },
@@ -67,10 +67,10 @@
       },
     },
     "packages/report": {
-      "name": "@agent-plugin-doctor/report",
-      "version": "0.0.1",
+      "name": "@agent-plugins-doctor/report",
+      "version": "0.0.2",
       "dependencies": {
-        "@agent-plugin-doctor/core": "workspace:*",
+        "@agent-plugins-doctor/core": "^0.0.2",
         "chalk": "^5.4.0",
       },
       "devDependencies": {
@@ -78,12 +78,12 @@
       },
     },
     "packages/rules": {
-      "name": "@agent-plugin-doctor/rules",
-      "version": "0.0.1",
+      "name": "@agent-plugins-doctor/rules",
+      "version": "0.0.2",
       "dependencies": {
-        "@agent-plugin-doctor/compatibility": "workspace:*",
-        "@agent-plugin-doctor/core": "workspace:*",
-        "@agent-plugin-doctor/parser": "workspace:*",
+        "@agent-plugins-doctor/compatibility": "^0.0.2",
+        "@agent-plugins-doctor/core": "^0.0.2",
+        "@agent-plugins-doctor/parser": "^0.0.2",
       },
       "devDependencies": {
         "typescript": "^5.9.0",
@@ -91,17 +91,17 @@
     },
   },
   "packages": {
-    "@agent-plugin-doctor/cli": ["@agent-plugin-doctor/cli@workspace:packages/cli"],
+    "@agent-plugins-doctor/cli": ["@agent-plugins-doctor/cli@workspace:packages/cli"],
 
-    "@agent-plugin-doctor/compatibility": ["@agent-plugin-doctor/compatibility@workspace:packages/compatibility"],
+    "@agent-plugins-doctor/compatibility": ["@agent-plugins-doctor/compatibility@workspace:packages/compatibility"],
 
-    "@agent-plugin-doctor/core": ["@agent-plugin-doctor/core@workspace:packages/core"],
+    "@agent-plugins-doctor/core": ["@agent-plugins-doctor/core@workspace:packages/core"],
 
-    "@agent-plugin-doctor/parser": ["@agent-plugin-doctor/parser@workspace:packages/parser"],
+    "@agent-plugins-doctor/parser": ["@agent-plugins-doctor/parser@workspace:packages/parser"],
 
-    "@agent-plugin-doctor/report": ["@agent-plugin-doctor/report@workspace:packages/report"],
+    "@agent-plugins-doctor/report": ["@agent-plugins-doctor/report@workspace:packages/report"],
 
-    "@agent-plugin-doctor/rules": ["@agent-plugin-doctor/rules@workspace:packages/rules"],
+    "@agent-plugins-doctor/rules": ["@agent-plugins-doctor/rules@workspace:packages/rules"],
 
     "@eslint-community/eslint-utils": ["@eslint-community/eslint-utils@4.10.1", "", { "dependencies": { "eslint-visitor-keys": "^3.4.3" }, "peerDependencies": { "eslint": "^6.0.0 || ^7.0.0 || >=8.0.0" } }, "sha512-cuadcxVFE8sDK6iWJbs8Sn0av2Nrh2QSGQhVlBW9AaAHqHwjWsZHT8LJ4hFGPh7ASBV2deFdM7H/DPjulmh8rg=="],
 

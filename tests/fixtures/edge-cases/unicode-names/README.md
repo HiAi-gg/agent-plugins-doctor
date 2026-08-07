@@ -13,7 +13,7 @@ A plugin whose `name` contains non-ASCII (unicode) characters:
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/edge-cases/unicode-names
+agent-plugins-doctor check tests/fixtures/edge-cases/unicode-names
 ```
 
 Exit code: `1` (validation error)

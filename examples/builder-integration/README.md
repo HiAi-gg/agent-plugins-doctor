@@ -18,10 +18,10 @@ Builder imports Doctor's packages and calls them directly after generation —
 no CLI subprocess needed for programmatic checks:
 
 ```ts
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
-import { generateReport } from '@agent-plugin-doctor/report';
-import { computeExitCode } from '@agent-plugin-doctor/cli';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { validatePlugin } from '@agent-plugins-doctor/rules';
+import { generateReport } from '@agent-plugins-doctor/report';
+import { computeExitCode } from '@agent-plugins-doctor/cli';
 ```
 
 1. **Load** the generated plugin with `loadPlugin(outputDir)` — it discovers
@@ -46,7 +46,7 @@ import { computeExitCode } from '@agent-plugin-doctor/cli';
 | `2`  | Security-critical findings                                                                     |
 | `3`  | Tool failure (plugin-level load/parse error, internal rule failure, or Builder-side exception) |
 
-`computeExitCode` is exported from `@agent-plugin-doctor/cli` so Builder's
+`computeExitCode` is exported from `@agent-plugins-doctor/cli` so Builder's
 process exit codes always match the Doctor CLI.
 
 ## Error handling

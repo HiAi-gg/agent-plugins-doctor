@@ -7,12 +7,12 @@
 // proven by the explicit type annotations elsewhere in tests/integration.
 
 import { describe, expect, test } from 'bun:test';
-import * as cli from '@agent-plugin-doctor/cli';
-import * as compatibility from '@agent-plugin-doctor/compatibility';
-import * as core from '@agent-plugin-doctor/core';
-import * as parser from '@agent-plugin-doctor/parser';
-import * as report from '@agent-plugin-doctor/report';
-import * as rules from '@agent-plugin-doctor/rules';
+import * as cli from '@agent-plugins-doctor/cli';
+import * as compatibility from '@agent-plugins-doctor/compatibility';
+import * as core from '@agent-plugins-doctor/core';
+import * as parser from '@agent-plugins-doctor/parser';
+import * as report from '@agent-plugins-doctor/report';
+import * as rules from '@agent-plugins-doctor/rules';
 
 describe('public API stability', () => {
   test('core exports are stable', () => {

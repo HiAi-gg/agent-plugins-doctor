@@ -2,7 +2,7 @@
 // endings, no trailing whitespace on frontmatter lines, closing delimiter).
 // Informational, with an automatic normalize fix.
 
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import {
   makeDiagnostic,

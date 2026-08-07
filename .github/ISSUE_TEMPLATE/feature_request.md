@@ -27,7 +27,7 @@ Describe the use case for this feature. Who would benefit from it and how?
 If applicable, show how this feature would be used.
 
 ```bash
-agent-plugin-doctor new-command [options]
+agent-plugins-doctor new-command [options]
 ```
 
 ## Additional Context

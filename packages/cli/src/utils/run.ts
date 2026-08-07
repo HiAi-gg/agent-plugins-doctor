@@ -9,16 +9,16 @@ import type {
   Diagnostic,
   ValidationOptions,
   ValidationResult,
-} from '@agent-plugin-doctor/core';
-import type { CompatibilityCheck } from '@agent-plugin-doctor/compatibility';
-import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
+} from '@agent-plugins-doctor/core';
+import type { CompatibilityCheck } from '@agent-plugins-doctor/compatibility';
+import { checkCompatibility } from '@agent-plugins-doctor/compatibility';
 import {
   LoadError,
   ParseError,
   scanPlugin,
   SchemaValidationError,
-} from '@agent-plugin-doctor/parser';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
+} from '@agent-plugins-doctor/parser';
+import { validatePlugin } from '@agent-plugins-doctor/rules';
 import { EXIT_CODES } from './exit-codes.js';
 import { error } from './output.js';
 

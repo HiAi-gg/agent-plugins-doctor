@@ -188,5 +188,5 @@ bun test
 bun run typecheck
 bun run lint
 bunx prettier --check .
-./packages/cli/bin/agent-plugin-doctor check .
+./packages/cli/bin/agent-plugins-doctor check .
 ```

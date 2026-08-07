@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `create --mcp-only`, `migrate --from claude`, and `migrate --from cursor`.
   The simulated `from-*` fixtures remain as the Builder integration contract;
   the real-builder fixtures prove the contract holds against actual generated
-  output. All five pass `agent-plugin-doctor check` with exit 0 and zero
+  output. All five pass `agent-plugins-doctor check` with exit 0 and zero
   diagnostics. See `docs/BUILDER_REAL_INTEGRATION.md`.
 
 - **Cross-repo integration test — `tests/integration/builder-real.test.ts`** —
@@ -70,10 +70,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the `compatibility` frontmatter field no longer claims "Works with all Agent
   Plugins clients"; it now states the real requirement (a client that supports
   Agent Skills and terminal command execution, with the CLI invoked via
-  `bunx agent-plugin-doctor` or `npx agent-plugin-doctor`). A new "Runtime
+  `bunx agent-plugins-doctor` or `npx agent-plugins-doctor`). A new "Runtime
   Requirements" section documents that installing the skill does **not**
   install the Doctor CLI and that Bun or npm must be available. Command
-  examples now use `bunx`/`npx` instead of a bare `agent-plugin-doctor`, and
+  examples now use `bunx`/`npx` instead of a bare `agent-plugins-doctor`, and
   the "Output" section no longer claims diagnostics carry line numbers (no
   rule emits `range`; diagnostics carry plugin-relative `file` paths only).
 
@@ -98,10 +98,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **External-install E2E test — `tests/e2e/external-install.test.ts`** — packs
   all six workspace packages with `npm pack` (which rebuilds `dist/` via
   `prepublishOnly`) and installs them with `npm install` into a scratch
-  directory outside the monorepo, simulating `bunx agent-plugin-doctor` without
+  directory outside the monorepo, simulating `bunx agent-plugins-doctor` without
   publishing: the installed node-targeted artifact is exercised end-to-end
   (`--help`, `--version`, `check`, `report`, `fix --dry-run`) against a minimal
-  test plugin. Because the `@agent-plugin-doctor/*` packages are not on the
+  test plugin. Because the `@agent-plugins-doctor/*` packages are not on the
   registry yet, all six tarballs are installed in a single `npm install` so
   their `^0.0.2` inter-package dependencies resolve locally. The test removes
   the scratch directory and tarballs afterwards, and `*.tgz` is gitignored as a
@@ -121,7 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   scripts.
 
 - **`scanPlugin()` — diagnostic-oriented plugin loading that never throws** —
-  `@agent-plugin-doctor/parser` gains `scanPlugin(rootDir, options?)`
+  `@agent-plugins-doctor/parser` gains `scanPlugin(rootDir, options?)`
   returning a `ScanResult` (`plugin: Plugin | null`, `diagnostics:
 Diagnostic[]`, and a `loaded` breakdown of what was loaded). Every
   parse/schema/load error is collected as a parser diagnostic instead of
@@ -193,7 +193,7 @@ Diagnostic[]`, and a `loaded` breakdown of what was loaded). Every
   capability unsupported → `unsupported`; otherwise `partial`. The
   `compatible` boolean is kept for backward compatibility and derived from the
   level (`true` only for `full`). The `CompatibilityLevel` enum lives in
-  `@agent-plugin-doctor/compatibility`; core's `CompatibilityResult` carries
+  `@agent-plugins-doctor/compatibility`; core's `CompatibilityResult` carries
   an aligned string-union type with identical values. Human/Markdown/JSON
   report formatters and the `compatibility` command render the level
   (`✓`/`~`/`✗`/`?`). Documented in docs/COMPATIBILITY.md and docs/SDK.md.
@@ -227,7 +227,7 @@ Diagnostic[]`, and a `loaded` breakdown of what was loaded). Every
   merges `parseDiagnostics` into the rule diagnostics and recomputes the
   summary, so malformed input is a validation error (exit code `1`) rather
   than a silent pass. A new standalone `computeSummary` export from
-  `@agent-plugin-doctor/rules` recomputes summary counts over merged
+  `@agent-plugins-doctor/rules` recomputes summary counts over merged
   diagnostics. Documented in docs/DIAGNOSTICS.md (DOC-2099) and
   docs/SDK.md (§2.1).
 - **Parser: `allowed-tools` no longer normalized from string to array** —

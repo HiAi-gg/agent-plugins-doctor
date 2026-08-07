@@ -11,7 +11,7 @@ A plugin that declares an outdated spec version (`0.9.0`) in its `$schema`.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/legacy-plugin
+agent-plugins-doctor check tests/fixtures/legacy-plugin
 ```
 
 Exit code: `1` (validation error)

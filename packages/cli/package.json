@@ -1,5 +1,5 @@
 {
-  "name": "@agent-plugin-doctor/cli",
+  "name": "@agent-plugins-doctor/cli",
   "version": "0.0.2",
   "description": "Command-line interface for Agent Plugin Doctor",
   "type": "module",
@@ -12,7 +12,7 @@
     }
   },
   "bin": {
-    "agent-plugin-doctor": "./dist/bin.js"
+    "agent-plugins-doctor": "./dist/bin.js"
   },
   "files": [
     "dist/",
@@ -21,11 +21,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/HiAi-gg/agent-plugin-doctor.git",
+    "url": "https://github.com/HiAi-gg/agent-plugins-doctor.git",
     "directory": "packages/cli"
   },
-  "bugs": "https://github.com/HiAi-gg/agent-plugin-doctor/issues",
-  "homepage": "https://github.com/HiAi-gg/agent-plugin-doctor#readme",
+  "bugs": "https://github.com/HiAi-gg/agent-plugins-doctor/issues",
+  "homepage": "https://github.com/HiAi-gg/agent-plugins-doctor#readme",
   "license": "MIT",
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -34,11 +34,11 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@agent-plugin-doctor/core": "^0.0.2",
-    "@agent-plugin-doctor/parser": "^0.0.2",
-    "@agent-plugin-doctor/rules": "^0.0.2",
-    "@agent-plugin-doctor/compatibility": "^0.0.2",
-    "@agent-plugin-doctor/report": "^0.0.2",
+    "@agent-plugins-doctor/core": "^0.0.2",
+    "@agent-plugins-doctor/parser": "^0.0.2",
+    "@agent-plugins-doctor/rules": "^0.0.2",
+    "@agent-plugins-doctor/compatibility": "^0.0.2",
+    "@agent-plugins-doctor/report": "^0.0.2",
     "commander": "^13.0.0",
     "chalk": "^5.4.0"
   },

@@ -1,6 +1,6 @@
 // DOC-1003: plugin name length must be within the spec limit.
 
-import { NAME_MAX_LENGTH } from '@agent-plugin-doctor/core';
+import { NAME_MAX_LENGTH } from '@agent-plugins-doctor/core';
 import type { Rule } from '../../rule.js';
 import { makeDiagnostic } from '../../util.js';
 

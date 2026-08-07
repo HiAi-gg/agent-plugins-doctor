@@ -12,7 +12,7 @@ A plugin that declares a future spec version (`2.0.0`) in its `$schema`.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/future-spec
+agent-plugins-doctor check tests/fixtures/future-spec
 ```
 
 Exit code: `1` (validation error)

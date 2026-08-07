@@ -15,7 +15,7 @@ reporting at scale.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/edge-cases/max-skills
+agent-plugins-doctor check tests/fixtures/edge-cases/max-skills
 ```
 
 Exit code: `0`

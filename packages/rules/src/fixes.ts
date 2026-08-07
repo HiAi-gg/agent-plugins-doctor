@@ -7,8 +7,8 @@
 
 import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { isWithinPath } from '@agent-plugin-doctor/core';
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import { isWithinPath } from '@agent-plugins-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import { canonicalJson, normalizeSkillFrontmatter } from './util.js';
 
 export interface FixResult {

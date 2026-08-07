@@ -8,11 +8,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@agent-plugin-doctor/core": "workspace:*",
-    "@agent-plugin-doctor/parser": "workspace:*",
-    "@agent-plugin-doctor/rules": "workspace:*",
-    "@agent-plugin-doctor/report": "workspace:*",
-    "@agent-plugin-doctor/cli": "workspace:*"
+    "@agent-plugins-doctor/core": "workspace:*",
+    "@agent-plugins-doctor/parser": "workspace:*",
+    "@agent-plugins-doctor/rules": "workspace:*",
+    "@agent-plugins-doctor/report": "workspace:*",
+    "@agent-plugins-doctor/cli": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.9.0"

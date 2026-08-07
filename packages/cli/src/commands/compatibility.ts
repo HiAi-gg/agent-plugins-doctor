@@ -1,13 +1,13 @@
 // compatibility command: check compatibility with Agent Plugin clients.
 
 import { Command } from 'commander';
-import type { CompatibilityCheck } from '@agent-plugin-doctor/compatibility';
+import type { CompatibilityCheck } from '@agent-plugins-doctor/compatibility';
 import {
   checkCompatibility,
   CompatibilityLevel,
-} from '@agent-plugin-doctor/compatibility';
-import type { Plugin } from '@agent-plugin-doctor/core';
-import { scanPlugin } from '@agent-plugin-doctor/parser';
+} from '@agent-plugins-doctor/compatibility';
+import type { Plugin } from '@agent-plugins-doctor/core';
+import { scanPlugin } from '@agent-plugins-doctor/parser';
 import { EXIT_CODES } from '../utils/exit-codes.js';
 import {
   error,

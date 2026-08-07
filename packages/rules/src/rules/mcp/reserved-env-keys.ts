@@ -1,6 +1,6 @@
 // DOC-3003: env must not declare the reserved keys PLUGIN_ROOT / PLUGIN_DATA.
 
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import {
   findJsonMemberSpans,

@@ -22,13 +22,13 @@ that have no Agent Plugins representation; it does not invent an `env` or
 ## Integration contract
 
 This fixture must load with `loadPlugin` and validate with `validatePlugin`
-producing zero error/critical diagnostics, and `agent-plugin-doctor check .`
+producing zero error/critical diagnostics, and `agent-plugins-doctor check .`
 must exit `0`.
 
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/builder-generated/from-migrate-claude
+agent-plugins-doctor check tests/fixtures/builder-generated/from-migrate-claude
 ```
 
 Exit code: `0`

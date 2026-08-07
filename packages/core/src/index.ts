@@ -1,4 +1,4 @@
-// @agent-plugin-doctor/core
+// @agent-plugins-doctor/core
 // Canonical types, spec constants, diagnostics, and path utilities
 
 // Spec layer

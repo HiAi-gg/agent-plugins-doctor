@@ -7,8 +7,8 @@
 // validates cleanly, and an invalid type is flagged by DOC-2005.
 
 import { describe, expect, test } from 'bun:test';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { validatePlugin } from '@agent-plugins-doctor/rules';
 import { fixturePath } from './helpers.js';
 
 describe('allowed-tools end-to-end', () => {

@@ -7,13 +7,13 @@
 
 import { Command } from 'commander';
 import { createInterface } from 'node:readline';
-import type { Diagnostic } from '@agent-plugin-doctor/core';
-import { scanPlugin } from '@agent-plugin-doctor/parser';
+import type { Diagnostic } from '@agent-plugins-doctor/core';
+import { scanPlugin } from '@agent-plugins-doctor/parser';
 import {
   applyFixes,
   type AppliedFix,
   validatePlugin,
-} from '@agent-plugin-doctor/rules';
+} from '@agent-plugins-doctor/rules';
 import { EXIT_CODES, computeExitCode } from '../utils/exit-codes.js';
 import {
   error,

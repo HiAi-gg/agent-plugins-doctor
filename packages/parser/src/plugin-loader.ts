@@ -9,11 +9,11 @@ import type {
   Plugin,
   PluginManifest,
   Skill,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 import {
   resolvePluginPath,
   resolveSpecVersion,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 import { ParsedFileCache } from './cache.js';
 import { TRAVERSAL_SKIP_DIRS } from './traverse.js';
 import {

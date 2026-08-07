@@ -32,7 +32,7 @@ All fixtures pass Doctor validation (exit 0, zero diagnostics). See
 ```bash
 for dir in tests/fixtures/builder-generated/real-builder/*/; do
   echo "Testing $dir"
-  ./packages/cli/bin/agent-plugin-doctor check "$dir"
+  ./packages/cli/bin/agent-plugins-doctor check "$dir"
 done
 ```
 

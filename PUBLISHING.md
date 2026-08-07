@@ -1,7 +1,7 @@
 # Publishing Agent Plugin Doctor to npm
 
 This document describes how to build and publish the six
-`@agent-plugin-doctor/*` packages to the npm registry. The full release
+`@agent-plugins-doctor/*` packages to the npm registry. The full release
 procedure (version bumps, changelog, quality gates, git tagging) lives in
 [docs/RELEASING.md](docs/RELEASING.md); this document covers the publish step
 itself.
@@ -12,12 +12,12 @@ The monorepo publishes six packages. They must be published in dependency
 order — a package's published tarball is installed by dependents, and npm
 resolves the `^x.y.z` version range against the registry at install time:
 
-1. `@agent-plugin-doctor/core` — no internal dependencies
-2. `@agent-plugin-doctor/parser` — depends on `core`
-3. `@agent-plugin-doctor/compatibility` — depends on `core`
-4. `@agent-plugin-doctor/report` — depends on `core`
-5. `@agent-plugin-doctor/rules` — depends on `core`, `parser`, `compatibility`
-6. `@agent-plugin-doctor/cli` — depends on all five
+1. `@agent-plugins-doctor/core` — no internal dependencies
+2. `@agent-plugins-doctor/parser` — depends on `core`
+3. `@agent-plugins-doctor/compatibility` — depends on `core`
+4. `@agent-plugins-doctor/report` — depends on `core`
+5. `@agent-plugins-doctor/rules` — depends on `core`, `parser`, `compatibility`
+6. `@agent-plugins-doctor/cli` — depends on all five
 
 `scripts/publish.ts` hard-codes this order; `bun run build` at the root builds
 all packages in the same topological order (bun's `--filter '*'` respects
@@ -88,12 +88,12 @@ After publishing, verify each package resolves from the registry:
 
 ```bash
 # Latest published version per package
-npm view @agent-plugin-doctor/core version
-npm view @agent-plugin-doctor/parser version
-npm view @agent-plugin-doctor/compatibility version
-npm view @agent-plugin-doctor/report version
-npm view @agent-plugin-doctor/rules version
-npm view @agent-plugin-doctor/cli version
+npm view @agent-plugins-doctor/core version
+npm view @agent-plugins-doctor/parser version
+npm view @agent-plugins-doctor/compatibility version
+npm view @agent-plugins-doctor/report version
+npm view @agent-plugins-doctor/rules version
+npm view @agent-plugins-doctor/cli version
 ```
 
 Install into a scratch project and smoke-test the CLI:
@@ -101,12 +101,12 @@ Install into a scratch project and smoke-test the CLI:
 ```bash
 mkdir -p /tmp/doctor-smoke && cd /tmp/doctor-smoke
 npm init -y
-npm install @agent-plugin-doctor/cli
-npx agent-plugin-doctor check /path/to/a/plugin
+npm install @agent-plugins-doctor/cli
+npx agent-plugins-doctor check /path/to/a/plugin
 ```
 
 TypeScript consumers should be able to `import { ... } from
-'@agent-plugin-doctor/core'` with the shipped `.d.ts` declarations resolving
+'@agent-plugins-doctor/core'` with the shipped `.d.ts` declarations resolving
 via each package's `exports` map.
 
 ## Troubleshooting

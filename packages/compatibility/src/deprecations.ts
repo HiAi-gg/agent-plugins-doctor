@@ -1,4 +1,4 @@
-// Deprecation mappings for @agent-plugin-doctor/compatibility
+// Deprecation mappings for @agent-plugins-doctor/compatibility
 // A deprecation lists a field that a client stopped honoring in a given spec
 // version, so plugins still declaring it can be warned.
 

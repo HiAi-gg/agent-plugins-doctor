@@ -1,5 +1,5 @@
-// @agent-plugin-doctor/cli
-// The agent-plugin-doctor command-line tool: a thin wrapper around the core,
+// @agent-plugins-doctor/cli
+// The agent-plugins-doctor command-line tool: a thin wrapper around the core,
 // parser, rules, compatibility, and report packages.
 
 import { Command } from 'commander';
@@ -25,7 +25,7 @@ export {
  */
 export function createProgram(): Command {
   return new Command()
-    .name('agent-plugin-doctor')
+    .name('agent-plugins-doctor')
     .description('Diagnose and fix Agent Plugins')
     .version('0.0.2')
     .addCommand(checkCommand)

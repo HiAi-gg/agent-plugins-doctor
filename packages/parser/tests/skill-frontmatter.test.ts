@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import type { AllowedToolsValue } from '@agent-plugin-doctor/core';
+import type { AllowedToolsValue } from '@agent-plugins-doctor/core';
 import { ParseError, parseSkillFrontmatter } from '../src/index.js';
 
 const FILE = '/tmp/example-skill/SKILL.md';

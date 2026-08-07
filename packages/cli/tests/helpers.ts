@@ -1,4 +1,4 @@
-// Shared test helpers for @agent-plugin-doctor/cli
+// Shared test helpers for @agent-plugins-doctor/cli
 
 import {
   mkdirSync,
@@ -11,7 +11,7 @@ import { existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { CommanderError } from 'commander';
-import { v1 } from '@agent-plugin-doctor/core';
+import { v1 } from '@agent-plugins-doctor/core';
 import { createProgram } from '../src/index.js';
 import { setColorEnabled } from '../src/utils/output.js';
 

@@ -1,6 +1,6 @@
 // DOC-2004: skill compatibility strings must not exceed the spec limit.
 
-import { COMPATIBILITY_MAX_LENGTH } from '@agent-plugin-doctor/core';
+import { COMPATIBILITY_MAX_LENGTH } from '@agent-plugins-doctor/core';
 import type { Rule } from '../../rule.js';
 import { makeDiagnostic } from '../../util.js';
 

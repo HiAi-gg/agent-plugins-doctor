@@ -38,14 +38,14 @@ The contract has four parts:
 
 ## 2. Required packages and their APIs
 
-| Package                              | Purpose                                                     | Key exports                                                                                                                                           |
-| ------------------------------------ | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@agent-plugin-doctor/core`          | Canonical types, spec constants, diagnostics, path security | `resolveSpecVersion`, `resolvePluginPath`, `isWithinPath`, types (`Plugin`, `PluginManifest`, `Skill`, `McpConfig`, `Diagnostic`, `ValidationResult`) |
-| `@agent-plugin-doctor/parser`        | Filesystem loading and parsing                              | `loadPlugin`, `parsePluginManifest`, `parseMcpConfig`, `parseSkillFrontmatter`, error classes (`LoadError`, `ParseError`, `SchemaValidationError`)    |
-| `@agent-plugin-doctor/rules`         | Validation engine, rule registry, auto-fixes                | `validatePlugin`, `applyFixes`, `createDefaultRegistry`, `ValidationEngine`, `INTERNAL_ERROR_CODE`                                                    |
-| `@agent-plugin-doctor/report`        | Report rendering                                            | `generateReport`, `getFormatter` (`human` \| `json` \| `markdown`)                                                                                    |
-| `@agent-plugin-doctor/compatibility` | Client-compatibility checking                               | `checkCompatibility`, `createDefaultClientRegistry`                                                                                                   |
-| `@agent-plugin-doctor/cli`           | CLI wrapper **and** the exit-code contract                  | `createProgram`, `main`, `computeExitCode`, `EXIT_CODES`                                                                                              |
+| Package                               | Purpose                                                     | Key exports                                                                                                                                           |
+| ------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@agent-plugins-doctor/core`          | Canonical types, spec constants, diagnostics, path security | `resolveSpecVersion`, `resolvePluginPath`, `isWithinPath`, types (`Plugin`, `PluginManifest`, `Skill`, `McpConfig`, `Diagnostic`, `ValidationResult`) |
+| `@agent-plugins-doctor/parser`        | Filesystem loading and parsing                              | `loadPlugin`, `parsePluginManifest`, `parseMcpConfig`, `parseSkillFrontmatter`, error classes (`LoadError`, `ParseError`, `SchemaValidationError`)    |
+| `@agent-plugins-doctor/rules`         | Validation engine, rule registry, auto-fixes                | `validatePlugin`, `applyFixes`, `createDefaultRegistry`, `ValidationEngine`, `INTERNAL_ERROR_CODE`                                                    |
+| `@agent-plugins-doctor/report`        | Report rendering                                            | `generateReport`, `getFormatter` (`human` \| `json` \| `markdown`)                                                                                    |
+| `@agent-plugins-doctor/compatibility` | Client-compatibility checking                               | `checkCompatibility`, `createDefaultClientRegistry`                                                                                                   |
+| `@agent-plugins-doctor/cli`           | CLI wrapper **and** the exit-code contract                  | `createProgram`, `main`, `computeExitCode`, `EXIT_CODES`                                                                                              |
 
 The CLI package is the source of truth for exit codes: Builder imports
 `computeExitCode` from it so Builder's process codes always match the CLI's.
@@ -57,12 +57,12 @@ The CLI package is the source of truth for exit codes: Builder imports
 ```json
 {
   "dependencies": {
-    "@agent-plugin-doctor/core": "^0.1.0",
-    "@agent-plugin-doctor/parser": "^0.1.0",
-    "@agent-plugin-doctor/rules": "^0.1.0",
-    "@agent-plugin-doctor/report": "^0.1.0",
-    "@agent-plugin-doctor/compatibility": "^0.1.0",
-    "@agent-plugin-doctor/cli": "^0.1.0"
+    "@agent-plugins-doctor/core": "^0.1.0",
+    "@agent-plugins-doctor/parser": "^0.1.0",
+    "@agent-plugins-doctor/rules": "^0.1.0",
+    "@agent-plugins-doctor/report": "^0.1.0",
+    "@agent-plugins-doctor/compatibility": "^0.1.0",
+    "@agent-plugins-doctor/cli": "^0.1.0"
   }
 }
 ```
@@ -95,8 +95,8 @@ generator changes that break the contract fail fast. See §5.
 ### Load and validate
 
 ```ts
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin, computeSummary } from '@agent-plugin-doctor/rules';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { validatePlugin, computeSummary } from '@agent-plugins-doctor/rules';
 
 const { plugin, parseDiagnostics } = await loadPlugin(outputDir);
 const result = await validatePlugin(plugin);
@@ -111,7 +111,7 @@ const diagnostics = [...parseDiagnostics, ...result.diagnostics];
 ### Render a report
 
 ```ts
-import { generateReport } from '@agent-plugin-doctor/report';
+import { generateReport } from '@agent-plugins-doctor/report';
 
 const human = generateReport(result, { format: 'human' }); // or 'json' | 'markdown'
 const json = generateReport(result, { format: 'json' });
@@ -120,7 +120,7 @@ const json = generateReport(result, { format: 'json' });
 ### Compute the exit code
 
 ```ts
-import { computeExitCode, EXIT_CODES } from '@agent-plugin-doctor/cli';
+import { computeExitCode, EXIT_CODES } from '@agent-plugins-doctor/cli';
 
 const code = computeExitCode(result.diagnostics);
 if (code === EXIT_CODES.SPEC_ERRORS) {
@@ -134,7 +134,7 @@ failure, mirroring the CLI's `--strict`.
 ### Apply auto-fixes
 
 ```ts
-import { applyFixes } from '@agent-plugin-doctor/rules';
+import { applyFixes } from '@agent-plugins-doctor/rules';
 
 const outcome = await applyFixes(plugin.rootDir, result.diagnostics, {
   dryRun: true, // preview without touching disk
@@ -146,7 +146,7 @@ const outcome = await applyFixes(plugin.rootDir, result.diagnostics, {
 ### Check client compatibility
 
 ```ts
-import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
+import { checkCompatibility } from '@agent-plugins-doctor/compatibility';
 
 const compat = checkCompatibility(plugin);
 // compat.checks: CompatibilityCheck[] (vscode, cursor, copilot, codex, kiro)
@@ -155,7 +155,7 @@ const compat = checkCompatibility(plugin);
 ### Parse one SKILL.md
 
 ```ts
-import { parseSkillFrontmatter } from '@agent-plugin-doctor/parser';
+import { parseSkillFrontmatter } from '@agent-plugins-doctor/parser';
 
 const parsed = parseSkillFrontmatter(content, filePath);
 // parsed.frontmatter: { name, description, license?, compatibility?,
@@ -195,13 +195,13 @@ Manual verification loop:
 ```bash
 for dir in tests/fixtures/builder-generated/*/; do
   echo "Testing $dir"
-  ./packages/cli/bin/agent-plugin-doctor check "$dir"
+  ./packages/cli/bin/agent-plugins-doctor check "$dir"
 done
 ```
 
 ### Builder side
 
-- After every generator change, run `agent-plugin-doctor check` (or the
+- After every generator change, run `agent-plugins-doctor check` (or the
   programmatic pipeline) over a sample of generated output and assert exit 0.
 - Keep one golden fixture per generator command and diff its diagnostics
   against a snapshot.
@@ -232,10 +232,10 @@ silently ignored.
 ## 7. Error handling patterns
 
 ```ts
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin, computeSummary } from '@agent-plugin-doctor/rules';
-import { generateReport } from '@agent-plugin-doctor/report';
-import { computeExitCode } from '@agent-plugin-doctor/cli';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { validatePlugin, computeSummary } from '@agent-plugins-doctor/rules';
+import { generateReport } from '@agent-plugins-doctor/report';
+import { computeExitCode } from '@agent-plugins-doctor/cli';
 
 try {
   const { plugin, parseDiagnostics } = await loadPlugin(dir); // throws on unloadable plugins
@@ -253,7 +253,7 @@ try {
 }
 ```
 
-Error hierarchy (all exported from `@agent-plugin-doctor/parser`):
+Error hierarchy (all exported from `@agent-plugins-doctor/parser`):
 
 - `LoadError` — root missing/not a directory, `plugin.json` missing or
   escaping the root.
@@ -282,7 +282,7 @@ rest of the plugin still loads (spec §7.2.2).
 
 ## 9. Troubleshooting common issues
 
-### "Cannot find module '@agent-plugin-doctor/parser'"
+### "Cannot find module '@agent-plugins-doctor/parser'"
 
 In this monorepo, root-level code resolves the packages because root
 `package.json` declares them as `workspace:*` devDependencies (bun symlinks

@@ -1,6 +1,6 @@
 // DOC-1001: plugin.json must contain the required fields $schema and name.
 
-import type { PluginManifest } from '@agent-plugin-doctor/core';
+import type { PluginManifest } from '@agent-plugins-doctor/core';
 import type { Rule } from '../../rule.js';
 import { makeDiagnostic } from '../../util.js';
 

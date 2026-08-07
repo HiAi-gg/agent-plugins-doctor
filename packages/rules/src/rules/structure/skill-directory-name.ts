@@ -5,8 +5,8 @@ import { basename } from 'node:path';
 import {
   SKILL_NAME_MAX_LENGTH,
   SKILL_NAME_PATTERN,
-} from '@agent-plugin-doctor/core';
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import { makeDiagnostic } from '../../util.js';
 

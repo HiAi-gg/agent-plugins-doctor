@@ -1,6 +1,6 @@
 // DOC-2003: skill descriptions must not exceed the spec limit.
 
-import { DESCRIPTION_MAX_LENGTH } from '@agent-plugin-doctor/core';
+import { DESCRIPTION_MAX_LENGTH } from '@agent-plugins-doctor/core';
 import type { Rule } from '../../rule.js';
 import { makeDiagnostic } from '../../util.js';
 

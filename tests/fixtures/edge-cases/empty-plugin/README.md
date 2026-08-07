@@ -14,7 +14,7 @@ components (no skills, no mcp.json, no extensions) and no metadata.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/edge-cases/empty-plugin
+agent-plugins-doctor check tests/fixtures/edge-cases/empty-plugin
 ```
 
 Exit code: `0`

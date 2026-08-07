@@ -18,7 +18,7 @@ import type {
   Diagnostic,
   Severity,
   ValidationResult,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 import type { ReportFormatter, ReportOptions } from './types.js';
 import {
   normalizeFilePath,

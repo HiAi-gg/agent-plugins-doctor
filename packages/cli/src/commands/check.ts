@@ -1,8 +1,8 @@
 // check command: validate an Agent Plugin and exit with the derived code.
 
 import { Command } from 'commander';
-import type { ValidationResult } from '@agent-plugin-doctor/core';
-import { generateReport } from '@agent-plugin-doctor/report';
+import type { ValidationResult } from '@agent-plugins-doctor/core';
+import { generateReport } from '@agent-plugins-doctor/report';
 import { computeExitCode } from '../utils/exit-codes.js';
 import { isNoColor, setColorEnabled } from '../utils/output.js';
 import {

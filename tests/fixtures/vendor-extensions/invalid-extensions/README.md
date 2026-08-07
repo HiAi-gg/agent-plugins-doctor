@@ -17,7 +17,7 @@ string), which violates §8.1.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/vendor-extensions/invalid-extensions
+agent-plugins-doctor check tests/fixtures/vendor-extensions/invalid-extensions
 ```
 
 Exit code: `0`

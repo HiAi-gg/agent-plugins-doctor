@@ -18,13 +18,13 @@ scaffolded from a template when the user already knows what they want (unlike
 ## Integration contract
 
 This fixture must load with `loadPlugin` and validate with `validatePlugin`
-producing zero error/critical diagnostics, and `agent-plugin-doctor check .`
+producing zero error/critical diagnostics, and `agent-plugins-doctor check .`
 must exit `0`.
 
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/builder-generated/from-create
+agent-plugins-doctor check tests/fixtures/builder-generated/from-create
 ```
 
 Exit code: `0`

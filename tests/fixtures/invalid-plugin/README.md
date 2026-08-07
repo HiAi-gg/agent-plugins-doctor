@@ -18,7 +18,7 @@ This fixture packs in five distinct defects:
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/invalid-plugin
+agent-plugins-doctor check tests/fixtures/invalid-plugin
 ```
 
 Exit code: `1` (validation error)

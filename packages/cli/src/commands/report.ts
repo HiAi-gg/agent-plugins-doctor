@@ -3,8 +3,8 @@
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Command } from 'commander';
-import type { ReportFormat } from '@agent-plugin-doctor/report';
-import { generateReport } from '@agent-plugin-doctor/report';
+import type { ReportFormat } from '@agent-plugins-doctor/report';
+import { generateReport } from '@agent-plugins-doctor/report';
 import { EXIT_CODES, computeExitCode } from '../utils/exit-codes.js';
 import { error, info, isNoColor, setColorEnabled } from '../utils/output.js';
 import { handleCommandError, loadAndValidate } from '../utils/run.js';

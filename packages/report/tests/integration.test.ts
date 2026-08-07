@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import type { Diagnostic, Severity } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Severity } from '@agent-plugins-doctor/core';
 import { generateReport, getFormatter } from '../src/index.js';
 import { makeResult } from './helpers.js';
 

@@ -16,9 +16,9 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import type { Plugin } from '@agent-plugin-doctor/core';
-import { loadPlugin, ParsedFileCache } from '@agent-plugin-doctor/parser';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
+import type { Plugin } from '@agent-plugins-doctor/core';
+import { loadPlugin, ParsedFileCache } from '@agent-plugins-doctor/parser';
+import { validatePlugin } from '@agent-plugins-doctor/rules';
 
 const PLUGIN_SCHEMA =
   'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json';

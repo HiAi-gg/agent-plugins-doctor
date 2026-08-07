@@ -4,7 +4,7 @@
 // they are caught against the raw file (the parser would otherwise reject the
 // manifest or the fields are lost at load time).
 
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import {
   findJsonMemberSpans,

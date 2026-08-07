@@ -2,20 +2,20 @@
 
 > Your Agent Plugin doesn't work? Doctor tells you why and fixes what it safely can.
 
-[![CI](https://github.com/HiAi-gg/agent-plugin-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/HiAi-gg/agent-plugin-doctor/actions/workflows/ci.yml)
+[![CI](https://github.com/HiAi-gg/agent-plugins-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/HiAi-gg/agent-plugins-doctor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Quick Start
 
 ```bash
 # Check a plugin
-bunx agent-plugin-doctor check ./my-plugin
+bunx agent-plugins-doctor check ./my-plugin
 
 # Fix issues
-bunx agent-plugin-doctor fix ./my-plugin
+bunx agent-plugins-doctor fix ./my-plugin
 
 # Generate a report
-bunx agent-plugin-doctor report ./my-plugin --format markdown
+bunx agent-plugins-doctor report ./my-plugin --format markdown
 ```
 
 The CLI is available through `bunx` (Bun) or `npx` (npm) once published;
@@ -44,7 +44,7 @@ Agent Plugin Doctor is the canonical validation, diagnostics, and security-audit
 Validate a plugin and report issues.
 
 ```bash
-agent-plugin-doctor check [dir] [options]
+agent-plugins-doctor check [dir] [options]
 
 Options:
   --json          Output as JSON
@@ -61,7 +61,7 @@ Options:
 Apply safe fixes to a plugin.
 
 ```bash
-agent-plugin-doctor fix [dir] [options]
+agent-plugins-doctor fix [dir] [options]
 
 Options:
   --dry-run       Show what would be fixed
@@ -75,7 +75,7 @@ Options:
 Generate a detailed report.
 
 ```bash
-agent-plugin-doctor report [dir] [options]
+agent-plugins-doctor report [dir] [options]
 
 Options:
   --format <fmt>  human|json|markdown (default: human)
@@ -87,7 +87,7 @@ Options:
 Check client compatibility.
 
 ```bash
-agent-plugin-doctor compatibility [dir] [options]
+agent-plugins-doctor compatibility [dir] [options]
 
 Options:
   --client <id>   Check specific client (vscode|cursor|copilot|codex|kiro)
@@ -99,9 +99,9 @@ Options:
 Doctor can be used as a library:
 
 ```typescript
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
-import { generateReport } from '@agent-plugin-doctor/report';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { validatePlugin } from '@agent-plugins-doctor/rules';
+import { generateReport } from '@agent-plugins-doctor/report';
 
 const plugin = await loadPlugin('./my-plugin');
 const result = await validatePlugin(plugin);
@@ -204,4 +204,4 @@ MIT © HiAI
 
 - [Agent Plugins Specification](https://agent-plugins.org/)
 - [Agent Plugin Builder](https://github.com/HiAi-gg/agent-plugin-builder)
-- [Report Issues](https://github.com/HiAi-gg/agent-plugin-doctor/issues)
+- [Report Issues](https://github.com/HiAi-gg/agent-plugins-doctor/issues)

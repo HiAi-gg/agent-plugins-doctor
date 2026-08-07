@@ -1,5 +1,5 @@
 // Shared helpers for end-to-end CLI tests (tests/e2e).
-// E2E tests spawn the real `agent-plugin-doctor` binary as a subprocess and
+// E2E tests spawn the real `agent-plugins-doctor` binary as a subprocess and
 // run it against the on-disk fixture plugins, so they verify the shipped CLI
 // contract (exit codes, output formats, filesystem behavior).
 
@@ -16,7 +16,7 @@ export const CLI_BIN = join(
   'packages',
   'cli',
   'bin',
-  'agent-plugin-doctor',
+  'agent-plugins-doctor',
 );
 
 /** Directory containing the on-disk plugin fixtures. */

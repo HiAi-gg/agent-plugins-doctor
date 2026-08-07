@@ -7,9 +7,9 @@
 // `migrate --from claude|cursor`) with zero error/critical diagnostics.
 
 import { describe, expect, test } from 'bun:test';
-import { computeExitCode } from '@agent-plugin-doctor/cli';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
+import { computeExitCode } from '@agent-plugins-doctor/cli';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { validatePlugin } from '@agent-plugins-doctor/rules';
 import { fixturePath } from './helpers.js';
 
 // Every real Builder command's output must validate cleanly (exit 0).

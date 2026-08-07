@@ -1,6 +1,6 @@
-// Shared test helpers for @agent-plugin-doctor/report
+// Shared test helpers for @agent-plugins-doctor/report
 
-import { v1 } from '@agent-plugin-doctor/core';
+import { v1 } from '@agent-plugins-doctor/core';
 import type {
   CompatibilityResult,
   Diagnostic,
@@ -8,7 +8,7 @@ import type {
   RuleCategory,
   Severity,
   ValidationResult,
-} from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
 
 export const PLUGIN_SCHEMA = v1.PLUGIN_SCHEMA_URL;
 

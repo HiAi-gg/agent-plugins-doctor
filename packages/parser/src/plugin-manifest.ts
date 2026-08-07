@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import type { PluginManifest } from '@agent-plugin-doctor/core';
+import type { PluginManifest } from '@agent-plugins-doctor/core';
 import type { ErrorObject } from 'ajv';
 import { ParseError, SchemaValidationError } from './errors.js';
 import { getPluginManifestValidator, mapAjvErrors } from './validation.js';

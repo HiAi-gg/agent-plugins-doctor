@@ -1,4 +1,4 @@
-// @agent-plugin-doctor/rules
+// @agent-plugins-doctor/rules
 // Modular validation engine: rules, registry, engine, and auto-fixes
 
 export * from './rule.js';

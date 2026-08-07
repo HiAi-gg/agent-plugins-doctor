@@ -190,7 +190,7 @@ deliverables; see [docs/ROADMAP.md](ROADMAP.md) for the full list.
 
 - `plugin.json` at repo root (v0.1.0)
 - `skills/doctor/SKILL.md` for the Doctor skill
-- `agent-plugin-doctor check .` exits 0
+- `agent-plugins-doctor check .` exits 0
 - No errors, no unexpected warnings
 
 ## Accessibility

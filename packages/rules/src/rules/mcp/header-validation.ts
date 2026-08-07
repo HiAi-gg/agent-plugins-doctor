@@ -1,7 +1,7 @@
 // DOC-3006: headers must be string values with no duplicate case-insensitive
 // names.
 
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import {
   findDuplicateJsonMemberSpans,

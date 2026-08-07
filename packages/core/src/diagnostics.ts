@@ -70,7 +70,7 @@ export interface ValidationSummary {
  * Compatibility level of a client check.
  *
  * Aligned with the `CompatibilityLevel` enum in
- * `@agent-plugin-doctor/compatibility` (identical string values):
+ * `@agent-plugins-doctor/compatibility` (identical string values):
  * `full` | `partial` | `unsupported` | `unknown`. Core keeps its own type so
  * the foundation package stays dependency-free; the CLI bridge converts
  * between the two.

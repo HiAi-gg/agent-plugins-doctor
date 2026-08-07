@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import type { Diagnostic } from '@agent-plugin-doctor/core';
+import type { Diagnostic } from '@agent-plugins-doctor/core';
 import { MarkdownReportFormatter } from '../src/markdown.js';
 import { makeResult } from './helpers.js';
 
@@ -56,7 +56,7 @@ Extra file at plugin root.
 | Kiro | ✓ Compatible |
 
 ## Fixes
-2 fixes available. Run \`agent-plugin-doctor fix\` to apply.
+2 fixes available. Run \`agent-plugins-doctor fix\` to apply.
 `;
 
 describe('MarkdownReportFormatter', () => {
@@ -127,7 +127,7 @@ describe('MarkdownReportFormatter', () => {
   test('shows fix availability', () => {
     const output = new MarkdownReportFormatter().format(makeResult());
     expect(output).toContain(
-      '2 fixes available. Run `agent-plugin-doctor fix` to apply.',
+      '2 fixes available. Run `agent-plugins-doctor fix` to apply.',
     );
   });
 

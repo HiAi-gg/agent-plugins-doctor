@@ -2,7 +2,7 @@
 // filtering. The default registry (see rules/index.ts) registers every rule in
 // this package.
 
-import type { RuleCategory } from '@agent-plugin-doctor/core';
+import type { RuleCategory } from '@agent-plugins-doctor/core';
 import type { Rule } from './rule.js';
 
 export class RuleRegistry {

@@ -7,7 +7,7 @@
 // client supports the mechanism and safely ignores unknown namespaces
 // (§8.2) — never that it "understands" the plugin's namespaces.
 
-import type { McpServer, Plugin } from '@agent-plugin-doctor/core';
+import type { McpServer, Plugin } from '@agent-plugins-doctor/core';
 import type {
   CapabilityId,
   ClientProfile,

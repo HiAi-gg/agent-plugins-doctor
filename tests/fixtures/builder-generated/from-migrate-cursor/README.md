@@ -17,13 +17,13 @@ converted into an Agent Plugin.
 ## Integration contract
 
 This fixture must load with `loadPlugin` and validate with `validatePlugin`
-producing zero error/critical diagnostics, and `agent-plugin-doctor check .`
+producing zero error/critical diagnostics, and `agent-plugins-doctor check .`
 must exit `0`.
 
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/builder-generated/from-migrate-cursor
+agent-plugins-doctor check tests/fixtures/builder-generated/from-migrate-cursor
 ```
 
 Exit code: `0`

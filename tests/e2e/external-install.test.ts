@@ -1,16 +1,16 @@
 // E2E: the published CLI works when installed from packed tarballs outside the
 // monorepo.
 //
-// This simulates `bunx agent-plugin-doctor` (or `npx`) against the npm-published
+// This simulates `bunx agent-plugins-doctor` (or `npx`) against the npm-published
 // artifacts from Phase 4.1-4.2 without publishing anything:
 //   1. every workspace package is packed with `npm pack` (which rebuilds dist/
 //      via prepublishOnly),
 //   2. all six tarballs are installed with `npm install` into a scratch
-//      directory outside the repo — the @agent-plugin-doctor/* packages are
+//      directory outside the repo — the @agent-plugins-doctor/* packages are
 //      not on the registry yet, so every tarball must be installed in a single
 //      npm install for their ^0.0.2 inter-package dependencies to resolve
 //      locally,
-//   3. the installed artifact (node_modules/@agent-plugin-doctor/cli/dist/bin.js,
+//   3. the installed artifact (node_modules/@agent-plugins-doctor/cli/dist/bin.js,
 //      the node-targeted file a user gets) is exercised end-to-end.
 
 import { describe, expect, test, beforeAll, afterAll } from 'bun:test';
@@ -122,7 +122,7 @@ describe('external installation', () => {
     cliJs = join(
       tempDir,
       'node_modules',
-      '@agent-plugin-doctor',
+      '@agent-plugins-doctor',
       'cli',
       'dist',
       'bin.js',
@@ -130,7 +130,7 @@ describe('external installation', () => {
     expect(existsSync(cliJs)).toBe(true);
     // npm wired the `bin` field into node_modules/.bin.
     expect(
-      existsSync(join(tempDir, 'node_modules', '.bin', 'agent-plugin-doctor')),
+      existsSync(join(tempDir, 'node_modules', '.bin', 'agent-plugins-doctor')),
     ).toBe(true);
 
     cliVersion = (

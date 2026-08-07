@@ -47,7 +47,7 @@ bun test               # full suite: unit + integration + E2E + benchmarks
 bun run typecheck      # strict-mode TS, all packages
 bun run lint           # oxlint (eslint config)
 bunx prettier --check . # formatting
-./packages/cli/bin/agent-plugin-doctor check .  # self-hosting: exit 0
+./packages/cli/bin/agent-plugins-doctor check .  # self-hosting: exit 0
 ```
 
 ## 4. Build All Packages
@@ -118,8 +118,8 @@ from its own directory via `npm publish` (or `npm publish --dry-run` in dry
 run mode). Each package's `prepublishOnly` runs `bun run build` again as a
 safety net, so the tarball always matches the source on disk.
 
-The CLI package's `bin` field (`agent-plugin-doctor`) makes it available via
-`bunx agent-plugin-doctor` once published.
+The CLI package's `bin` field (`agent-plugins-doctor`) makes it available via
+`bunx agent-plugins-doctor` once published.
 
 ## Verification Checklist
 
@@ -129,7 +129,7 @@ The CLI package's `bin` field (`agent-plugin-doctor`) makes it available via
 - [ ] `bun run typecheck` passes
 - [ ] `bun run lint` passes
 - [ ] `bunx prettier --check .` passes
-- [ ] `./packages/cli/bin/agent-plugin-doctor check .` exits 0
+- [ ] `./packages/cli/bin/agent-plugins-doctor check .` exits 0
 - [ ] `bun run build` exits 0 for all packages
 - [ ] Documentation updated (SDK/DIAGNOSTICS/ARCHITECTURE/COMPATIBILITY as
       needed)

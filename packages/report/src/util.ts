@@ -1,6 +1,6 @@
 // Shared helpers for the report formatters
 
-import type { Diagnostic, Severity } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Severity } from '@agent-plugins-doctor/core';
 
 /** Severity order from most to least severe. */
 export const SEVERITY_ORDER: readonly Severity[] = [

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
-import { v1 } from '@agent-plugin-doctor/core';
-import type { McpConfig, Plugin } from '@agent-plugin-doctor/core';
+import { v1 } from '@agent-plugins-doctor/core';
+import type { McpConfig, Plugin } from '@agent-plugins-doctor/core';
 import { checkCompatibility, CompatibilityChecker } from '../src/checker.js';
 import {
   ClientProfileRegistry,

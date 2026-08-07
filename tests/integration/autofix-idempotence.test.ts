@@ -25,10 +25,10 @@ import type {
   McpConfig,
   Plugin,
   PluginManifest,
-} from '@agent-plugin-doctor/core';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import type { FixResult } from '@agent-plugin-doctor/rules';
-import { applyFixes, validatePlugin } from '@agent-plugin-doctor/rules';
+} from '@agent-plugins-doctor/core';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import type { FixResult } from '@agent-plugins-doctor/rules';
+import { applyFixes, validatePlugin } from '@agent-plugins-doctor/rules';
 import { deprecatedFieldsRule } from '../../packages/rules/src/rules/compatibility/deprecated-fields.js';
 import { cleanup, makeTempDir, readFile, writeTree } from './helpers.js';
 

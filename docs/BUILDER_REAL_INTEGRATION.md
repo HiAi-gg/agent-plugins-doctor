@@ -115,7 +115,7 @@ mkdir -p /tmp/builder-outputs
 # ... run each Builder command into /tmp/builder-outputs ...
 
 # Run Doctor against each output
-./packages/cli/bin/agent-plugin-doctor check /tmp/builder-outputs/<fixture>
+./packages/cli/bin/agent-plugins-doctor check /tmp/builder-outputs/<fixture>
 ```
 
 All five commands exit `0` with `Result: No issues found`.

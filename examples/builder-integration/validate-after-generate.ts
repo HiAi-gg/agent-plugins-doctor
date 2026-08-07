@@ -10,10 +10,10 @@
 //
 // Run directly:  bun validate-after-generate.ts <plugin-directory>
 
-import { computeExitCode } from '@agent-plugin-doctor/cli';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { generateReport } from '@agent-plugin-doctor/report';
-import { computeSummary, validatePlugin } from '@agent-plugin-doctor/rules';
+import { computeExitCode } from '@agent-plugins-doctor/cli';
+import { loadPlugin } from '@agent-plugins-doctor/parser';
+import { generateReport } from '@agent-plugins-doctor/report';
+import { computeSummary, validatePlugin } from '@agent-plugins-doctor/rules';
 
 export async function validateGeneratedPlugin(outputDir: string): Promise<{
   valid: boolean;

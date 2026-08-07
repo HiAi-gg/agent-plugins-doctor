@@ -20,7 +20,7 @@ Related standards validated alongside the core spec:
   `streamable-http`, and `sse` transports, env, args, cwd, headers, URLs.
 
 Version support is registry-based (`resolveSpecVersion` / `getSpecVersion`
-in `@agent-plugin-doctor/core`) and additive: adding a spec version never
+in `@agent-plugins-doctor/core`) and additive: adding a spec version never
 changes how existing versions are validated. See §5 for the mechanism.
 
 ## Validated features

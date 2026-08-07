@@ -16,7 +16,7 @@ traversal attempt in a stdio server configuration.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/security-plugin/path-traversal
+agent-plugins-doctor check tests/fixtures/security-plugin/path-traversal
 ```
 
 Exit code: `0`

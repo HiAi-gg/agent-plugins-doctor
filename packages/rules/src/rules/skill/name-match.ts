@@ -1,7 +1,7 @@
 // DOC-2001: a skill's name must match its directory name.
 
 import { basename } from 'node:path';
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import { makeDiagnostic } from '../../util.js';
 

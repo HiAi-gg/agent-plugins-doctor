@@ -4,7 +4,7 @@
 // is an error. The autofix only normalizes whitespace — it never converts a
 // string into a list.
 
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import { makeDiagnostic, readTextFile } from '../../util.js';
 

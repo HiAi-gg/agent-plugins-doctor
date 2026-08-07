@@ -6,13 +6,13 @@ Each section ends with a complete, working example.
 
 The extension points are:
 
-| Extension       | Registry / dispatcher                                | Package                              |
-| --------------- | ---------------------------------------------------- | ------------------------------------ |
-| Validation rule | `RuleRegistry` (via `createDefaultRegistry`)         | `@agent-plugin-doctor/rules`         |
-| Spec version    | `specVersions` in `packages/core/src/spec/index.ts`  | `@agent-plugin-doctor/core`          |
-| Report format   | `getFormatter` in `packages/report/src/index.ts`     | `@agent-plugin-doctor/report`        |
-| Client profile  | `ClientProfileRegistry` (seeded from `clients.json`) | `@agent-plugin-doctor/compatibility` |
-| Auto-fix        | `fix()` method on a rule                             | `@agent-plugin-doctor/rules`         |
+| Extension       | Registry / dispatcher                                | Package                               |
+| --------------- | ---------------------------------------------------- | ------------------------------------- |
+| Validation rule | `RuleRegistry` (via `createDefaultRegistry`)         | `@agent-plugins-doctor/rules`         |
+| Spec version    | `specVersions` in `packages/core/src/spec/index.ts`  | `@agent-plugins-doctor/core`          |
+| Report format   | `getFormatter` in `packages/report/src/index.ts`     | `@agent-plugins-doctor/report`        |
+| Client profile  | `ClientProfileRegistry` (seeded from `clients.json`) | `@agent-plugins-doctor/compatibility` |
+| Auto-fix        | `fix()` method on a rule                             | `@agent-plugins-doctor/rules`         |
 
 ---
 
@@ -212,7 +212,7 @@ so rules automatically see the per-version value through `getSpecVersion`).
 `packages/report/src/xml.ts`:
 
 ```ts
-import type { ValidationResult } from '@agent-plugin-doctor/core';
+import type { ValidationResult } from '@agent-plugins-doctor/core';
 import type { ReportFormatter } from './types.js';
 
 export class XmlReportFormatter implements ReportFormatter {
@@ -369,7 +369,7 @@ bun test                 # unit + integration + E2E + benchmarks
 bun run typecheck        # strict-mode TS across all packages
 bun run lint             # oxlint via eslint
 bunx prettier --check .  # formatting
-./packages/cli/bin/agent-plugin-doctor check .   # self-hosting: exit 0
+./packages/cli/bin/agent-plugins-doctor check .   # self-hosting: exit 0
 ```
 
 New rules, spec versions, and report formats must also be documented

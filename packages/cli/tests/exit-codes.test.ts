@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import type { Diagnostic } from '@agent-plugin-doctor/core';
+import type { Diagnostic } from '@agent-plugins-doctor/core';
 import { EXIT_CODES, computeExitCode } from '../src/utils/exit-codes.js';
 
 function diagnostic(overrides: Partial<Diagnostic> = {}): Diagnostic {

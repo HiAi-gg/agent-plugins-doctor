@@ -4,7 +4,7 @@
 // loaded (scanResult.plugin is null).
 
 import { describe, expect, test } from 'bun:test';
-import { loadPlugin, scanPlugin } from '@agent-plugin-doctor/parser';
+import { loadPlugin, scanPlugin } from '@agent-plugins-doctor/parser';
 import { ValidationEngine, validatePlugin } from '../src/index.js';
 import { createDefaultRegistry } from '../src/rules/index.js';
 import { cleanup, makeTempDir, PLUGIN_SCHEMA, writeTree } from './helpers.js';

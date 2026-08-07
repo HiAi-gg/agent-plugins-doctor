@@ -4,7 +4,7 @@
 // file to catch them; the in-memory manifest is used as a fallback when the
 // file is unavailable (e.g. programmatically built plugins).
 
-import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
+import type { Diagnostic, Fix } from '@agent-plugins-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
 import {
   findJsonMemberSpans,

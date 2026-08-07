@@ -15,7 +15,7 @@ critical violation. All values are fake.
 ## Expected result
 
 ```
-agent-plugin-doctor check tests/fixtures/security-plugin/embedded-secrets
+agent-plugins-doctor check tests/fixtures/security-plugin/embedded-secrets
 ```
 
 Exit code: `2` (security-critical)

@@ -1,5 +1,5 @@
-// Integration: @agent-plugin-doctor/parser output must be type-compatible with
-// the canonical @agent-plugin-doctor/core types, and loadPlugin must assemble
+// Integration: @agent-plugins-doctor/parser output must be type-compatible with
+// the canonical @agent-plugins-doctor/core types, and loadPlugin must assemble
 // every component of a plugin.
 //
 // The explicit type annotations (e.g. `const manifest: PluginManifest = ...`)
@@ -16,8 +16,8 @@ import type {
   PluginManifest,
   Skill,
   SkillFrontmatter,
-} from '@agent-plugin-doctor/core';
-import { v1 } from '@agent-plugin-doctor/core';
+} from '@agent-plugins-doctor/core';
+import { v1 } from '@agent-plugins-doctor/core';
 import {
   loadPlugin,
   parseMcpConfig,
@@ -25,7 +25,7 @@ import {
   parseSkillFrontmatter,
   type LoadResult,
   type ParsedSkill,
-} from '@agent-plugin-doctor/parser';
+} from '@agent-plugins-doctor/parser';
 import { fixturePath, REPO_ROOT } from './helpers.js';
 
 describe('core <-> parser type compatibility', () => {
@@ -163,7 +163,7 @@ describe('core <-> parser type compatibility', () => {
     const result: LoadResult = await loadPlugin(REPO_ROOT);
     const plugin: Plugin = result.plugin;
     expect(result.parseDiagnostics).toEqual([]);
-    expect(plugin.manifest.name).toBe('agent-plugin-doctor');
+    expect(plugin.manifest.name).toBe('agent-plugins-doctor');
     expect(plugin.manifest.version).toBe('0.0.1');
     expect(plugin.manifest.license).toBe('MIT');
     expect(plugin.skills).toHaveLength(1);
