@@ -1,0 +1,650 @@
+CHANGELOG.md
+  s_1a4eb2564ff4ae::t_28503e498efcd7 8
+  s_1a4eb2564ff4ae::t_8e3b1bbfead86b 5-7
+  s_1a4eb2564ff4ae::t_2e7599d177e4cf 9-11
+packages/rules/package.json
+  s_1a4eb2564ff4ae::t_e9da125eafe9e0 3
+  s_1a4eb2564ff4ae::t_c4de3f2c977d4b 1-2
+  s_1a4eb2564ff4ae::t_7eebe7bc1ded1d 4-6
+packages/parser/package.json
+  s_1a4eb2564ff4ae::t_4c5c84bdc84140 3
+  s_1a4eb2564ff4ae::t_eb9e3c0ad0adbd 1-2
+  s_1a4eb2564ff4ae::t_91f1c27678c17d 4-6
+packages/cli/package.json
+  s_1a4eb2564ff4ae::t_f70662de12d3d7 3
+  s_1a4eb2564ff4ae::t_a5b14be7bc64ab 1-2
+  s_1a4eb2564ff4ae::t_a09ed7bdcff92f 4-6
+packages/compatibility/package.json
+  s_1a4eb2564ff4ae::t_0d782627664e7c 3
+  s_1a4eb2564ff4ae::t_b0a81a18e92172 1-2
+  s_1a4eb2564ff4ae::t_852158b2e35e78 4-6
+packages/core/package.json
+  s_1a4eb2564ff4ae::t_613daa527aa1f4 3
+  s_1a4eb2564ff4ae::t_d711e0a43e8f64 1-2
+  s_1a4eb2564ff4ae::t_6f5539ca2a8f05 4-6
+.gitignore
+  s_1a4eb2564ff4ae::t_f01ebea3ad04c8 10-12
+  s_1a4eb2564ff4ae::t_66f7ac4cdbdba9 7-9
+packages/report/package.json
+  s_1a4eb2564ff4ae::t_46aae63be05b18 3
+  s_1a4eb2564ff4ae::t_e5ce3e73e4233a 1-2
+  s_1a4eb2564ff4ae::t_f17e99c38bbf79 4-6
+package.json
+  s_1a4eb2564ff4ae::t_46168f1d17669d 3
+  s_1a4eb2564ff4ae::t_bda7f474abacdb 1-2
+  s_1a4eb2564ff4ae::t_bae9262e955bfe 4-6
+.github/ISSUE_TEMPLATE/bug_report.md
+  s_61df3046143b2d::t_df2d6b4f494d2e 1-48
+.github/ISSUE_TEMPLATE/feature_request.md
+  s_1a12a025b1fabc::t_87e19e98f787d1 1-35
+.github/PULL_REQUEST_TEMPLATE.md
+  s_61df3046143b2d::t_58af7812f5481c 1-58
+AGENTS.md
+  s_e87b60950a0bf1::t_f93fe92d5379e5 1-126
+CODE_OF_CONDUCT.md
+  s_61df3046143b2d::t_52699112f44fe6 1-129
+CONTRIBUTING.md
+  s_61df3046143b2d::t_b2a4d5d2f7e799 1-136
+LICENSE
+  s_1a12a025b1fabc::t_8e7dcba26bcd55 1-21
+MEMORY.md
+  s_45578d70cf2d89::t_6ccaca55e32df0 1-52
+README.md
+  s_e87b60950a0bf1::t_26e204a295c2e9 1-191
+SECURITY.md
+  s_61df3046143b2d::t_39cfea23379f64 1-64
+bun.lock
+  s_f10686323b6bc5::t_8a49c5dc2af0fd 1-366
+docs/ARCHITECTURE.md
+  s_8571a17a3e9d7b::t_71f65dcec773fb 1-347
+docs/BUILDER_INTEGRATION.md
+  s_8d42b5e5daed0f::t_ac4d7af9962cd2 1-299
+docs/COMPATIBILITY.md
+  s_8571a17a3e9d7b::t_228d192c096130 1-137
+docs/DIAGNOSTICS.md
+  s_35042745f682fc::t_c12906019bd541 1-655
+docs/DUPLICATION_ANALYSIS.md
+  s_dbf68074f861bb::t_2e4e9475290209 1-186
+docs/EXTENSIBILITY.md
+  s_4b82db80f03127::t_a78ffc7853808b 1-376
+docs/RELEASING.md
+  s_e87b60950a0bf1::t_9bf1357be060d4 1-127
+docs/REPOSITORY_AUDIT.md
+  s_e48f15fd950733::t_c3129c4df883fb 1-282
+docs/RISK_ASSESSMENT.md
+  s_e48f15fd950733::t_8fa750fc617de8 1-254
+docs/ROADMAP.md
+  s_e48f15fd950733::t_225532e84c2e47 1-262
+docs/RULES.md
+  s_35042745f682fc::t_8db680e5941645 1-266
+docs/RULE_ENGINE.md
+  s_e48f15fd950733::t_aa35383c04bda4 1-329
+docs/SPEC_SUPPORT.md
+  s_35042745f682fc::t_e7bd1da81b108a 1-161
+eslint.config.mjs
+  s_ce68562a0c818f::t_c76c2ca1af6cad 1-20
+examples/builder-integration/README.md
+  s_8d42b5e5daed0f::t_3364afc5939565 1-71
+packages/cli/bin/agent-plugin-doctor
+  s_f10686323b6bc5::t_e924a28753d430 1-3
+packages/cli/src/commands/compatibility.ts
+  s_c16cfd984502c1::t_a58a32df134287 1-123
+packages/cli/tests/compatibility.test.ts
+  s_c16cfd984502c1::t_d47b47d3c8100c 1-115
+packages/cli/tests/exit-codes.test.ts
+  s_c16cfd984502c1::t_dc58aacb0d7ff0 1-96
+packages/cli/tests/helpers.ts
+  s_c16cfd984502c1::t_6d241d5bfc078f 1-225
+packages/cli/tests/report.test.ts
+  s_c16cfd984502c1::t_e540428dad2234 1-99
+packages/compatibility/tests/checker.test.ts
+  s_54aa2a59540e63::t_cf6c415c166c3f 1-241
+packages/compatibility/tests/clients.test.ts
+  s_54aa2a59540e63::t_d9469b7b91b567 1-82
+packages/core/src/diagnostics.ts
+  s_ce68562a0c818f::t_8cf042f45f2231 1-74
+packages/core/src/index.ts
+  s_ce68562a0c818f::t_2d7cbe6240de9f 1-14
+packages/core/src/path.ts
+  s_ce68562a0c818f::t_fd0f465cb10332 1-104
+packages/core/src/spec/current.ts
+  s_ce68562a0c818f::t_b5e41f178180ba 1-4
+packages/core/src/spec/index.ts
+  s_ce68562a0c818f::t_66d0e3e8d7d532 1-52
+packages/core/src/spec/v1/index.ts
+  s_ce68562a0c818f::t_703ec225365536 1-27
+packages/core/src/types.ts
+  s_ce68562a0c818f::t_3ff081c48c10d4 1-83
+packages/core/tests/path.test.ts
+  s_ce68562a0c818f::t_e491391d9ebdd0 1-271
+packages/core/tests/spec.test.ts
+  s_ce68562a0c818f::t_6d3c89aa067a9b 1-186
+packages/core/tests/types.test.ts
+  s_ce68562a0c818f::t_d9dd94694e3925 1-276
+packages/parser/src/errors.ts
+  s_ce68562a0c818f::t_ecdb58195564d7 1-40
+packages/parser/src/mcp-config.ts
+  s_ce68562a0c818f::t_0f034609f8cdad 1-113
+packages/parser/src/plugin-loader.ts
+  s_8571a17a3e9d7b::t_8e3e68b4efc6f6 1-319
+packages/parser/src/plugin-manifest.ts
+  s_ce68562a0c818f::t_3a4b8541376618 1-129
+packages/parser/src/schemas/mcp.schema.json
+  s_ce68562a0c818f::t_39f9e488a613f4 1-120
+packages/parser/src/schemas/plugin.schema.json
+  s_ce68562a0c818f::t_f6cd1b16721f85 1-65
+packages/parser/src/skill-frontmatter.ts
+  s_ce68562a0c818f::t_b8281720c5442a 1-131
+packages/parser/src/validation.ts
+  s_ce68562a0c818f::t_fb6c82e1756db1 1-74
+packages/parser/tests/cache.test.ts
+  s_8571a17a3e9d7b::t_0304a19f6004a7 1-185
+packages/parser/tests/mcp-config.test.ts
+  s_ce68562a0c818f::t_3cd0d531e37fef 1-163
+packages/parser/tests/plugin-loader.test.ts
+  s_ce68562a0c818f::t_09e09f640c3c8d 1-309
+packages/parser/tests/plugin-manifest.test.ts
+  s_ce68562a0c818f::t_67f0a5c63eb505 1-211
+packages/parser/tests/skill-frontmatter.test.ts
+  s_ce68562a0c818f::t_09571160f314f2 1-176
+packages/report/src/human.ts
+  s_6da012c60fd998::t_dd34c231cb0402 1-235
+packages/report/src/json.ts
+  s_6da012c60fd998::t_f668de6cfe1814 1-111
+packages/report/src/markdown.ts
+  s_6da012c60fd998::t_34514d97230fb5 1-168
+packages/report/src/util.ts
+  s_6da012c60fd998::t_f0f995482518aa 1-113
+packages/report/tests/integration.test.ts
+  s_6da012c60fd998::t_a954711b66c585 1-130
+packages/report/tests/json.test.ts
+  s_6da012c60fd998::t_6da2fe19b5d8ab 1-140
+packages/report/tests/markdown.test.ts
+  s_6da012c60fd998::t_e9b2d443900743 1-157
+packages/rules/src/engine.ts
+  s_8571a17a3e9d7b::t_22f80e062cc300 1-356
+packages/rules/src/fixes.ts
+  s_82e411404d62d4::t_10a7c29e214638 1-271
+packages/rules/src/rules/compatibility/deprecated-fields.ts
+  s_e87b60950a0bf1::t_54021837ef472a 1-121
+packages/rules/src/rules/compatibility/index.ts
+  s_82e411404d62d4::t_e754cd15b86887 1-8
+packages/rules/src/rules/compatibility/spec-version.ts
+  s_82e411404d62d4::t_5211cda6169ceb 1-34
+packages/rules/src/rules/format/json-formatting.ts
+  s_e87b60950a0bf1::t_42fcbd8f1c1295 1-64
+packages/rules/src/rules/index.ts
+  s_82e411404d62d4::t_41b5f1206031d9 1-50
+packages/rules/src/rules/manifest/author-strictness.ts
+  s_e87b60950a0bf1::t_2a22840e1b15ab 1-84
+packages/rules/src/rules/manifest/extensions-format.ts
+  s_82e411404d62d4::t_a6742404db909d 1-70
+packages/rules/src/rules/manifest/name-pattern.ts
+  s_82e411404d62d4::t_f4bcdc2f6fefa8 1-70
+packages/rules/src/rules/mcp/header-validation.ts
+  s_82e411404d62d4::t_0892c86e2635ca 1-109
+packages/rules/src/rules/mcp/reserved-env-keys.ts
+  s_82e411404d62d4::t_732659cb4ce1c9 1-86
+packages/rules/src/rules/mcp/server-type.ts
+  s_82e411404d62d4::t_d973c9aabee36f 1-42
+packages/rules/src/rules/security/path-traversal.ts
+  s_82e411404d62d4::t_bc56043686d719 1-73
+packages/rules/src/rules/security/secret-detection.ts
+  s_82e411404d62d4::t_e757f05e8cd32c 1-135
+packages/rules/src/rules/security/symlink-escape.ts
+  s_82e411404d62d4::t_f4989a5a7f4278 1-72
+packages/rules/src/rules/skill/allowed-tools-format.ts
+  s_82e411404d62d4::t_58896333d81fea 1-93
+packages/rules/src/rules/skill/name-match.ts
+  s_82e411404d62d4::t_0fcf7790f38cb9 1-58
+packages/rules/src/rules/skill/required-fields.ts
+  s_82e411404d62d4::t_cff3db5c0d1bc2 1-47
+packages/rules/src/rules/structure/skill-directory-name.ts
+  s_82e411404d62d4::t_14af37a2ab0ba7 1-84
+packages/rules/src/util.ts
+  s_82e411404d62d4::t_ae0aba46c4dece 1-392
+packages/rules/tests/engine.test.ts
+  s_82e411404d62d4::t_250764f877b0b4 1-258
+packages/rules/tests/fixes.test.ts
+  s_82e411404d62d4::t_5c7b013b10fcd1 1-277
+packages/rules/tests/helpers.ts
+  s_82e411404d62d4::t_c3ad7f7a095ff6 1-146
+packages/rules/tests/incremental.test.ts
+  s_8571a17a3e9d7b::t_3640ba46c5373e 1-268
+packages/rules/tests/registry.test.ts
+  s_82e411404d62d4::t_720902715adbab 1-72
+packages/rules/tests/rules/compatibility/deprecated-fields.test.ts
+  s_82e411404d62d4::t_cfeb28d34534ee 1-93
+packages/rules/tests/rules/compatibility/spec-version.test.ts
+  s_82e411404d62d4::t_861fde140615d5 1-27
+packages/rules/tests/rules/format/frontmatter-style.test.ts
+  s_82e411404d62d4::t_e5c140454e9ff3 1-105
+packages/rules/tests/rules/format/json-formatting.test.ts
+  s_82e411404d62d4::t_4a4ea1b7c7a509 1-88
+packages/rules/tests/rules/manifest/author-strictness.test.ts
+  s_82e411404d62d4::t_3b6a3ec3cc4b1b 1-93
+packages/rules/tests/rules/manifest/extensions-format.test.ts
+  s_82e411404d62d4::t_06f0329227d81e 1-46
+packages/rules/tests/rules/manifest/name-length.test.ts
+  s_82e411404d62d4::t_ede862db99b77c 1-29
+packages/rules/tests/rules/manifest/name-pattern.test.ts
+  s_82e411404d62d4::t_141729e710f89c 1-61
+packages/rules/tests/rules/manifest/required-fields.test.ts
+  s_82e411404d62d4::t_23062ebc4e7845 1-35
+packages/rules/tests/rules/manifest/schema-match.test.ts
+  s_82e411404d62d4::t_734b20d1b63ec7 1-62
+packages/rules/tests/rules/manifest/unknown-fields.test.ts
+  s_82e411404d62d4::t_5b3812ba015a68 1-69
+packages/rules/tests/rules/mcp/cwd-pattern.test.ts
+  s_82e411404d62d4::t_21f168597a3cb7 1-62
+packages/rules/tests/rules/mcp/header-validation.test.ts
+  s_82e411404d62d4::t_c3a743ccc42330 1-98
+packages/rules/tests/rules/mcp/reserved-env-keys.test.ts
+  s_82e411404d62d4::t_9eb8f903fb2916 1-92
+packages/rules/tests/rules/mcp/server-type.test.ts
+  s_82e411404d62d4::t_0f4fbfb7423128 1-57
+packages/rules/tests/rules/mcp/stdio-command.test.ts
+  s_82e411404d62d4::t_8d2c082e02511e 1-58
+packages/rules/tests/rules/mcp/url-format.test.ts
+  s_82e411404d62d4::t_6e2b63e7558ba4 1-79
+packages/rules/tests/rules/security/path-traversal.test.ts
+  s_82e411404d62d4::t_aa3776d193ddd9 1-80
+packages/rules/tests/rules/security/secret-detection.test.ts
+  s_82e411404d62d4::t_cfa7e97f3b7ef8 1-145
+packages/rules/tests/rules/security/symlink-escape.test.ts
+  s_82e411404d62d4::t_a843fd47f5b0e3 1-82
+packages/rules/tests/rules/skill/allowed-tools-format.test.ts
+  s_82e411404d62d4::t_6ae20c95252112 1-81
+packages/rules/tests/rules/skill/body-size.test.ts
+  s_82e411404d62d4::t_7cc9a707b7eccc 1-43
+packages/rules/tests/rules/skill/compatibility-length.test.ts
+  s_82e411404d62d4::t_c1ead0d83a67cb 1-40
+packages/rules/tests/rules/skill/description-length.test.ts
+  s_82e411404d62d4::t_d0ab17f115eb0c 1-34
+packages/rules/tests/rules/skill/name-match.test.ts
+  s_82e411404d62d4::t_17f1b97cc3d059 1-66
+packages/rules/tests/rules/skill/required-fields.test.ts
+  s_82e411404d62d4::t_9d3449d3b6c8ec 1-52
+packages/rules/tests/rules/structure/directory-layout.test.ts
+  s_82e411404d62d4::t_1f20dcd23e4097 1-57
+packages/rules/tests/rules/structure/extra-files.test.ts
+  s_82e411404d62d4::t_ad65c93b639c7c 1-72
+packages/rules/tests/rules/structure/skill-directory-name.test.ts
+  s_82e411404d62d4::t_e0008c6d946950 1-56
+skills/doctor/SKILL.md
+  s_f10686323b6bc5::t_07e67ba43dac1a 1-75
+tests/benchmarks/benchmark.test.ts
+  s_e87b60950a0bf1::t_a07b6e843dc92b 1-68
+tests/benchmarks/benchmark.ts
+  s_e87b60950a0bf1::t_34abd87404727b 1-142
+tests/e2e/fix.test.ts
+  s_f10686323b6bc5::t_5d76e65702daf4 1-133
+tests/e2e/helpers.ts
+  s_f10686323b6bc5::t_ec4b03a1037de8 1-76
+tests/fixtures/edge-cases/huge-description/plugin.json
+  s_2520b58fd9542a::t_819bfd832c93eb 1-5
+tests/fixtures/edge-cases/huge-description/skills/huge-description/SKILL.md
+  s_2520b58fd9542a::t_60b8ae95c99a45 1-8
+tests/fixtures/edge-cases/max-skills/plugin.json
+  s_2520b58fd9542a::t_4a3b6853fe8ef7 1-4
+tests/fixtures/edge-cases/max-skills/skills/skill-001/SKILL.md
+  s_2520b58fd9542a::t_fbced401f88afb 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-002/SKILL.md
+  s_2520b58fd9542a::t_16ed5f75c7518f 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-003/SKILL.md
+  s_2520b58fd9542a::t_58d24083880eff 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-004/SKILL.md
+  s_2520b58fd9542a::t_adfc8e98fdc6d7 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-005/SKILL.md
+  s_2520b58fd9542a::t_c35cecf1bb1620 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-006/SKILL.md
+  s_2520b58fd9542a::t_d9be76ee7172d0 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-007/SKILL.md
+  s_2520b58fd9542a::t_db3052a6adca9a 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-008/SKILL.md
+  s_2520b58fd9542a::t_1a74e87af85b04 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-009/SKILL.md
+  s_2520b58fd9542a::t_6fe5879b23673a 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-010/SKILL.md
+  s_2520b58fd9542a::t_e44cf28f077210 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-011/SKILL.md
+  s_2520b58fd9542a::t_d83c5894d2ee14 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-012/SKILL.md
+  s_2520b58fd9542a::t_9f8c9363958893 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-013/SKILL.md
+  s_2520b58fd9542a::t_8a08348b80183e 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-014/SKILL.md
+  s_2520b58fd9542a::t_987200a10640d1 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-015/SKILL.md
+  s_2520b58fd9542a::t_0fda74723253b9 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-016/SKILL.md
+  s_2520b58fd9542a::t_9805c0d195df16 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-017/SKILL.md
+  s_2520b58fd9542a::t_900f89630747a1 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-018/SKILL.md
+  s_2520b58fd9542a::t_39ada115105091 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-019/SKILL.md
+  s_2520b58fd9542a::t_2fa76bf12e7a5a 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-020/SKILL.md
+  s_2520b58fd9542a::t_4267114faa9e52 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-021/SKILL.md
+  s_2520b58fd9542a::t_d0526b359e1a10 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-022/SKILL.md
+  s_2520b58fd9542a::t_66d150a89c92c9 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-023/SKILL.md
+  s_2520b58fd9542a::t_55dcffc620f421 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-024/SKILL.md
+  s_2520b58fd9542a::t_ab8c8ad1950fe8 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-025/SKILL.md
+  s_2520b58fd9542a::t_76235cca0c7329 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-026/SKILL.md
+  s_2520b58fd9542a::t_7c3522b7410ba1 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-027/SKILL.md
+  s_2520b58fd9542a::t_b90648e6b599e8 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-028/SKILL.md
+  s_2520b58fd9542a::t_41570aa0011262 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-029/SKILL.md
+  s_2520b58fd9542a::t_6571ec23b79f14 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-030/SKILL.md
+  s_2520b58fd9542a::t_6f58badc851c63 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-031/SKILL.md
+  s_2520b58fd9542a::t_f140513acff903 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-032/SKILL.md
+  s_2520b58fd9542a::t_d8b164e2873242 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-033/SKILL.md
+  s_2520b58fd9542a::t_179937e5dae623 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-034/SKILL.md
+  s_2520b58fd9542a::t_aaf73e02235192 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-035/SKILL.md
+  s_2520b58fd9542a::t_972d5df0457127 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-036/SKILL.md
+  s_2520b58fd9542a::t_f0b564748ea79b 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-037/SKILL.md
+  s_2520b58fd9542a::t_8573b2b8048fb4 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-038/SKILL.md
+  s_2520b58fd9542a::t_fe5a120b2c0b24 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-039/SKILL.md
+  s_2520b58fd9542a::t_cdac3a6c5048ba 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-040/SKILL.md
+  s_2520b58fd9542a::t_61ae3191a619ab 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-041/SKILL.md
+  s_2520b58fd9542a::t_bc2db60079a925 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-042/SKILL.md
+  s_2520b58fd9542a::t_da0c8769fc2fef 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-043/SKILL.md
+  s_2520b58fd9542a::t_d4c190c0b105fa 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-044/SKILL.md
+  s_2520b58fd9542a::t_955526c3206846 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-045/SKILL.md
+  s_2520b58fd9542a::t_5c0deeeda25fac 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-046/SKILL.md
+  s_2520b58fd9542a::t_d7992ac8434038 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-047/SKILL.md
+  s_2520b58fd9542a::t_bb03fa585582cc 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-048/SKILL.md
+  s_2520b58fd9542a::t_e345814de6231c 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-049/SKILL.md
+  s_2520b58fd9542a::t_7e184911cf2224 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-050/SKILL.md
+  s_2520b58fd9542a::t_627f9095933b42 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-051/SKILL.md
+  s_2520b58fd9542a::t_fc271dda200294 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-052/SKILL.md
+  s_2520b58fd9542a::t_e24d12bd662125 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-053/SKILL.md
+  s_2520b58fd9542a::t_bde84ad48670c0 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-054/SKILL.md
+  s_2520b58fd9542a::t_90f450cffba466 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-055/SKILL.md
+  s_2520b58fd9542a::t_ceafb688583660 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-056/SKILL.md
+  s_2520b58fd9542a::t_9c210bcd8670c4 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-057/SKILL.md
+  s_2520b58fd9542a::t_b52366bf419321 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-058/SKILL.md
+  s_2520b58fd9542a::t_b3abdb3e84cdbd 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-059/SKILL.md
+  s_2520b58fd9542a::t_0052ab6e8eb348 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-060/SKILL.md
+  s_2520b58fd9542a::t_f1ccca209136fc 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-061/SKILL.md
+  s_2520b58fd9542a::t_1f1b91c6f54034 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-062/SKILL.md
+  s_2520b58fd9542a::t_3a24f84d024e67 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-063/SKILL.md
+  s_2520b58fd9542a::t_4d66d7477036e1 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-064/SKILL.md
+  s_2520b58fd9542a::t_a4f47bbb5c05b6 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-065/SKILL.md
+  s_2520b58fd9542a::t_8f5db1dcc3465a 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-066/SKILL.md
+  s_2520b58fd9542a::t_8a1ca6c9e7b3b5 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-067/SKILL.md
+  s_2520b58fd9542a::t_f372c8ea0293db 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-068/SKILL.md
+  s_2520b58fd9542a::t_836f1bab820636 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-069/SKILL.md
+  s_2520b58fd9542a::t_40ccb1ffb67343 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-070/SKILL.md
+  s_2520b58fd9542a::t_4477be16b671fe 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-071/SKILL.md
+  s_2520b58fd9542a::t_b762a88a39835f 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-072/SKILL.md
+  s_2520b58fd9542a::t_6e80af1de23bbb 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-073/SKILL.md
+  s_2520b58fd9542a::t_4e4f9c22a7eaa8 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-074/SKILL.md
+  s_2520b58fd9542a::t_d2e9c0206d825f 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-075/SKILL.md
+  s_2520b58fd9542a::t_c8c02c82d3483b 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-076/SKILL.md
+  s_2520b58fd9542a::t_9c6bc0227fe92f 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-077/SKILL.md
+  s_2520b58fd9542a::t_9353cbf2641052 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-078/SKILL.md
+  s_2520b58fd9542a::t_d5f484e8365129 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-079/SKILL.md
+  s_2520b58fd9542a::t_5c91ac93a99cda 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-080/SKILL.md
+  s_2520b58fd9542a::t_a1cc28b99a7394 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-081/SKILL.md
+  s_2520b58fd9542a::t_ff9db030dd5758 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-082/SKILL.md
+  s_2520b58fd9542a::t_876878d79fd60c 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-083/SKILL.md
+  s_2520b58fd9542a::t_bba8cc6bbfea1e 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-084/SKILL.md
+  s_2520b58fd9542a::t_2e05288dd7c14c 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-085/SKILL.md
+  s_2520b58fd9542a::t_98ace0a30d595b 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-086/SKILL.md
+  s_2520b58fd9542a::t_5f739e6fc5c072 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-087/SKILL.md
+  s_2520b58fd9542a::t_0f4456b1963925 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-088/SKILL.md
+  s_2520b58fd9542a::t_bbb8b019b348c3 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-089/SKILL.md
+  s_2520b58fd9542a::t_27dcc2b07fa6a0 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-090/SKILL.md
+  s_2520b58fd9542a::t_277a21984b53aa 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-091/SKILL.md
+  s_2520b58fd9542a::t_e9dad6126a423d 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-092/SKILL.md
+  s_2520b58fd9542a::t_9d9a8b44dd36d6 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-093/SKILL.md
+  s_2520b58fd9542a::t_31c274a3f2160e 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-094/SKILL.md
+  s_2520b58fd9542a::t_0e22104a3db029 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-095/SKILL.md
+  s_2520b58fd9542a::t_2bd3fc45a04c6e 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-096/SKILL.md
+  s_2520b58fd9542a::t_bf1fd13514a8ce 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-097/SKILL.md
+  s_2520b58fd9542a::t_91b1d8c88c8a44 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-098/SKILL.md
+  s_2520b58fd9542a::t_2a5fa9e66041bb 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-099/SKILL.md
+  s_2520b58fd9542a::t_b2fc02dc4e0591 1-8
+tests/fixtures/edge-cases/max-skills/skills/skill-100/SKILL.md
+  s_2520b58fd9542a::t_15db070227e2ad 1-8
+tests/fixtures/security-plugin/symlink-escape/escape-link
+  s_2520b58fd9542a::t_550ccc208d5f94 1
+tests/integration/core-parser.test.ts
+  s_f10686323b6bc5::t_390d826678fd4e 1-164
+tests/integration/fix-pipeline.test.ts
+  s_f10686323b6bc5::t_89ddf8c76a6010 1-166
+tests/integration/full-pipeline.test.ts
+  s_f10686323b6bc5::t_bc845e6c556bd5 1-188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "d7e69f389c2611a48eef4fb91097204dee1acc5a",
+  "prompts": {},
+  "sessions": {
+    "s_1a12a025b1fabc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02361a357ffeGJP2djxaRBezHX",
+        "model": "laguna-s-2.1-free"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_1a4eb2564ff4ae": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0232a8528ffer8DWUOSD7EiAzI",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_2520b58fd9542a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0237dbca1ffe03440YkuADGVpd",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_35042745f682fc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02360bf37ffeC07UjfZlv741v4",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_45578d70cf2d89": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02330cf13ffe9F6NL8sWCoQHKV",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_4b82db80f03127": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0234a227fffe0yEbDC0vXH2rMs",
+        "model": "laguna-s-2.1-free"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_54aa2a59540e63": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0239c031fffe4FtgwwOicu0P6x",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_61df3046143b2d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_023615fabffeLoZo8XwgSGnCmE",
+        "model": "laguna-s-2.1-free"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_6da012c60fd998": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_023979417ffe3gkZMxEeBA0sPa",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_82e411404d62d4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_023b7f688ffeJAIiycA6GQS8nM",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_8571a17a3e9d7b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02350b00affekbAJVnf3PuH2Fl",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_8d42b5e5daed0f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02368ec08ffeJN0BrBDZNBOg5g",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_c16cfd984502c1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0238cdf5affe4Guiq0KubF5iQl",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_ce68562a0c818f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_023c794b2ffegAr376epPriJ6v",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_dbf68074f861bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0233157bdffeGyWGqkvhilOudO",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_e48f15fd950733": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0233bb5b8ffeQCWKUnym4iuHmM",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_e87b60950a0bf1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02349be49ffefaXgn7XzMfDYAP",
+        "model": "laguna-s-2.1-free"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_f10686323b6bc5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02374a074ffeQXYAUAtB2k5iPF",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
