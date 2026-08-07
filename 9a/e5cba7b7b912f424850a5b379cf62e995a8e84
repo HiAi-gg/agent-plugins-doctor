@@ -1,0 +1,25 @@
+.gitattributes
+  s_7b4473a691ee9d::t_2bb91542a1683c 1-9
+tests/e2e/check.test.ts
+  s_7b4473a691ee9d::t_063eb1a41a7edd 32-48
+tests/benchmarks/benchmark.test.ts
+  s_7b4473a691ee9d::t_e67805e1e6823e 3-10,26-29
+CHANGELOG.md
+  s_7b4473a691ee9d::t_036baf152693c1 20-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "9ae5cba7b7b912f424850a5b379cf62e995a8e84",
+  "prompts": {},
+  "sessions": {
+    "s_7b4473a691ee9d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_022fa39c6ffe31XKpIaUqP5kPc",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
