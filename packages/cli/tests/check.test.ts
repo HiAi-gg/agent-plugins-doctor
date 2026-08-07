@@ -1,14 +1,17 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { join } from 'node:path';
 import {
+  canonicalJson,
   cleanup,
   errorPlugin,
   makeTempDir,
   mixedPlugin,
+  PLUGIN_SCHEMA,
   runCli,
   securityPlugin,
   validPlugin,
   warningPlugin,
+  writeTree,
 } from './helpers.js';
 
 describe('check command', () => {
@@ -34,6 +37,24 @@ describe('check command', () => {
     const result = await runCli(['check', dir]);
     expect(result.exitCode).toBe(1);
     expect(result.stdout).toContain('DOC-3006');
+  });
+
+  test('malformed skill exits 1 with a parser diagnostic, not 3', async () => {
+    // A skill with unparseable frontmatter must surface as a validation error
+    // (DOC-2099, exit 1) instead of being silently dropped or failing the tool.
+    writeTree(dir, {
+      'plugin.json': canonicalJson({
+        $schema: PLUGIN_SCHEMA,
+        name: 'bad-skill',
+      }),
+      'skills/good/SKILL.md':
+        '---\nname: good\ndescription: Good skill\n---\nBody\n',
+      'skills/bad/SKILL.md': 'no frontmatter here',
+    });
+    const result = await runCli(['check', dir]);
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toContain('DOC-2099');
+    expect(result.stdout).toContain('skills/bad/SKILL.md');
   });
 
   test('security issue exits 2', async () => {

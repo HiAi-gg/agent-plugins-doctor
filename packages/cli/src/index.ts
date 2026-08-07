@@ -27,7 +27,7 @@ export function createProgram(): Command {
   return new Command()
     .name('agent-plugin-doctor')
     .description('Diagnose and fix Agent Plugins')
-    .version('0.0.1')
+    .version('0.0.2')
     .addCommand(checkCommand)
     .addCommand(fixCommand)
     .addCommand(reportCommand)
@@ -42,9 +42,4 @@ export const program = createProgram();
  */
 export async function main(): Promise<void> {
   await program.parseAsync(process.argv);
-}
-
-// Allow direct execution
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main();
 }

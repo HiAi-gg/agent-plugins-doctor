@@ -34,9 +34,10 @@ type Outcome = { ok: true; applied: boolean } | { ok: false; error: string };
  * Apply every fix attached to the given diagnostics.
  *
  * Fixes are applied in order; each fix re-reads the file it targets so earlier
- * fixes never invalidate later ones. A fix that would not change anything (its
- * target state is already reached) counts as applied without modifying the
- * file, which is what makes repeated runs idempotent.
+ * fixes never invalidate later ones. Directory renames are applied last (see
+ * the sorting below). A fix that would not change anything (its target state
+ * is already reached) counts as applied without modifying the file, which is
+ * what makes repeated runs idempotent.
  *
  * @param rootDir - Absolute path to the plugin root
  * @param diagnostics - Diagnostics that may carry fixes
@@ -51,6 +52,17 @@ export async function applyFixes(
   const entries = diagnostics
     .filter((diagnostic) => diagnostic.fix !== undefined)
     .map((diagnostic) => ({ diagnostic, fix: diagnostic.fix as Fix }));
+
+  // Directory renames change paths, which would invalidate any later content
+  // fix that targets a file inside the renamed directory. Apply renames last
+  // (the stable sort keeps diagnostic order within each group) so content
+  // fixes always run against the paths they were computed for, and a rename
+  // can never strand a fix on an ENOENT path.
+  entries.sort((a, b) => {
+    const aRename = a.fix.kind === 'rename' ? 1 : 0;
+    const bRename = b.fix.kind === 'rename' ? 1 : 0;
+    return aRename - bRename;
+  });
 
   const fixes: AppliedFix[] = [];
   let applied = 0;
@@ -107,19 +119,51 @@ function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function isWhitespace(ch: string): boolean {
+  return ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r';
+}
+
 /**
- * Remove the first whitespace-tolerant match of `oldText` from `content`.
- * Runs of whitespace in the target text match any whitespace, so a member
- * removal fix applies even when the file was reformatted since the fix was
- * computed.
+ * Remove one JSON object member from `content`.
+ *
+ * `oldText` is the member's text span (leading whitespace through its value,
+ * without separators) as computed by the JSON member scanner. Matching is
+ * whitespace-tolerant, so the member is found even when the file was
+ * reformatted since the fix was computed, and the surrounding separator is
+ * cleaned up here: a trailing comma when the member is in the middle of its
+ * object, otherwise the preceding comma. Because the span never includes the
+ * comma, several removals from the same object apply in any order against a
+ * changing file and converge to the same result.
+ *
+ * @returns The content with the member removed, or null when it is gone
  */
-function fuzzyRemoval(content: string, oldText: string): string | null {
-  const pattern = new RegExp(escapeRegExp(oldText).replace(/\s+/g, '\\s+'));
-  const match = pattern.exec(content);
-  if (match === null) return null;
-  return (
-    content.slice(0, match.index) + content.slice(match.index + match[0].length)
-  );
+function removeJsonMember(content: string, oldText: string): string | null {
+  let start: number;
+  let end: number;
+  const exact = content.indexOf(oldText);
+  if (exact !== -1) {
+    start = exact;
+    end = exact + oldText.length;
+  } else {
+    const pattern = new RegExp(escapeRegExp(oldText).replace(/\s+/g, '\\s+'));
+    const match = pattern.exec(content);
+    if (match === null) return null;
+    start = match.index;
+    end = match.index + match[0].length;
+  }
+  // Trailing comma: the member sits in the middle of its object.
+  let p = end;
+  while (p < content.length && isWhitespace(content[p])) p++;
+  if (content[p] === ',') {
+    end = p + 1;
+  } else {
+    // No trailing comma: the member is (now) last; remove the preceding
+    // comma together with the whitespace between it and the member.
+    let q = start - 1;
+    while (q >= 0 && isWhitespace(content[q])) q--;
+    if (content[q] === ',') start = q;
+  }
+  return content.slice(0, start) + content.slice(end);
 }
 
 function applyReplace(
@@ -143,25 +187,27 @@ function applyReplace(
     return fail(`Cannot read ${fix.file}: ${(error as Error).message}`);
   }
 
+  // Delete-style fixes (newText === '') remove a JSON member: match the span
+  // exactly or with flexible whitespace, and clean up the surrounding comma.
+  // This branch runs before the exact-match replacement below so removals
+  // stay order-independent when several members of the same object are
+  // removed and when the file was reformatted by an earlier fix.
+  if (fix.newText === '') {
+    const removed = removeJsonMember(content, fix.oldText);
+    if (removed !== null) {
+      if (removed === content) return { ok: true, applied: false };
+      if (!dryRun) writeFileSync(full, removed, 'utf8');
+      return { ok: true, applied: true };
+    }
+    // Target member is already gone: no-op (idempotence).
+    return { ok: true, applied: false };
+  }
+
   if (content.includes(fix.oldText)) {
     const next = content.split(fix.oldText).join(fix.newText ?? '');
     if (next === content) return { ok: true, applied: false };
     if (!dryRun) writeFileSync(full, next, 'utf8');
     return { ok: true, applied: true };
-  }
-
-  // Whitespace-tolerant removal: a delete-style fix whose target member was
-  // reformatted by an earlier fix (e.g. JSON canonicalization) may no longer
-  // match byte-for-byte. Re-match with flexible whitespace so the removal
-  // still applies in any fix order.
-  if (fix.newText === '') {
-    const fuzzy = fuzzyRemoval(content, fix.oldText);
-    if (fuzzy !== null) {
-      if (!dryRun) writeFileSync(full, fuzzy, 'utf8');
-      return { ok: true, applied: true };
-    }
-    // Target member is already gone: no-op (idempotence).
-    return { ok: true, applied: false };
   }
 
   // Target state already present: applying again is a no-op.

@@ -13,7 +13,7 @@
 import { computeExitCode } from '@agent-plugin-doctor/cli';
 import { loadPlugin } from '@agent-plugin-doctor/parser';
 import { generateReport } from '@agent-plugin-doctor/report';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
+import { computeSummary, validatePlugin } from '@agent-plugin-doctor/rules';
 
 export async function validateGeneratedPlugin(outputDir: string): Promise<{
   valid: boolean;
@@ -21,17 +21,35 @@ export async function validateGeneratedPlugin(outputDir: string): Promise<{
   report: string;
 }> {
   try {
-    // 1. Load the generated plugin
-    const plugin = await loadPlugin(outputDir);
+    // 1. Load the generated plugin. Skills that fail to load (malformed
+    //    frontmatter, invalid YAML, ...) are reported as parse diagnostics
+    //    instead of being silently dropped.
+    const { plugin, parseDiagnostics } = await loadPlugin(outputDir);
 
     // 2. Validate it
     const result = await validatePlugin(plugin);
 
-    // 3. Generate a report
-    const report = generateReport(result, { format: 'human' });
+    // 2b. Merge parser-level parse diagnostics with the rule diagnostics so
+    //     malformed input is a validation error (exit 1), not a silent drop.
+    const diagnostics = [...parseDiagnostics, ...result.diagnostics];
+
+    // 3. Generate a report (summary recomputed over the merged diagnostics)
+    const report = generateReport(
+      {
+        ...result,
+        diagnostics,
+        summary: computeSummary(diagnostics),
+        compatible: !diagnostics.some(
+          (diagnostic) =>
+            diagnostic.severity === 'error' ||
+            diagnostic.severity === 'critical',
+        ),
+      },
+      { format: 'human' },
+    );
 
     // 4. Compute exit code
-    const exitCode = computeExitCode(result.diagnostics);
+    const exitCode = computeExitCode(diagnostics);
 
     return {
       valid: exitCode === 0,

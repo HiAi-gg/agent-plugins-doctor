@@ -28,7 +28,7 @@ export class JsonReportFormatter implements ReportFormatter {
   format(result: ValidationResult): string {
     const data = {
       plugin: {
-        name: result.plugin.manifest.name,
+        name: result.plugin === null ? null : result.plugin.manifest.name,
         specVersion: result.specVersion,
       },
       diagnostics: result.diagnostics.map(serializeDiagnostic),
@@ -81,7 +81,10 @@ function serializeCompatibility(entry: CompatibilityResult) {
   return {
     clientId: entry.clientId,
     clientName: entry.clientName,
+    level: entry.level,
     compatible: entry.compatible,
+    working: entry.working,
+    unsupported: entry.unsupported,
     issues: entry.issues,
     evidence: entry.evidence,
   };

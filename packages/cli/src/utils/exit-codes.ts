@@ -3,6 +3,13 @@
 // Priority: 3 > 2 > 1 > 0. When multiple conditions apply, the highest code
 // wins. Tool/runtime failures (exceptions) produce 3 and are handled at the
 // command level; diagnostic-based exit codes are derived here.
+//
+// Parse errors are diagnostics, not exceptions: the CLI loads plugins via
+// scanPlugin, so malformed input (unparseable plugin.json -> DOC-1008,
+// malformed SKILL.md -> DOC-2099, invalid mcp.json -> DOC-3007) surfaces as
+// parser diagnostics with severity "error" and produces exit 1 (validation
+// error) — never exit 3. Only true tool failures (inaccessible root,
+// internal rule failure DOC-0000) produce exit 3.
 
 import type { Diagnostic } from '@agent-plugin-doctor/core';
 import { INTERNAL_ERROR_CODE } from '@agent-plugin-doctor/rules';

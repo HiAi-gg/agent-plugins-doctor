@@ -3,7 +3,12 @@
 import { NAME_MAX_LENGTH, NAME_PATTERN } from '@agent-plugin-doctor/core';
 import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
-import { makeDiagnostic } from '../../util.js';
+import {
+  findJsonMemberSpans,
+  jsonMemberValueSpan,
+  makeDiagnostic,
+  readTextFile,
+} from '../../util.js';
 
 const ID = 'manifest-name-pattern';
 const CODE = 'DOC-1002';
@@ -59,12 +64,29 @@ export const namePatternRule: Rule = {
     if (typeof name !== 'string') return null;
     const normalized = normalizePluginName(name);
     if (normalized === null || normalized === name) return null;
+    const file = diagnostic.file ?? './plugin.json';
+    const raw = readTextFile(ctx.rootDir, file);
+    if (raw === null) return null;
+    // Rewrite only the value token of the top-level "name" member, so the
+    // fix is whitespace-tolerant (any spacing around the key or colon) and
+    // never touches a nested member such as author.name.
+    const spans = findJsonMemberSpans(
+      raw,
+      (path, key) => path.length === 0 && key === 'name',
+    );
+    if (spans === null || spans.length === 0) return null;
+    const valueSpan = jsonMemberValueSpan(raw, spans[0]);
+    if (valueSpan === null) return null;
+    const current = raw.slice(valueSpan.start, valueSpan.end);
+    // Only rewrite when the file's value matches the in-memory name, so a
+    // stale in-memory model never rewrites a different value.
+    if (current !== JSON.stringify(name)) return null;
     return {
       kind: 'replace',
-      file: diagnostic.file ?? './plugin.json',
+      file,
       description: `Rename plugin to "${normalized}"`,
-      oldText: `"name": ${JSON.stringify(name)}`,
-      newText: `"name": ${JSON.stringify(normalized)}`,
+      oldText: current,
+      newText: JSON.stringify(normalized),
     };
   },
 };

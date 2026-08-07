@@ -10,6 +10,7 @@ import type {
   ValidationResult,
   ValidationSummary,
 } from '@agent-plugin-doctor/core';
+import type { ScanResult } from '@agent-plugin-doctor/parser';
 import type { Rule, RuleContext } from './rule.js';
 import type { RuleRegistry } from './registry.js';
 import { applyFixes } from './fixes.js';
@@ -28,25 +29,39 @@ const SEVERITY_RANK: Record<Severity, number> = {
 export class ValidationEngine {
   constructor(private registry: RuleRegistry) {}
 
+  /**
+   * Validate a plugin, or a scan result produced by the parser.
+   *
+   * In scan mode the parser's parse/schema/load diagnostics are merged ahead
+   * of the rule diagnostics, and rules that require a loaded plugin model are
+   * skipped when the manifest could not be loaded (scanResult.plugin is
+   * null); rules that inspect the raw tree still run. Passing a Plugin
+   * directly keeps the previous strict behavior (rule diagnostics only).
+   */
   async validate(
-    plugin: Plugin,
+    pluginOrScanResult: Plugin | ScanResult,
     options: ValidationOptions = {},
   ): Promise<ValidationResult> {
     const started = Date.now();
+    const { plugin, rootDir, parseDiagnostics } =
+      splitScanResult(pluginOrScanResult);
     const rules = this.selectRules(plugin, options);
-    const diagnostics = this.runRules(plugin, rules);
+    const ruleDiagnostics = this.runRules(plugin, rootDir, rules);
 
     // Best-effort auto-fix pass. Fixes are idempotent, so applying them in the
     // same pass is safe even when multiple rules touch the same file.
     if (options.fix === true) {
-      const fixable = diagnostics.filter(
+      const fixable = ruleDiagnostics.filter(
         (diagnostic) => diagnostic.fix !== undefined,
       );
       if (fixable.length > 0) {
-        await applyFixes(plugin.rootDir, fixable);
+        await applyFixes(rootDir, fixable);
       }
     }
 
+    // Parse diagnostics come first so malformed user input (e.g. an
+    // unparseable plugin.json) surfaces as the plugin's first problems.
+    const diagnostics = [...parseDiagnostics, ...ruleDiagnostics];
     const summary = this.computeSummary(diagnostics);
     const compatible = !diagnostics.some(
       (diagnostic) =>
@@ -55,7 +70,7 @@ export class ValidationEngine {
 
     return {
       plugin,
-      specVersion: plugin.specVersion,
+      specVersion: plugin === null ? '' : plugin.specVersion,
       diagnostics: this.sortDiagnostics(diagnostics),
       summary,
       compatible,
@@ -99,6 +114,7 @@ export class ValidationEngine {
       (options.excludeRules !== undefined && options.excludeRules.length > 0);
 
     if (
+      previous.plugin === null ||
       previous.plugin.rootDir !== plugin.rootDir ||
       previous.specVersion !== plugin.specVersion ||
       hasFiltering
@@ -111,7 +127,7 @@ export class ValidationEngine {
     const reused = previous.diagnostics.filter(
       (diagnostic) => !affected.some((rule) => rule.id === diagnostic.ruleId),
     );
-    const fresh = this.runRules(plugin, affected);
+    const fresh = this.runRules(plugin, plugin.rootDir, affected);
     const diagnostics = [...reused, ...fresh];
 
     // Same best-effort auto-fix pass as full validation.
@@ -185,9 +201,20 @@ export class ValidationEngine {
     return files;
   }
 
-  /** Run the given rules over the plugin, attaching fixes produced by rule.fix(). */
-  runRules(plugin: Plugin, rules: Rule[]): Diagnostic[] {
-    const ctx: RuleContext = { plugin, rootDir: plugin.rootDir };
+  /**
+   * Run the given rules over the plugin, attaching fixes produced by rule.fix().
+   *
+   * `plugin` may be null when validating a scan result whose manifest could
+   * not be loaded; in that case the caller guarantees every rule in `rules`
+   * declares `requiresPlugin: false` (it inspects only `rootDir`), so the
+   * context's plugin field is never dereferenced.
+   */
+  runRules(
+    plugin: Plugin | null,
+    rootDir: string,
+    rules: Rule[],
+  ): Diagnostic[] {
+    const ctx: RuleContext = { plugin: plugin as Plugin, rootDir };
     const diagnostics: Diagnostic[] = [];
 
     for (const rule of rules) {
@@ -225,8 +252,15 @@ export class ValidationEngine {
    * 1. explicit include list (options.rules) or enabledByDefault
    * 2. exclude list (options.excludeRules)
    * 3. spec-version support
+   *
+   * When `plugin` is null (scan result with an unloadable manifest) only the
+   * rules that inspect the raw tree (requiresPlugin === false) can run; the
+   * spec-version filter is skipped because the version is unknown.
    */
-  private selectRules(plugin: Plugin, options: ValidationOptions): Rule[] {
+  private selectRules(
+    plugin: Plugin | null,
+    options: ValidationOptions,
+  ): Rule[] {
     const include = options.rules;
     const exclude = options.excludeRules;
     let rules = this.registry.getAll();
@@ -237,6 +271,9 @@ export class ValidationEngine {
     }
     if (exclude && exclude.length > 0) {
       rules = rules.filter((rule) => !exclude.includes(rule.id));
+    }
+    if (plugin === null) {
+      return rules.filter((rule) => rule.requiresPlugin === false);
     }
     return rules.filter(
       (rule) =>
@@ -250,26 +287,7 @@ export class ValidationEngine {
    * Public so CLI/report layers and tests can reuse it.
    */
   computeSummary(diagnostics: Diagnostic[]): ValidationSummary {
-    const counts: Record<Severity, number> = {
-      info: 0,
-      warning: 0,
-      error: 0,
-      critical: 0,
-    };
-    const byCategory: Record<RuleCategory, number> = {
-      spec: 0,
-      skills: 0,
-      mcp: 0,
-      security: 0,
-      structure: 0,
-      compatibility: 0,
-      format: 0,
-    };
-    for (const diagnostic of diagnostics) {
-      counts[diagnostic.severity] += 1;
-      byCategory[diagnostic.category] += 1;
-    }
-    return { counts, byCategory };
+    return computeSummary(diagnostics);
   }
 
   /**
@@ -319,18 +337,88 @@ export class ValidationEngine {
   }
 }
 
+/**
+ * Compute the summary counts for a set of diagnostics.
+ *
+ * Exported so callers that merge parser-level parse diagnostics into rule
+ * diagnostics (e.g. the CLI pipeline) can recompute the summary over the
+ * combined set.
+ */
+export function computeSummary(diagnostics: Diagnostic[]): ValidationSummary {
+  const counts: Record<Severity, number> = {
+    info: 0,
+    warning: 0,
+    error: 0,
+    critical: 0,
+  };
+  const byCategory: Record<RuleCategory, number> = {
+    spec: 0,
+    skills: 0,
+    mcp: 0,
+    security: 0,
+    structure: 0,
+    compatibility: 0,
+    format: 0,
+  };
+  for (const diagnostic of diagnostics) {
+    counts[diagnostic.severity] += 1;
+    byCategory[diagnostic.category] += 1;
+  }
+  return { counts, byCategory };
+}
+
 /** Normalize a plugin-relative path for comparisons (strip a leading "./"). */
 function normalizeRelPath(path: string): string {
   return path.replace(/^\.\//, '');
 }
 
-/** Validate a plugin with the default rule registry. */
+/** True when the value is a parser ScanResult rather than a loaded Plugin. */
+function isScanResult(value: Plugin | ScanResult): value is ScanResult {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'loaded' in value &&
+    'diagnostics' in value
+  );
+}
+
+/**
+ * Split the validation input into the plugin model (possibly null), the
+ * plugin root directory, and the parser-level diagnostics to merge.
+ */
+function splitScanResult(pluginOrScanResult: Plugin | ScanResult): {
+  plugin: Plugin | null;
+  rootDir: string;
+  parseDiagnostics: Diagnostic[];
+} {
+  if (isScanResult(pluginOrScanResult)) {
+    return {
+      plugin: pluginOrScanResult.plugin,
+      rootDir: pluginOrScanResult.rootDir,
+      parseDiagnostics: pluginOrScanResult.diagnostics,
+    };
+  }
+  return {
+    plugin: pluginOrScanResult,
+    rootDir: pluginOrScanResult.rootDir,
+    parseDiagnostics: [],
+  };
+}
+
+/**
+ * Validate a plugin with the default rule registry.
+ *
+ * Accepts either a loaded Plugin (strict mode: rule diagnostics only) or a
+ * ScanResult from `scanPlugin` (diagnostic mode: parser parse/schema/load
+ * diagnostics are merged in, and rules that need a loaded plugin model are
+ * skipped when the manifest could not be loaded).
+ */
 export async function validatePlugin(
-  plugin: Plugin,
+  pluginOrScanResult: Plugin | ScanResult,
   options?: ValidationOptions,
 ): Promise<ValidationResult> {
   return new ValidationEngine(createDefaultRegistry()).validate(
-    plugin,
+    pluginOrScanResult,
     options,
   );
 }

@@ -23,7 +23,7 @@ const BUILDER_FIXTURES = [
 describe('Builder integration contract', () => {
   test('all Builder-generated fixtures pass validation', async () => {
     for (const fixture of BUILDER_FIXTURES) {
-      const plugin = await loadPlugin(fixturePath(fixture));
+      const { plugin } = await loadPlugin(fixturePath(fixture));
       const result = await validatePlugin(plugin);
       expect(
         result.diagnostics.filter((d) => d.severity === 'error'),
@@ -40,7 +40,9 @@ describe('Builder integration contract', () => {
 
   test('parseSkillFrontmatter handles all Builder outputs', () => {
     // Frontmatter shapes Builder is expected to emit: plain, metadata maps,
-    // and both allowed-tools spellings (space-separated string and YAML list).
+    // and the space-separated `allowed-tools` string. A YAML list is NOT part
+    // of the Agent Skills spec; the parser preserves the raw value and the
+    // DOC-2005 rule diagnoses non-string forms.
     const cases = [
       {
         name: 'simple',
@@ -65,12 +67,6 @@ describe('Builder integration contract', () => {
         content:
           '---\nname: test\ndescription: Test\nallowed-tools: bash read\n---\nBody',
       },
-      {
-        name: 'allowed-tools-list',
-        description: 'Test',
-        content:
-          '---\nname: test\ndescription: Test\nallowed-tools:\n  - bash\n  - read\n---\nBody',
-      },
     ];
 
     for (const { name, description, content } of cases) {
@@ -86,22 +82,24 @@ describe('Builder integration contract', () => {
   test('exit codes match Builder expectations', async () => {
     // Builder expects: 0=valid, 1=errors, 2=security-critical, 3=tool failure.
     // A clean fixture (minimal-plugin) must be 0.
-    const plugin = await loadPlugin(fixturePath('minimal-plugin'));
+    const { plugin } = await loadPlugin(fixturePath('minimal-plugin'));
     const result = await validatePlugin(plugin);
     expect(computeExitCode(result.diagnostics)).toBe(0);
   });
 
   test('error and critical fixtures map to exit codes 1 and 2', async () => {
     // Spec errors -> 1 (huge-description: DOC-2003 error).
-    const errorResult = await validatePlugin(
-      await loadPlugin(fixturePath('edge-cases', 'huge-description')),
+    const { plugin: errorPlugin } = await loadPlugin(
+      fixturePath('edge-cases', 'huge-description'),
     );
+    const errorResult = await validatePlugin(errorPlugin);
     expect(computeExitCode(errorResult.diagnostics)).toBe(1);
 
     // Security-critical findings -> 2 (embedded-secrets: DOC-4003 critical).
-    const criticalResult = await validatePlugin(
-      await loadPlugin(fixturePath('security-plugin', 'embedded-secrets')),
+    const { plugin: criticalPlugin } = await loadPlugin(
+      fixturePath('security-plugin', 'embedded-secrets'),
     );
+    const criticalResult = await validatePlugin(criticalPlugin);
     expect(computeExitCode(criticalResult.diagnostics)).toBe(2);
   });
 

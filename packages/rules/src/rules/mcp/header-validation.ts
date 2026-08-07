@@ -85,9 +85,11 @@ export const headerValidationRule: Rule = {
     // Remove the duplicate members whose lowercase name matches (keep first).
     const spans = findDuplicateJsonMemberSpans(raw, headersPath);
     if (spans === null || spans.length === 0) return null;
-    const target = spans.find(
-      (span) => span.key.toLowerCase() === header.toLowerCase(),
-    );
+    // Match the exact key so each duplicate diagnostic targets its own span:
+    // a case-insensitive lookup would make two diagnostics (e.g. for
+    // "authorization" and "AUTHORIZATION") target the same span, leaving one
+    // duplicate behind and breaking idempotence with 3+ case variants.
+    const target = spans.find((span) => span.key === header);
     if (target === undefined) return null;
     return memberRemovalFix(
       raw,

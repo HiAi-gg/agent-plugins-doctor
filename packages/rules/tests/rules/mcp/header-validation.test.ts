@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { headerValidationRule } from '../../../src/rules/mcp/header-validation.js';
+import { applyFixes } from '../../../src/fixes.js';
 import {
   byCode,
   checkRule,
@@ -7,6 +8,7 @@ import {
   makeMcp,
   makePlugin,
   makeTempDir,
+  readFile,
   readJson,
   writeTree,
 } from '../../../tests/helpers.js';
@@ -91,6 +93,53 @@ describe('mcp/header-validation (DOC-3006)', () => {
       const headers = config?.mcpServers.remote.headers;
       expect(headers?.['Authorization']).toBe('first');
       expect(headers?.['authorization']).toBe('second');
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  test('fixes for three case-variant duplicates converge in one pass', async () => {
+    const root = makeTempDir();
+    try {
+      const headers = {
+        Authorization: 'first',
+        authorization: 'second',
+        AUTHORIZATION: 'third',
+      };
+      writeMcpJson(root, {
+        remote: {
+          type: 'streamable-http',
+          url: 'https://example.com/mcp',
+          headers,
+        },
+      });
+      const plugin = makePlugin({
+        rootDir: root,
+        mcpConfig: makeMcp({
+          remote: {
+            type: 'streamable-http',
+            url: 'https://example.com/mcp',
+            headers,
+          },
+        }),
+      });
+      const diagnostics = checkRule(headerValidationRule, plugin, root);
+      const fixable = diagnostics.filter((d) => d.fix !== undefined);
+      expect(byCode(diagnostics, 'DOC-3006')).toHaveLength(2);
+
+      // One pass must remove BOTH duplicates (each diagnostic targets its own
+      // span); a second pass is a byte-identical no-op.
+      const first = await applyFixes(root, fixable);
+      expect(first.failed).toBe(0);
+      expect(first.applied).toBe(2);
+      const afterFirst = readFile(root, 'mcp.json');
+      expect(afterFirst).not.toContain('authorization');
+      expect(afterFirst).not.toContain('AUTHORIZATION');
+
+      const second = await applyFixes(root, fixable);
+      expect(second.applied).toBe(0);
+      expect(second.failed).toBe(0);
+      expect(readFile(root, 'mcp.json')).toBe(afterFirst);
     } finally {
       cleanup(root);
     }

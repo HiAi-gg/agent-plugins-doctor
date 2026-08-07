@@ -15,18 +15,19 @@ A plugin that declares a future spec version (`2.0.0`) in its `$schema`.
 agent-plugin-doctor check tests/fixtures/future-spec
 ```
 
-Exit code: `3` (tool/load failure)
+Exit code: `1` (validation error)
 
-Output (stderr):
+Output (stdout):
 
 ```
-Failed to load plugin: plugin.json does not conform to plugin.schema.json (1 violation)
+ERROR DOC-1008
+plugin.json
 ```
 
 > Note: the `compatibility-spec-version` rule (`DOC-6001`) is unreachable from
 > disk for this fixture for the same reason as `legacy-plugin`: the schema
 > `const` on `$schema` rejects the value during manifest parsing, which the CLI
-> maps to a load failure (exit 3), not a diagnostic (exit 1).
+> reports as a `DOC-1008` parser diagnostic (exit 1), not a rule diagnostic.
 
 ## Setup
 

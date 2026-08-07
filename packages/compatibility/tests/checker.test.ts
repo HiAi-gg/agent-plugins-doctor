@@ -6,7 +6,7 @@ import {
   ClientProfileRegistry,
   createDefaultClientRegistry,
 } from '../src/clients.js';
-import type { CompatibilityResult } from '../src/types.js';
+import { CompatibilityLevel, type CompatibilityResult } from '../src/types.js';
 
 function makePlugin(
   overrides: {
@@ -49,6 +49,9 @@ describe('CompatibilityChecker', () => {
     expect(result.checks).toHaveLength(5);
     for (const check of result.checks) {
       expect(check.compatible).toBe(true);
+      expect(check.level).toBe(CompatibilityLevel.FULL);
+      expect(check.working).toEqual(['skills']);
+      expect(check.unsupported).toEqual([]);
       expect(check.issues).toEqual([]);
     }
     expect(result.summary).toEqual({
@@ -71,6 +74,10 @@ describe('CompatibilityChecker', () => {
       compatible: 5,
       incompatible: 0,
     });
+    for (const check of result.checks) {
+      expect(check.level).toBe(CompatibilityLevel.FULL);
+      expect(check.working).toEqual(['mcp-stdio']);
+    }
   });
 
   test('plugin with streamable-http MCP is compatible with all clients', () => {
@@ -83,6 +90,8 @@ describe('CompatibilityChecker', () => {
     );
     for (const check of result.checks) {
       expect(check.compatible).toBe(true);
+      expect(check.level).toBe(CompatibilityLevel.FULL);
+      expect(check.working).toEqual(['mcp-streamable-http']);
       expect(check.issues).toEqual([]);
     }
   });
@@ -97,6 +106,9 @@ describe('CompatibilityChecker', () => {
     );
     const codex = result.checks.find((check) => check.clientId === 'codex')!;
     expect(codex.compatible).toBe(false);
+    expect(codex.level).toBe(CompatibilityLevel.UNSUPPORTED);
+    expect(codex.working).toEqual([]);
+    expect(codex.unsupported).toEqual(['mcp-sse']);
     expect(codex.issues).toHaveLength(1);
     expect(codex.issues[0]).toMatchObject({
       severity: 'error',
@@ -107,6 +119,7 @@ describe('CompatibilityChecker', () => {
       (check) => check.clientId !== 'codex',
     )) {
       expect(check.compatible).toBe(true);
+      expect(check.level).toBe(CompatibilityLevel.FULL);
       expect(check.issues).toEqual([]);
     }
     expect(result.summary).toEqual({
@@ -114,6 +127,107 @@ describe('CompatibilityChecker', () => {
       compatible: 4,
       incompatible: 1,
     });
+  });
+
+  test('mixed capabilities produce PARTIAL for a client missing one of them', () => {
+    // Skills + stdio + SSE: Codex lacks only the legacy SSE transport.
+    const result = checkCompatibility(
+      makePlugin({
+        skills: [makeSkill()],
+        mcpConfig: makeMcp({
+          main: { type: 'stdio', command: 'node', args: ['server.js'] },
+          remote: { type: 'sse', url: 'https://example.com/sse' },
+        }),
+      }),
+    );
+    const codex = result.checks.find((check) => check.clientId === 'codex')!;
+    expect(codex.level).toBe(CompatibilityLevel.PARTIAL);
+    expect(codex.compatible).toBe(false);
+    expect(codex.working).toEqual(['skills', 'mcp-stdio']);
+    expect(codex.unsupported).toEqual(['mcp-sse']);
+    expect(codex.issues).toHaveLength(1);
+    // Clients that support every used capability stay FULL.
+    const vscode = result.checks.find((check) => check.clientId === 'vscode')!;
+    expect(vscode.level).toBe(CompatibilityLevel.FULL);
+    expect(vscode.compatible).toBe(true);
+    expect(vscode.working).toEqual(['skills', 'mcp-stdio', 'mcp-sse']);
+  });
+
+  test('a client profile with evidence "none" reports UNKNOWN', () => {
+    const registry = new ClientProfileRegistry();
+    registry.register({
+      id: 'unverified',
+      name: 'Unverified',
+      supportedSpecVersions: ['1.0.0'],
+      capabilities: {
+        skills: true,
+        mcpStdio: true,
+        mcpStreamableHttp: true,
+        mcpLegacySse: true,
+        extensions: true,
+      },
+      evidence: 'none',
+      source: 'https://example.com/unverified',
+      verificationNote: 'Verified in test fixture',
+    });
+    const result = new CompatibilityChecker(registry).check(
+      makePlugin({ skills: [makeSkill()] }),
+    );
+    const check = result.checks[0];
+    expect(check.level).toBe(CompatibilityLevel.UNKNOWN);
+    expect(check.compatible).toBe(false);
+    expect(check.issues).toEqual([]);
+  });
+
+  test('plugin with extensions is fine for clients that support the mechanism', () => {
+    // Every default client has extensions: true, meaning it supports the
+    // extension mechanism and safely ignores unknown namespaces per §8.2 —
+    // so a plugin with extensions raises no issue and stays FULL.
+    const result = checkCompatibility(
+      makePlugin({
+        extensions: [
+          {
+            namespace: 'com.example.client',
+            data: {},
+            path: 'ext/client.json',
+          },
+        ],
+      }),
+    );
+    for (const check of result.checks) {
+      expect(check.compatible).toBe(true);
+      expect(check.level).toBe(CompatibilityLevel.FULL);
+      // Extensions never contribute to working/unsupported.
+      expect(check.working).toEqual([]);
+      expect(check.unsupported).toEqual([]);
+      expect(check.issues).toEqual([]);
+      expect(check.extensionsHandling).toBe('ignored');
+    }
+    expect(result.summary.compatible).toBe(5);
+  });
+
+  test('a client with extensions: true does not claim to understand the namespace', () => {
+    // The simple model cannot verify namespace understanding: extensions:
+    // true means the mechanism is supported and unknown namespaces are
+    // safely ignored (§8.2) — never that the namespace is "understood".
+    const result = checkCompatibility(
+      makePlugin({
+        extensions: [
+          {
+            namespace: 'com.example.foo',
+            data: {},
+            path: 'ext/foo.json',
+          },
+        ],
+      }),
+    );
+    for (const check of result.checks) {
+      expect(check.extensionsHandling).toBe('ignored');
+      expect(check.issues).toEqual([]);
+      expect(
+        check.issues.map((issue) => issue.message).join(' '),
+      ).not.toContain('understands');
+    }
   });
 
   test('plugin with extensions warns for clients that do not support them', () => {
@@ -131,6 +245,7 @@ describe('CompatibilityChecker', () => {
       },
       evidence: 'expected',
       source: 'https://example.com/docs',
+      verificationNote: 'Verified in test fixture',
     });
     const result = new CompatibilityChecker(registry).check(
       makePlugin({
@@ -148,16 +263,69 @@ describe('CompatibilityChecker', () => {
     )!;
     // Warnings are not blocking: the plugin still works without extensions.
     expect(minimal.compatible).toBe(true);
+    expect(minimal.level).toBe(CompatibilityLevel.FULL);
+    expect(minimal.working).toEqual([]);
+    expect(minimal.unsupported).toEqual([]);
+    expect(minimal.extensionsHandling).toBe('unsupported');
     expect(minimal.issues).toHaveLength(1);
     expect(minimal.issues[0]).toMatchObject({
       severity: 'warning',
       component: 'extensions',
     });
-    // Every default client supports extensions.
+    expect(minimal.issues[0].message).toContain('does not support extensions');
+    // Every default client (extensions: true) stays issue-free.
     for (const check of result.checks.filter(
       (check) => check.clientId !== 'minimal',
     )) {
       expect(check.issues).toEqual([]);
+      expect(check.extensionsHandling).toBe('ignored');
+    }
+  });
+
+  test('plugin with extensions reports info for clients with unverified behavior', () => {
+    const registry = createDefaultClientRegistry();
+    registry.register({
+      id: 'unverified-extensions',
+      name: 'Unverified Extensions',
+      supportedSpecVersions: ['1.0.0'],
+      capabilities: {
+        skills: true,
+        mcpStdio: true,
+        mcpStreamableHttp: true,
+        mcpLegacySse: true,
+        extensions: true,
+      },
+      evidence: 'none',
+      source: 'https://example.com/unverified',
+      verificationNote: 'Verified in test fixture',
+    });
+    const result = new CompatibilityChecker(registry).check(
+      makePlugin({
+        extensions: [
+          {
+            namespace: 'com.example.client',
+            data: {},
+            path: 'ext/client.json',
+          },
+        ],
+      }),
+    );
+    const check = result.checks.find(
+      (client) => client.clientId === 'unverified-extensions',
+    )!;
+    expect(check.extensionsHandling).toBe('unknown');
+    expect(check.issues).toHaveLength(1);
+    expect(check.issues[0]).toMatchObject({
+      severity: 'info',
+      component: 'extensions',
+    });
+    expect(check.issues[0].message).toContain('unverified');
+  });
+
+  test('plugin without extensions has no extensionsHandling field', () => {
+    const result = checkCompatibility(makePlugin({ skills: [makeSkill()] }));
+    for (const check of result.checks) {
+      expect(check.extensionsHandling).toBeUndefined();
     }
   });
 
@@ -167,6 +335,7 @@ describe('CompatibilityChecker', () => {
     );
     for (const check of result.checks) {
       expect(check.compatible).toBe(false);
+      expect(check.level).toBe(CompatibilityLevel.UNSUPPORTED);
       expect(check.issues).toHaveLength(1);
       expect(check.issues[0].severity).toBe('error');
       expect(check.issues[0].message).toContain('2.0.0');
@@ -178,6 +347,9 @@ describe('CompatibilityChecker', () => {
     const result = checkCompatibility(makePlugin());
     for (const check of result.checks) {
       expect(check.compatible).toBe(true);
+      expect(check.level).toBe(CompatibilityLevel.FULL);
+      expect(check.working).toEqual([]);
+      expect(check.unsupported).toEqual([]);
       expect(check.issues).toEqual([]);
       expect(check.evidence).toBe('docs');
     }
@@ -212,6 +384,7 @@ describe('CompatibilityChecker', () => {
       },
       evidence: 'runtime',
       source: 'https://example.com/docs',
+      verificationNote: 'Verified in test fixture',
     });
     const result = checkCompatibility(makePlugin(), registry);
     expect(result.checks).toHaveLength(1);

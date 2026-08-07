@@ -126,8 +126,8 @@ describe('loadPlugin with a shared cache', () => {
       writeFileSync(join(dir, skillFile), skillMd);
 
       const cache = new ParsedFileCache();
-      const first = await loadPlugin(dir, { cache });
-      const second = await loadPlugin(dir, { cache });
+      const { plugin: first } = await loadPlugin(dir, { cache });
+      const { plugin: second } = await loadPlugin(dir, { cache });
       expect(first.manifest.name).toBe('cached-plugin');
       expect(second.skills).toHaveLength(1);
       expect(second.mcpConfig).toBeDefined();
@@ -146,11 +146,11 @@ describe('loadPlugin with a shared cache', () => {
       writeFileSync(join(dir, 'plugin.json'), manifest('first-name'));
 
       const cache = new ParsedFileCache();
-      const first = await loadPlugin(dir, { cache });
+      const { plugin: first } = await loadPlugin(dir, { cache });
       expect(first.manifest.name).toBe('first-name');
 
       writeFileSync(join(dir, 'plugin.json'), manifest('second-name'));
-      const second = await loadPlugin(dir, { cache });
+      const { plugin: second } = await loadPlugin(dir, { cache });
       expect(second.manifest.name).toBe('second-name');
     } finally {
       rmSync(dir, { recursive: true, force: true });
@@ -169,7 +169,7 @@ describe('loadPlugin with a shared cache', () => {
         ),
       );
       const cache = new ParsedFileCache();
-      expect((await loadPlugin(dir, { cache })).skills).toHaveLength(0);
+      expect((await loadPlugin(dir, { cache })).plugin.skills).toHaveLength(0);
 
       const skillDir = join(dir, 'skills', 'new-skill');
       mkdirSync(skillDir, { recursive: true });
@@ -177,7 +177,7 @@ describe('loadPlugin with a shared cache', () => {
         join(skillDir, 'SKILL.md'),
         '---\nname: new-skill\ndescription: A new skill\n---\nBody\n',
       );
-      expect((await loadPlugin(dir, { cache })).skills).toHaveLength(1);
+      expect((await loadPlugin(dir, { cache })).plugin.skills).toHaveLength(1);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

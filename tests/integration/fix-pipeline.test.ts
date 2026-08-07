@@ -3,7 +3,6 @@
 // does), and verify improvement, dry-run safety, and idempotence.
 
 import { describe, expect, test } from 'bun:test';
-import type { Plugin } from '@agent-plugin-doctor/core';
 import { loadPlugin } from '@agent-plugin-doctor/parser';
 import {
   applyFixes,
@@ -61,7 +60,7 @@ describe('fix pipeline', () => {
     const dir = makeTempDir();
     try {
       duplicateHeaderPlugin(dir);
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const result = await validatePlugin(plugin);
       const headerDiag = result.diagnostics.find((d) => d.code === 'DOC-3006');
       expect(headerDiag).toBeDefined();
@@ -78,7 +77,7 @@ describe('fix pipeline', () => {
     try {
       duplicateHeaderPlugin(dir);
       const before = readFile(dir, 'mcp.json');
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const result = await validatePlugin(plugin);
       const fixable = result.diagnostics.filter((d) => d.fix !== undefined);
 
@@ -95,7 +94,7 @@ describe('fix pipeline', () => {
     const dir = makeTempDir();
     try {
       duplicateHeaderPlugin(dir);
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const before = await validatePlugin(plugin);
       expect(before.diagnostics.length).toBeGreaterThan(0);
       expect(engine.computeExitCode(before.diagnostics)).toBe(1);
@@ -111,7 +110,7 @@ describe('fix pipeline', () => {
       expect(mcp).toContain('Authorization');
 
       // Re-load from disk (in-memory state is stale) and re-validate.
-      const reloaded: Plugin = await loadPlugin(dir);
+      const { plugin: reloaded } = await loadPlugin(dir);
       const after = await validatePlugin(reloaded);
       expect(after.diagnostics).toEqual([]);
       expect(engine.computeExitCode(after.diagnostics)).toBe(0);
@@ -124,7 +123,7 @@ describe('fix pipeline', () => {
     const dir = makeTempDir();
     try {
       unknownFieldPlugin(dir);
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const result = await validatePlugin(plugin);
       const fixable = result.diagnostics.filter((d) => d.fix !== undefined);
       expect(fixable.length).toBe(1);
@@ -133,7 +132,7 @@ describe('fix pipeline', () => {
       expect(first.applied).toBe(1);
 
       // Second run: the target state is already reached, so nothing applies.
-      const reloaded = await loadPlugin(dir);
+      const { plugin: reloaded } = await loadPlugin(dir);
       const again = await validatePlugin(reloaded);
       const stillFixable = again.diagnostics.filter((d) => d.fix !== undefined);
       expect(stillFixable).toEqual([]);
@@ -151,11 +150,11 @@ describe('fix pipeline', () => {
     const dir = makeTempDir();
     try {
       unknownFieldPlugin(dir);
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       // The engine applies fixes during validation when options.fix is set.
       await validatePlugin(plugin, { fix: true });
 
-      const reloaded = await loadPlugin(dir);
+      const { plugin: reloaded } = await loadPlugin(dir);
       const after = await validatePlugin(reloaded);
       expect(after.diagnostics).toEqual([]);
       expect(readFile(dir, 'plugin.json')).not.toContain('x-extra');

@@ -4,7 +4,12 @@
 import { getSpecVersion } from '@agent-plugin-doctor/core';
 import type { Diagnostic, Fix } from '@agent-plugin-doctor/core';
 import type { Rule, RuleContext } from '../../rule.js';
-import { makeDiagnostic, readTextFile } from '../../util.js';
+import {
+  findJsonMemberSpans,
+  jsonMemberValueSpan,
+  makeDiagnostic,
+  readTextFile,
+} from '../../util.js';
 
 const ID = 'manifest-schema-match';
 const CODE = 'DOC-1007';
@@ -45,12 +50,23 @@ export const schemaMatchRule: Rule = {
     if (raw === null) return null;
     const schema = ctx.plugin.manifest.$schema;
     if (typeof schema !== 'string') return null;
+    // Rewrite only the value token of the top-level "$schema" member, so the
+    // fix is whitespace-tolerant and never touches a nested "$schema" member.
+    const spans = findJsonMemberSpans(
+      raw,
+      (path, key) => path.length === 0 && key === '$schema',
+    );
+    if (spans === null || spans.length === 0) return null;
+    const valueSpan = jsonMemberValueSpan(raw, spans[0]);
+    if (valueSpan === null) return null;
+    const current = raw.slice(valueSpan.start, valueSpan.end);
+    if (current !== JSON.stringify(schema)) return null;
     return {
       kind: 'replace',
       file,
       description: `Update $schema to ${spec.pluginSchemaUrl}`,
-      oldText: `"$schema": ${JSON.stringify(schema)}`,
-      newText: `"$schema": ${JSON.stringify(spec.pluginSchemaUrl)}`,
+      oldText: current,
+      newText: JSON.stringify(spec.pluginSchemaUrl),
     };
   },
 };

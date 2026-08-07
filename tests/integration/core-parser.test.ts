@@ -23,6 +23,7 @@ import {
   parseMcpConfig,
   parsePluginManifest,
   parseSkillFrontmatter,
+  type LoadResult,
   type ParsedSkill,
 } from '@agent-plugin-doctor/parser';
 import { fixturePath, REPO_ROOT } from './helpers.js';
@@ -89,7 +90,9 @@ describe('core <-> parser type compatibility', () => {
   });
 
   test('loadPlugin returns a complete core Plugin (complex-plugin)', async () => {
-    const plugin: Plugin = await loadPlugin(fixturePath('complex-plugin'));
+    const result: LoadResult = await loadPlugin(fixturePath('complex-plugin'));
+    const plugin: Plugin = result.plugin;
+    expect(result.parseDiagnostics).toEqual([]);
     expect(plugin.rootDir).toBe(fixturePath('complex-plugin'));
     expect(plugin.specVersion).toBe(v1.SPEC_VERSION);
     expect(plugin.manifest.name).toBe('complex-plugin');
@@ -117,12 +120,14 @@ describe('core <-> parser type compatibility', () => {
   });
 
   test('loadPlugin handles a plugin with no optional components', async () => {
-    const plugin: Plugin = await loadPlugin(fixturePath('minimal-plugin'));
+    const result: LoadResult = await loadPlugin(fixturePath('minimal-plugin'));
+    const plugin: Plugin = result.plugin;
     expect(plugin.manifest.name).toBe('minimal-plugin');
     expect(plugin.mcpConfig).toBeUndefined();
     expect(plugin.skills).toEqual([]);
     expect(plugin.extensions).toEqual([]);
     expect(plugin.specVersion).toBe('1.0.0');
+    expect(result.parseDiagnostics).toEqual([]);
   });
 
   test('parser types are assignable to core types (compile-time contract)', () => {
@@ -136,6 +141,9 @@ describe('core <-> parser type compatibility', () => {
     >;
     const pluginType: Plugin = null as unknown as Awaited<
       ReturnType<typeof loadPlugin>
+    >['plugin'];
+    const loadResultType: LoadResult = null as unknown as Awaited<
+      ReturnType<typeof loadPlugin>
     >;
     const skillType: Skill = null as unknown as Plugin['skills'][number];
     // Runtime sanity: the type-level assignments above are erased, but the
@@ -148,10 +156,13 @@ describe('core <-> parser type compatibility', () => {
     expect(mcpType).toBeNull();
     expect(skillType).toBeNull();
     expect(pluginType).toBeNull();
+    expect(loadResultType).toBeNull();
   });
 
   test('the repo root itself loads as a plugin (self-hosting contract)', async () => {
-    const plugin: Plugin = await loadPlugin(REPO_ROOT);
+    const result: LoadResult = await loadPlugin(REPO_ROOT);
+    const plugin: Plugin = result.plugin;
+    expect(result.parseDiagnostics).toEqual([]);
     expect(plugin.manifest.name).toBe('agent-plugin-doctor');
     expect(plugin.manifest.version).toBe('0.0.1');
     expect(plugin.manifest.license).toBe('MIT');

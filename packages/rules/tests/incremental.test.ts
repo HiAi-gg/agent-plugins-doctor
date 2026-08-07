@@ -42,7 +42,7 @@ describe('validateIncremental', () => {
         'skills/summarize/SKILL.md': skill('summarize'),
         'notes.log': 'unexpected file',
       });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const full = await validatePlugin(plugin);
       expect(diagnosticCodes(full)).toContain('DOC-5003'); // notes.log
 
@@ -62,7 +62,7 @@ describe('validateIncremental', () => {
         'plugin.json': manifest(),
         'skills/summarize/SKILL.md': skill('summarize'),
       });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const full = await validatePlugin(plugin);
       expect(full.diagnostics).toHaveLength(0);
 
@@ -75,7 +75,7 @@ describe('validateIncremental', () => {
           2,
         ) + '\n',
       );
-      const changed = await loadPlugin(dir);
+      const { plugin: changed } = await loadPlugin(dir);
       const incremental = await validateIncremental(changed, full, [
         './plugin.json',
       ]);
@@ -92,7 +92,7 @@ describe('validateIncremental', () => {
         'plugin.json': manifest(),
         'skills/summarize/SKILL.md': skill('summarize'),
       });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const full = await validatePlugin(plugin);
 
       // Make the skill description far too long → DOC-2003 (skill
@@ -105,7 +105,7 @@ describe('validateIncremental', () => {
           longDescription,
         ),
       );
-      const changed = await loadPlugin(dir);
+      const { plugin: changed } = await loadPlugin(dir);
       const incremental = await validateIncremental(changed, full, [
         'skills/summarize/SKILL.md',
       ]);
@@ -122,12 +122,12 @@ describe('validateIncremental', () => {
         'plugin.json': manifest(),
         'skills/summarize/SKILL.md': skill('summarize'),
       });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const full = await validatePlugin(plugin);
       expect(diagnosticCodes(full)).not.toContain('DOC-5003');
 
       writeFileSync(join(dir, 'stray.log'), 'new file');
-      const changed = await loadPlugin(dir);
+      const { plugin: changed } = await loadPlugin(dir);
       const incremental = await validateIncremental(changed, full, [
         'stray.log',
       ]);
@@ -144,7 +144,7 @@ describe('validateIncremental', () => {
         'plugin.json': manifest(),
         'skills/summarize/SKILL.md': skill('summarize'),
       });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const full = await validatePlugin(plugin);
 
       // Changing a skill helper script is not part of the model and does not
@@ -152,7 +152,7 @@ describe('validateIncremental', () => {
       writeTree(dir, {
         'skills/summarize/scripts/run.sh': '#!/bin/sh\necho changed\n',
       });
-      const changed = await loadPlugin(dir);
+      const { plugin: changed } = await loadPlugin(dir);
       const incremental = await validateIncremental(changed, full, [
         'skills/summarize/scripts/run.sh',
       ]);
@@ -171,14 +171,15 @@ describe('validateIncremental', () => {
         'plugin.json': manifest('plugin-b'),
         'skills/b/SKILL.md': skill('b'),
       });
-      const pluginA = await loadPlugin(dirA);
-      const pluginB = await loadPlugin(dirB);
+      const { plugin: pluginA } = await loadPlugin(dirA);
+      const { plugin: pluginB } = await loadPlugin(dirB);
       const fullA = await validatePlugin(pluginA);
 
       const incremental = await validateIncremental(pluginB, fullA, []);
       const fullB = await validatePlugin(pluginB);
       expect(incremental.diagnostics).toEqual(fullB.diagnostics);
-      expect(incremental.plugin.rootDir).toBe(dirB);
+      // validateIncremental always returns the fresh (non-null) plugin.
+      expect(incremental.plugin?.rootDir).toBe(dirB);
     } finally {
       rmSync(dirA, { recursive: true, force: true });
       rmSync(dirB, { recursive: true, force: true });
@@ -189,7 +190,7 @@ describe('validateIncremental', () => {
     const dir = makeTempDir();
     try {
       writeTree(dir, { 'plugin.json': manifest() });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const full = await validatePlugin(plugin);
       const incremental = await validateIncremental(plugin, full, [], {
         rules: ['structure-extra-files'],
@@ -219,7 +220,7 @@ describe('validateIncremental', () => {
         'skills/summarize/SKILL.md': skill('summarize'),
         'com.example.client/extension.json': JSON.stringify({ feature: true }),
       });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const full = await validatePlugin(plugin);
 
       const allFiles = [
@@ -240,13 +241,16 @@ describe('validateIncremental', () => {
     const dir = makeTempDir();
     try {
       writeTree(dir, { 'plugin.json': manifest() });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const full = await validatePlugin(plugin);
       const compatibility = [
         {
           clientId: 'vscode',
           clientName: 'VS Code',
+          level: 'full' as const,
           compatible: true,
+          working: [],
+          unsupported: [],
           issues: [],
           evidence: 'docs' as const,
         },

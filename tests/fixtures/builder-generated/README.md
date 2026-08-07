@@ -19,7 +19,7 @@ Each fixture maps to one Builder command:
 1. Every Builder-generated plugin loads with `loadPlugin` and validates with
    `validatePlugin` with zero error/critical diagnostics (exit 0).
 2. `parseSkillFrontmatter` handles every frontmatter shape Builder emits
-   (plain, metadata maps, allowed-tools lists, space-separated strings).
+   (plain, metadata maps, space-separated `allowed-tools` strings).
 3. The exit-code contract (0=valid, 1=errors, 2=security-critical,
    3=tool failure) matches Builder's expectations.
 

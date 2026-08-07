@@ -125,14 +125,18 @@ describe('HumanReportFormatter', () => {
         {
           clientId: 'kiro',
           clientName: 'Kiro',
+          level: 'unsupported',
           compatible: false,
+          working: [],
+          unsupported: ['mcp-sse'],
           issues: ['Client "Kiro" does not support legacy SSE MCP servers'],
           evidence: 'docs',
         },
       ],
     });
     const output = new HumanReportFormatter(NO_COLOR).format(result);
-    expect(output).toContain('  Kiro: ✗');
+    expect(output).toContain('  Kiro: ✗ (unsupported)');
+    expect(output).toContain('    Unsupported: mcp-sse');
     expect(output).toContain(
       '    Client "Kiro" does not support legacy SSE MCP servers',
     );

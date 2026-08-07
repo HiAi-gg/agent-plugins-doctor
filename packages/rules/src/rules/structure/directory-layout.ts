@@ -17,6 +17,7 @@ export const directoryLayoutRule: Rule = {
   supportedSpecVersions: ['1.0.0'],
   description: 'plugin.json must exist at the plugin root.',
   enabledByDefault: true,
+  requiresPlugin: false,
 
   check(ctx) {
     const manifestPath = join(ctx.rootDir, 'plugin.json');

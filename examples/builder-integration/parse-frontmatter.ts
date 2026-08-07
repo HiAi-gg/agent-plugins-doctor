@@ -8,6 +8,7 @@
 
 import { parseSkillFrontmatter } from '@agent-plugin-doctor/parser';
 import type { ParsedSkill } from '@agent-plugin-doctor/parser';
+import type { AllowedToolsValue } from '@agent-plugin-doctor/core';
 
 export interface ParsedSkillResult {
   name: string;
@@ -16,7 +17,7 @@ export interface ParsedSkillResult {
   license?: string;
   compatibility?: string;
   metadata?: Record<string, string>;
-  allowedTools?: string | string[];
+  allowedTools?: AllowedToolsValue;
 }
 
 export function parseSkill(

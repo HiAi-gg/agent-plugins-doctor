@@ -83,7 +83,7 @@ export async function benchmarkLoadAndValidate(dir: string): Promise<{
   plugin: Plugin;
 }> {
   const start = performance.now();
-  const plugin = await loadPlugin(dir);
+  const { plugin } = await loadPlugin(dir);
   const result = await validatePlugin(plugin);
   return {
     elapsedMs: performance.now() - start,
@@ -99,7 +99,7 @@ export async function benchmarkCachedReload(
   const cache = new ParsedFileCache();
   await loadPlugin(dir, { cache }); // warm the cache
   const start = performance.now();
-  const plugin = await loadPlugin(dir, { cache });
+  const { plugin } = await loadPlugin(dir, { cache });
   return { elapsedMs: performance.now() - start, skills: plugin.skills.length };
 }
 

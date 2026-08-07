@@ -71,7 +71,10 @@ describe('JsonReportFormatter', () => {
     expect(compatibility[0]).toEqual({
       clientId: 'vscode',
       clientName: 'VS Code',
+      level: 'full',
       compatible: true,
+      working: [],
+      unsupported: [],
       issues: [],
       evidence: 'docs',
     });

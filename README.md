@@ -18,8 +18,9 @@ bunx agent-plugin-doctor fix ./my-plugin
 bunx agent-plugin-doctor report ./my-plugin --format markdown
 ```
 
-The CLI is available through `bunx` once published; inside this repository it
-resolves to the local workspace binary (see [Development](#development)).
+The CLI is available through `bunx` (Bun) or `npx` (npm) once published;
+inside this repository it resolves to the local workspace binary (see
+[Development](#development)).
 
 ## What is Agent Plugin Doctor?
 
@@ -33,6 +34,8 @@ Agent Plugin Doctor is the canonical validation, diagnostics, and security-audit
 - **Safe Auto-Fixes** — Automatically fixes common issues like formatting, missing fields, and naming mismatches
 - **Multiple Output Formats** — Human-readable terminal output, JSON for CI, and Markdown for documentation
 - **Self-Hosting** — Doctor validates itself as an Agent Plugin (`check .` exits 0 with zero diagnostics)
+- **Cross-Platform** — CI runs the full suite on Linux, macOS, and Windows (Bun 1.3.14)
+- **Comprehensive Test Suite** — 578 tests across 73 files: unit, integration, E2E (spawns the real binary), fixture-based, and benchmark budgets
 
 ## CLI Commands
 
@@ -49,6 +52,7 @@ Options:
   --strict        Treat warnings as errors
   --rule <id>     Run only specific rules
   --exclude-rule  Exclude specific rules
+  --verbose       Show detailed output
   --no-color      Disable colors
 ```
 
@@ -62,6 +66,8 @@ agent-plugin-doctor fix [dir] [options]
 Options:
   --dry-run       Show what would be fixed
   --yes           Apply fixes without confirmation
+  --json          Output as JSON
+  --no-color      Disable colors
 ```
 
 ### report
@@ -85,6 +91,7 @@ agent-plugin-doctor compatibility [dir] [options]
 
 Options:
   --client <id>   Check specific client (vscode|cursor|copilot|codex|kiro)
+  --json          Output as JSON
 ```
 
 ## Public SDK
@@ -102,6 +109,11 @@ const report = generateReport(result, { format: 'json' });
 ```
 
 See [docs/SDK.md](docs/SDK.md) for complete API documentation.
+
+All six packages are publishable npm artifacts — the packed tarballs are
+verified end-to-end by the external-install E2E test (`bunx`/`npx` against
+an installed copy outside this repository). They are not on the public
+registry yet; see [PUBLISHING.md](PUBLISHING.md) for the publish procedure.
 
 ## Supported Specifications
 
@@ -141,12 +153,12 @@ See [docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md) for the complete catalog.
 
 ## Exit Codes
 
-| Code | Meaning                                                |
-| ---- | ------------------------------------------------------ |
-| `0`  | Valid (warnings/info allowed, unless `--strict`)       |
-| `1`  | Spec validation errors                                 |
-| `2`  | Security-critical findings                             |
-| `3`  | Tool failure (load/parse error, internal rule failure) |
+| Code | Meaning                                                        |
+| ---- | -------------------------------------------------------------- |
+| `0`  | Valid (warnings/info allowed, unless `--strict`)               |
+| `1`  | Validation errors (malformed input, spec violations)           |
+| `2`  | Security-critical findings                                     |
+| `3`  | Tool failure (inaccessible plugin root, internal rule failure) |
 
 ## Development
 
@@ -154,7 +166,7 @@ See [docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md) for the complete catalog.
 # Install dependencies
 bun install
 
-# Run tests
+# Run tests (578 tests across 73 files)
 bun test
 
 # Type check
@@ -167,6 +179,9 @@ bun run lint
 bun run build
 ```
 
+CI (`.github/workflows/ci.yml`) runs install, build, typecheck, lint, and the
+full test suite on Linux, macOS, and Windows.
+
 ## Documentation
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — package architecture, design decisions (ADRs), data flow, and performance model
@@ -175,6 +190,7 @@ bun run build
 - [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) — verified-client compatibility matrix and evidence
 - [docs/EXTENSIBILITY.md](docs/EXTENSIBILITY.md) — how to add rules, spec versions, report formats, client profiles, and fixes
 - [docs/RELEASING.md](docs/RELEASING.md) — release and git-tag procedure
+- [PUBLISHING.md](PUBLISHING.md) — npm publish procedure for the six packages
 
 ## Contributing
 

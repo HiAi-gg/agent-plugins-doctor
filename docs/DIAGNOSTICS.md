@@ -3,7 +3,13 @@
 Doctor uses stable diagnostic codes in the format `DOC-xxxx`. Codes never
 change once shipped; new rules get the next free code in their range. Every
 code in this catalog is emitted by one of the 29 shipped rules (see
-[RULES.md](RULES.md) for the rule implementation behind each code).
+[RULES.md](RULES.md) for the rule implementation behind each code) or, for
+`DOC-1008`, `DOC-2099`, and `DOC-3007`, by the parser itself when a component
+cannot be loaded.
+
+Each code is also classified by **reachability** — whether it can be produced
+by the public CLI against an on-disk plugin, or only through the SDK with an
+in-memory `Plugin`. See [Diagnostic Reachability](#diagnostic-reachability).
 
 ## Code Ranges
 
@@ -44,7 +50,7 @@ contained within the plugin root; security rules never produce fixes.
 | DOC-1006 | Removes the disallowed author field                         |
 | DOC-1007 | Rewrites `$schema` to the expected URL                      |
 | DOC-2001 | Renames the skill directory to match the frontmatter name   |
-| DOC-2005 | Normalizes a space-separated `allowed-tools` to a YAML list |
+| DOC-2005 | Normalizes `allowed-tools` whitespace (string form only)    |
 | DOC-3003 | Removes the reserved env key                                |
 | DOC-3006 | Removes duplicate headers (keeps the first)                 |
 | DOC-5002 | Renames the skill directory to a valid name                 |
@@ -52,13 +58,121 @@ contained within the plugin root; security rules never produce fixes.
 | DOC-7001 | Re-formats the JSON file (2-space indent, trailing newline) |
 | DOC-7002 | Normalizes SKILL.md frontmatter style                       |
 
+## Diagnostic Reachability
+
+Every code is classified by whether it can be produced by the public CLI
+(`agent-plugin-doctor check <dir>`, which loads a plugin from disk through
+`scanPlugin`) or only by the SDK (`validatePlugin()` called with an in-memory
+`Plugin` object).
+
+The distinction exists because the parser validates `plugin.json` and
+`mcp.json` against the vendored JSON Schemas _before_ the rule engine runs.
+Any condition the schema already rejects never reaches its rule:
+
+- A fatal `plugin.json` schema violation makes `scanPlugin` return
+  `plugin: null` and emit `DOC-1008`. Only the three `requiresPlugin: false`
+  rules (`DOC-5001`, `DOC-5003`, `DOC-7001`) still run, so the manifest rules
+  that restate a schema constraint are never reached from disk.
+- A `SKILL.md` that fails frontmatter parsing is dropped with `DOC-2099`, so
+  rules that inspect a loaded-but-incomplete skill are never reached.
+- An MCP server object that violates `mcp.schema.json` is dropped per-server
+  (§7.2.2 rule 3) and silently removed from `mcpConfig.mcpServers`, so the
+  MCP rules that restate a schema constraint are never reached.
+
+Legend:
+
+- **disk (rule-level)** — reachable from the CLI, emitted by the rule engine
+- **disk (parser-level)** — reachable from the CLI, emitted during parse/load
+- **SDK-only** — only reachable via `validatePlugin()` with an in-memory
+  construct; the disk path is shadowed by the parser diagnostic in parentheses
+- **dead** — not emitted by the shipped default configuration
+
+| Code     | Category      | Severity | Autofix | Reachability                                | Description                      |
+| -------- | ------------- | -------- | ------- | ------------------------------------------- | -------------------------------- |
+| DOC-1001 | spec          | error    | no      | SDK-only (shadowed by DOC-1008)             | Missing required manifest fields |
+| DOC-1002 | spec          | error    | yes     | SDK-only (shadowed by DOC-1008)             | Invalid plugin name              |
+| DOC-1003 | spec          | error    | no      | SDK-only (shadowed by DOC-1008)             | Plugin name too long             |
+| DOC-1004 | spec          | warning  | yes     | disk (rule-level)                           | Unknown top-level field          |
+| DOC-1005 | spec          | warning  | no      | disk (rule-level, namespace branch)         | Invalid extensions format        |
+| DOC-1006 | spec          | error    | yes     | SDK-only (shadowed by DOC-1008)             | Disallowed author field          |
+| DOC-1007 | spec          | error    | yes     | SDK-only (shadowed by DOC-1008)             | Wrong `$schema` URL              |
+| DOC-1008 | structure     | error    | no      | disk (parser-level)                         | Manifest could not be loaded     |
+| DOC-2001 | skills        | error    | yes     | disk (rule-level)                           | Skill name ≠ directory name      |
+| DOC-2002 | skills        | error    | no      | SDK-only (shadowed by DOC-2099)             | Skill missing required fields    |
+| DOC-2003 | skills        | error    | no      | disk (rule-level)                           | Skill description too long       |
+| DOC-2004 | skills        | error    | no      | disk (rule-level)                           | Compatibility string too long    |
+| DOC-2005 | skills        | error    | yes     | disk (rule-level)                           | Malformed `allowed-tools`        |
+| DOC-2006 | skills        | warning  | no      | disk (rule-level)                           | Skill body too large             |
+| DOC-2099 | skills        | error    | no      | disk (parser-level)                         | Skill failed to load             |
+| DOC-3001 | mcp           | error    | no      | SDK-only (server dropped by schema)         | Unsupported MCP server type      |
+| DOC-3002 | mcp           | error    | no      | disk (rule-level)                           | Invalid stdio command            |
+| DOC-3003 | mcp           | error    | yes     | SDK-only (server dropped by schema)         | Reserved env key                 |
+| DOC-3004 | mcp           | error    | no      | SDK-only (server dropped by schema)         | stdio cwd not plugin-relative    |
+| DOC-3005 | mcp           | error    | no      | disk (rule-level)                           | Invalid remote server URL        |
+| DOC-3006 | mcp           | error    | yes     | disk (rule-level, duplicate branch)         | Duplicate or non-string header   |
+| DOC-3007 | mcp           | error    | no      | disk (parser-level)                         | `mcp.json` could not be loaded   |
+| DOC-4001 | security      | critical | no      | disk (rule-level)                           | Path traversal                   |
+| DOC-4002 | security      | critical | no      | SDK-only (shadowed by DOC-2099)             | Symlink escape                   |
+| DOC-4003 | security      | critical | no      | disk (rule-level)                           | Secret detected                  |
+| DOC-5001 | structure     | error    | no      | disk (rule-level)                           | `plugin.json` missing            |
+| DOC-5002 | structure     | error    | yes     | disk (rule-level)                           | Invalid skill directory name     |
+| DOC-5003 | structure     | info     | no      | disk (rule-level)                           | Unexpected file at plugin root   |
+| DOC-6001 | compatibility | error    | no      | SDK-only (shadowed by DOC-1008)             | Unsupported spec version         |
+| DOC-6002 | compatibility | warning  | yes     | dead in v1.0.0 (SDK-only with a custom map) | Deprecated field                 |
+| DOC-7001 | format        | info     | yes     | disk (rule-level)                           | Non-canonical JSON formatting    |
+| DOC-7002 | format        | info     | yes     | disk (rule-level)                           | Frontmatter style issues         |
+
+### Disk-reachable (public CLI)
+
+DOC-1004, DOC-1005, DOC-1008, DOC-2001, DOC-2003, DOC-2004, DOC-2005,
+DOC-2006, DOC-2099, DOC-3002, DOC-3005, DOC-3006, DOC-3007, DOC-4001,
+DOC-4003, DOC-5001, DOC-5002, DOC-5003, DOC-7001, DOC-7002 — 20 codes.
+
+### Parser-level (disk-reachable)
+
+DOC-1008, DOC-2099, DOC-3007. These are emitted by `scanPlugin` with
+`ruleId: "parser"` and are a subset of the disk-reachable set.
+
+### SDK-only
+
+DOC-1001, DOC-1002, DOC-1003, DOC-1006, DOC-1007, DOC-2002, DOC-3001,
+DOC-3003, DOC-3004, DOC-4002, DOC-6001 — 11 codes.
+
+These are not dead: they are the precise, actionable form of a condition that
+the schema only reports generically, and they fire whenever a caller builds a
+`Plugin` in memory (Builder, editor integrations, tests). Notes on the less
+obvious ones:
+
+- **DOC-4002** — a symlinked skill directory or `SKILL.md` is rejected by
+  `resolvePluginPath` during discovery, so from disk it always surfaces as
+  `DOC-2099` ("cannot be resolved inside the plugin root"). The rule remains
+  the containment check for in-memory plugins whose `rootDir` is a real tree.
+- **DOC-6001** — an unsupported `$schema` cannot resolve a spec version, so
+  `scanPlugin` reports `DOC-1008` and leaves `plugin` null. The rule fires
+  when a `Plugin` is constructed with an unknown `specVersion` directly.
+- **DOC-1005** — partially disk-reachable. The reverse-domain-namespace and
+  non-object-value branches fire from disk; a non-object `extensions` value
+  is rejected by the schema first (`DOC-1008`).
+- **DOC-3006** — partially disk-reachable. The duplicate-header branch fires
+  from disk; the non-string-header branch is dropped per-server by the schema.
+
+### Dead (unreachable)
+
+DOC-6002. Agent Plugins v1.0.0 deprecates no fields, so
+`DEFAULT_DEPRECATED_FIELDS` is empty and the rule always returns `[]` under
+the shipped default registry. This is intentional and documented in
+`packages/rules/src/rules/compatibility/deprecated-fields.ts`: the rule is a
+factory (`deprecatedFieldsRule(map)`) that keeps the deprecation mechanism
+tested and ready for the first spec version that deprecates a field. It is
+retained rather than removed so the diagnostic ID stays stable.
+
 ---
 
 ## Manifest Diagnostics (DOC-1xxx)
 
 ### DOC-1001: Missing required fields
 
-**Rule:** `manifest-required-fields` · **Severity:** error · **Category:** spec · **Autofix:** No
+**Rule:** `manifest-required-fields` · **Severity:** error · **Category:** spec · **Autofix:** No · **Reachability:** SDK-only (shadowed by DOC-1008)
 
 **Description:** `plugin.json` must contain the required fields `$schema`
 and `name` (§5.2).
@@ -79,7 +193,7 @@ lowercase alphanumerics, hyphens and periods).
 
 ### DOC-1002: Invalid plugin name
 
-**Rule:** `manifest-name-pattern` · **Severity:** error · **Category:** spec · **Autofix:** Yes (normalize)
+**Rule:** `manifest-name-pattern` · **Severity:** error · **Category:** spec · **Autofix:** Yes (normalize) · **Reachability:** SDK-only (shadowed by DOC-1008)
 
 **Description:** Plugin names are 1–64 chars of lowercase alphanumerics,
 hyphens and periods; no consecutive separators (`--`, `..`) and no
@@ -102,7 +216,7 @@ into a valid form.
 
 ### DOC-1003: Plugin name too long
 
-**Rule:** `manifest-name-length` · **Severity:** error · **Category:** spec · **Autofix:** No
+**Rule:** `manifest-name-length` · **Severity:** error · **Category:** spec · **Autofix:** No · **Reachability:** SDK-only (shadowed by DOC-1008)
 
 **Description:** Plugin names must not exceed 64 characters.
 
@@ -121,7 +235,7 @@ into a valid form.
 
 ### DOC-1004: Unknown top-level field
 
-**Rule:** `manifest-unknown-fields` · **Severity:** warning · **Category:** spec · **Autofix:** Yes (remove)
+**Rule:** `manifest-unknown-fields` · **Severity:** warning · **Category:** spec · **Autofix:** Yes (remove) · **Reachability:** disk (rule-level)
 
 **Description:** Unknown top-level fields in `plugin.json` are reported and
 ignored (§5.2). The parser strips them at load time; the rule re-reads the
@@ -144,7 +258,7 @@ text (including its trailing comma), leaving every other byte untouched.
 
 ### DOC-1005: Invalid extensions format
 
-**Rule:** `manifest-extensions-format` · **Severity:** warning · **Category:** spec · **Autofix:** No
+**Rule:** `manifest-extensions-format` · **Severity:** warning · **Category:** spec · **Autofix:** No · **Reachability:** disk (rule-level, namespace branch)
 
 **Description:** `extensions` must be an object keyed by reverse-domain
 namespaces (e.g. `com.example.client`) with object values (§8.1, §8.2).
@@ -173,7 +287,7 @@ namespaces (e.g. `com.example.client`) with object values (§8.1, §8.2).
 
 ### DOC-1006: Disallowed author field
 
-**Rule:** `manifest-author-strictness` · **Severity:** error · **Category:** spec · **Autofix:** Yes (remove)
+**Rule:** `manifest-author-strictness` · **Severity:** error · **Category:** spec · **Autofix:** Yes (remove) · **Reachability:** SDK-only (shadowed by DOC-1008)
 
 **Description:** The `author` object may only contain `name`, `email`, and
 `url`. Any other field violates the schema's `additionalProperties: false`.
@@ -197,7 +311,7 @@ namespaces (e.g. `com.example.client`) with object values (§8.1, §8.2).
 
 ### DOC-1007: Wrong $schema URL
 
-**Rule:** `manifest-schema-match` · **Severity:** error · **Category:** spec · **Autofix:** Yes (rewrite)
+**Rule:** `manifest-schema-match` · **Severity:** error · **Category:** spec · **Autofix:** Yes (rewrite) · **Reachability:** SDK-only (shadowed by DOC-1008)
 
 **Description:** `plugin.json`'s `$schema` must be the expected schema URL
 for the plugin's spec version.
@@ -216,11 +330,42 @@ for the plugin's spec version.
 
 ---
 
+### DOC-1008: Manifest could not be loaded
+
+**Source:** parser (`scanPlugin`) · **Severity:** error · **Category:** structure · **Autofix:** No · **Reachability:** disk (parser-level)
+
+**Description:** `plugin.json` could not be loaded: the plugin root does not
+exist or is not a directory, the file is missing or unreadable, it is
+unparseable JSON, it does not conform to `plugin.schema.json` (one diagnostic
+per schema violation), the path escapes the plugin root, or it declares an
+unsupported `$schema`. Emitted by the parser, not by a rule (`ruleId` is
+`"parser"`).
+
+**Example:**
+
+```json
+{
+  "version": "1.0.0"
+  // Invalid JSON — missing closing brace
+}
+```
+
+**Behavior:** `scanPlugin` never throws: the failure is collected as a
+diagnostic, `plugin` is `null`, and scanning continues over skills,
+`mcp.json`, and extensions so every problem is reported at once. `loadPlugin`
+instead throws `LoadError`/`ParseError`/`SchemaValidationError` for the same
+conditions.
+
+**Fix:** Make `plugin.json` valid, conforming JSON (see `DOC-1001`–`DOC-1007`
+for specific violations), or ensure the path resolves inside the plugin root.
+
+---
+
 ## Skill Diagnostics (DOC-2xxx)
 
 ### DOC-2001: Skill name does not match directory
 
-**Rule:** `skill-name-match` · **Severity:** error · **Category:** skills · **Autofix:** Yes (rename)
+**Rule:** `skill-name-match` · **Severity:** error · **Category:** skills · **Autofix:** Yes (rename) · **Reachability:** disk (rule-level)
 
 **Description:** The skill `name` in SKILL.md frontmatter must match its
 directory name under `skills/`.
@@ -239,7 +384,7 @@ skills/
 
 ### DOC-2002: Skill missing required fields
 
-**Rule:** `skill-required-fields` · **Severity:** error · **Category:** skills · **Autofix:** No
+**Rule:** `skill-required-fields` · **Severity:** error · **Category:** skills · **Autofix:** No · **Reachability:** SDK-only (shadowed by DOC-2099)
 
 **Description:** SKILL.md frontmatter must contain `name` and `description`.
 
@@ -260,7 +405,7 @@ frontmatter.
 
 ### DOC-2003: Skill description too long
 
-**Rule:** `skill-description-length` · **Severity:** error · **Category:** skills · **Autofix:** No
+**Rule:** `skill-description-length` · **Severity:** error · **Category:** skills · **Autofix:** No · **Reachability:** disk (rule-level)
 
 **Description:** Skill descriptions must not exceed 1024 characters.
 
@@ -270,7 +415,7 @@ frontmatter.
 
 ### DOC-2004: Skill compatibility string too long
 
-**Rule:** `skill-compatibility-length` · **Severity:** error · **Category:** skills · **Autofix:** No
+**Rule:** `skill-compatibility-length` · **Severity:** error · **Category:** skills · **Autofix:** No · **Reachability:** disk (rule-level)
 
 **Description:** Skill `compatibility` strings must not exceed 500 characters
 when present.
@@ -281,34 +426,41 @@ when present.
 
 ### DOC-2005: Malformed allowed-tools
 
-**Rule:** `skill-allowed-tools-format` · **Severity:** error · **Category:** skills · **Autofix:** Yes (normalize string form)
+**Rule:** `skill-allowed-tools-format` · **Severity:** error · **Category:** skills · **Autofix:** Yes (whitespace normalization) · **Reachability:** disk (rule-level)
 
-**Description:** `allowed-tools` must be a list of non-empty strings. A
-space-separated string is valid and normalized to a list; any other value is
-an error.
+**Description:** Per the Agent Skills spec, `allowed-tools` is a
+space-separated string of tool names (e.g. `Bash(git:*) Bash(jq:*) Read`).
+The rule validates each whitespace-separated token. A YAML list is a
+Doctor-specific extension and only warrants a warning; any other type is an
+error.
 
 **Example:**
 
 ```yaml
-allowed-tools: 'read_file,write_file' # comma-separated: invalid
+allowed-tools: 'Bash(git:*) Bash(jq:*) Read' # canonical form
 ```
 
-**Fix:** The string form is normalized to a YAML list:
+**Diagnostics:**
 
-```yaml
-allowed-tools:
-  - read_file
-  - write_file
-```
+- Invalid tool token → error (e.g. `allowed-tools: read !!!`)
+- YAML list (`allowed-tools: [Read, Bash]`) → warning — not in the spec,
+  consider the space-separated string form (a Doctor-specific extension).
+- Number, boolean, object, or list with non-string members → error
+- Empty or whitespace-only string → warning (a skill declaring no tools is
+  suspicious)
+- Comma-separated with spaces (`bash, read`) → warning (likely a user error;
+  comma-separated without spaces, e.g. `bash,read`, is a single token and
+  valid)
 
-Non-string values (e.g. numbers) cannot be normalized and must be fixed by
-hand.
+**Fix:** Whitespace is normalized in the string form (multiple spaces →
+single space, trimmed); the string is **never** converted to a YAML list.
+The list form and invalid types must be fixed by hand.
 
 ---
 
 ### DOC-2006: Skill body too large
 
-**Rule:** `skill-body-size` · **Severity:** warning · **Category:** skills · **Autofix:** No
+**Rule:** `skill-body-size` · **Severity:** warning · **Category:** skills · **Autofix:** No · **Reachability:** disk (rule-level)
 
 **Description:** SKILL.md bodies should stay under 5000 tokens
 (whitespace-delimited words). This is a recommendation, not a hard limit.
@@ -317,11 +469,43 @@ hand.
 
 ---
 
+### DOC-2099: Skill failed to load
+
+**Source:** parser (`loadPlugin`, `scanPlugin`) · **Severity:** error · **Category:** skills · **Autofix:** No · **Reachability:** disk (parser-level)
+
+**Description:** A discovered skill (a directory under `skills/` containing
+`SKILL.md`) could not be loaded: the frontmatter is missing or malformed
+YAML, a required field (`name`/`description`) is missing, or the `SKILL.md`
+file cannot be resolved inside the plugin root (file-level symlink escape).
+Emitted by the parser, not by a rule (`ruleId` is `"parser"`). Note: a
+malformed `allowed-tools` type is _not_ a load failure — the parser
+preserves the raw value and the DOC-2005 rule diagnoses it.
+
+**Example:**
+
+```markdown
+---
+description: Missing the required name field
+---
+
+Body...
+```
+
+**Behavior:** The failing skill is omitted from the loaded plugin, but other
+skills still load (failure isolation, §7.1). The diagnostic is merged into
+the validation results by the CLI pipeline, so malformed input is a
+validation error (exit code `1`), not a silent drop.
+
+**Fix:** Fix the SKILL.md frontmatter, or remove the escaping symlink so the
+file resolves inside the plugin root.
+
+---
+
 ## MCP Diagnostics (DOC-3xxx)
 
 ### DOC-3001: Unsupported MCP server type
 
-**Rule:** `mcp-server-type` · **Severity:** error · **Category:** mcp · **Autofix:** No
+**Rule:** `mcp-server-type` · **Severity:** error · **Category:** mcp · **Autofix:** No · **Reachability:** SDK-only (server dropped by schema isolation)
 
 **Description:** MCP server types must be `stdio`, `streamable-http`, or
 `sse`.
@@ -343,7 +527,7 @@ hand.
 
 ### DOC-3002: Invalid stdio command
 
-**Rule:** `mcp-stdio-command` · **Severity:** error · **Category:** mcp · **Autofix:** No
+**Rule:** `mcp-stdio-command` · **Severity:** error · **Category:** mcp · **Autofix:** No · **Reachability:** disk (rule-level)
 
 **Description:** stdio servers must declare a single executable token as
 their `command` (no whitespace; use `args` for arguments).
@@ -368,7 +552,7 @@ their `command` (no whitespace; use `args` for arguments).
 
 ### DOC-3003: Reserved env key
 
-**Rule:** `mcp-reserved-env-keys` · **Severity:** error · **Category:** mcp · **Autofix:** Yes (remove)
+**Rule:** `mcp-reserved-env-keys` · **Severity:** error · **Category:** mcp · **Autofix:** Yes (remove) · **Reachability:** SDK-only (server dropped by schema isolation)
 
 **Description:** The plugin runtime reserves `PLUGIN_ROOT` and `PLUGIN_DATA`;
 env must not override them.
@@ -387,7 +571,7 @@ env must not override them.
 
 ### DOC-3004: stdio cwd not plugin-relative
 
-**Rule:** `mcp-cwd-pattern` · **Severity:** error · **Category:** mcp · **Autofix:** No
+**Rule:** `mcp-cwd-pattern` · **Severity:** error · **Category:** mcp · **Autofix:** No · **Reachability:** SDK-only (server dropped by schema isolation)
 
 **Description:** stdio `cwd` must start with `./`, `${PLUGIN_ROOT}`, or
 `${PLUGIN_DATA}`.
@@ -407,7 +591,7 @@ env must not override them.
 
 ### DOC-3005: Invalid remote server URL
 
-**Rule:** `mcp-url-format` · **Severity:** error · **Category:** mcp · **Autofix:** No
+**Rule:** `mcp-url-format` · **Severity:** error · **Category:** mcp · **Autofix:** No · **Reachability:** disk (rule-level)
 
 **Description:** Remote server (`streamable-http` / `sse`) URLs must be
 absolute `http`/`https` URLs without userinfo (`user:password@`) or
@@ -427,7 +611,7 @@ fragments (`#...`).
 
 ### DOC-3006: Duplicate or non-string header
 
-**Rule:** `mcp-header-validation` · **Severity:** error · **Category:** mcp · **Autofix:** Yes (remove duplicates)
+**Rule:** `mcp-header-validation` · **Severity:** error · **Category:** mcp · **Autofix:** Yes (remove duplicates) · **Reachability:** disk (rule-level, duplicate branch)
 
 **Description:** Headers must be string values with unique case-insensitive
 names.
@@ -446,11 +630,40 @@ Non-string values must be fixed by hand.
 
 ---
 
+### DOC-3007: mcp.json could not be loaded
+
+**Source:** parser (`scanPlugin`) · **Severity:** error · **Category:** mcp · **Autofix:** No · **Reachability:** disk (parser-level)
+
+**Description:** `mcp.json` could not be loaded: the file is unreadable,
+unparseable JSON, violates the top level of `mcp.schema.json` (one diagnostic
+per violation), or the path escapes the plugin root. Emitted by the parser,
+not by a rule (`ruleId` is `"parser"`).
+
+**Example:**
+
+```json
+{
+  "mcpServers": "not an object"
+}
+```
+
+**Behavior:** A top-level `mcp.json` violation disables MCP for the plugin
+(§7.2.2 rule 2) but does not prevent loading the rest of the plugin.
+`scanPlugin` reports it as a diagnostic; `loadPlugin` silently disables MCP
+for the same condition. Invalid _server objects_ are isolated per-server
+(§7.2.2 rule 3) and are diagnosed by the MCP rules (DOC-3001–DOC-3006), not
+by the parser.
+
+**Fix:** Make `mcp.json` conform to `mcp.schema.json`, or remove the escaping
+symlink so the file resolves inside the plugin root.
+
+---
+
 ## Security Diagnostics (DOC-4xxx)
 
 ### DOC-4001: Path traversal
 
-**Rule:** `security-path-traversal` · **Severity:** critical · **Category:** security · **Autofix:** No
+**Rule:** `security-path-traversal` · **Severity:** critical · **Category:** security · **Autofix:** No · **Reachability:** disk (rule-level)
 
 **Description:** File references (skill directories, extension paths, stdio
 `cwd`) must stay inside the plugin root. Absolute paths and parent traversal
@@ -470,7 +683,7 @@ Non-string values must be fixed by hand.
 
 ### DOC-4002: Symlink escape
 
-**Rule:** `security-symlink-escape` · **Severity:** critical · **Category:** security · **Autofix:** No
+**Rule:** `security-symlink-escape` · **Severity:** critical · **Category:** security · **Autofix:** No · **Reachability:** SDK-only (shadowed by DOC-2099)
 
 **Description:** No component directory (skill, extension) may be a symlink
 that resolves outside the plugin root. The check is conservative: missing
@@ -488,7 +701,7 @@ ln -s /etc skills/evil   # skills/evil resolves outside the plugin root
 
 ### DOC-4003: Secret detected
 
-**Rule:** `security-secret-detection` · **Severity:** critical · **Category:** security · **Autofix:** No
+**Rule:** `security-secret-detection` · **Severity:** critical · **Category:** security · **Autofix:** No · **Reachability:** disk (rule-level)
 
 **Description:** Detects API keys, tokens, private keys, passwords, and
 credential-bearing database URLs in MCP env values, headers, and manifest
@@ -513,7 +726,7 @@ examples are ignored to avoid false positives.
 
 ### DOC-5001: plugin.json missing
 
-**Rule:** `structure-directory-layout` · **Severity:** error · **Category:** structure · **Autofix:** No
+**Rule:** `structure-directory-layout` · **Severity:** error · **Category:** structure · **Autofix:** No · **Reachability:** disk (rule-level)
 
 **Description:** `plugin.json` must exist at the plugin root.
 
@@ -523,7 +736,7 @@ examples are ignored to avoid false positives.
 
 ### DOC-5002: Invalid skill directory name
 
-**Rule:** `structure-skill-directory-name` · **Severity:** error · **Category:** structure · **Autofix:** Yes (rename)
+**Rule:** `structure-skill-directory-name` · **Severity:** error · **Category:** structure · **Autofix:** Yes (rename) · **Reachability:** disk (rule-level)
 
 **Description:** Skill directories under `skills/` must be named after the
 skill, using the skill-name pattern (lowercase alphanumerics and hyphens,
@@ -543,7 +756,7 @@ itself valid (e.g. to `skills/my-skill`).
 
 ### DOC-5003: Unexpected file at plugin root
 
-**Rule:** `structure-extra-files` · **Severity:** info · **Category:** structure · **Autofix:** No
+**Rule:** `structure-extra-files` · **Severity:** info · **Category:** structure · **Autofix:** No · **Reachability:** disk (rule-level)
 
 **Description:** Reports files at the plugin root that are not part of the
 plugin structure. Informational only — does not affect the exit code.
@@ -565,7 +778,7 @@ config) and reverse-domain extension directories are not reported.
 
 ### DOC-6001: Unsupported spec version
 
-**Rule:** `compatibility-spec-version` · **Severity:** error · **Category:** compatibility · **Autofix:** No
+**Rule:** `compatibility-spec-version` · **Severity:** error · **Category:** compatibility · **Autofix:** No · **Reachability:** SDK-only (shadowed by DOC-1008)
 
 **Description:** The plugin must declare a spec version this validator
 supports (currently v1.0.0).
@@ -580,14 +793,14 @@ supports (currently v1.0.0).
 ```
 
 **Fix:** Declare a supported `$schema`. Note: unsupported `$schema` values
-are rejected at load time (exit 3) before rules run, so this rule fires
-mainly for programmatically-built plugins.
+are rejected at parse time as a `DOC-1008` parser diagnostic (exit 1) before
+rules run, so this rule fires mainly for programmatically-built plugins.
 
 ---
 
 ### DOC-6002: Deprecated field
 
-**Rule:** `compatibility-deprecated-fields` · **Severity:** warning · **Category:** compatibility · **Autofix:** Yes (rename or remove)
+**Rule:** `compatibility-deprecated-fields` · **Severity:** warning · **Category:** compatibility · **Autofix:** Yes (rename or remove) · **Reachability:** dead in v1.0.0 (SDK-only with a custom map)
 
 **Description:** Deprecated manifest fields must be migrated to their
 replacements. The Agent Plugins v1.0.0 spec deprecates no fields, so this
@@ -602,7 +815,7 @@ rule is silent by default; the mechanism is ready for future spec versions.
 
 ### DOC-7001: Non-canonical JSON formatting
 
-**Rule:** `format-json-formatting` · **Severity:** info · **Category:** format · **Autofix:** Yes (reformat)
+**Rule:** `format-json-formatting` · **Severity:** info · **Category:** format · **Autofix:** Yes (reformat) · **Reachability:** disk (rule-level)
 
 **Description:** `plugin.json` and `mcp.json` should be formatted with
 2-space indentation and a trailing newline.
@@ -623,7 +836,7 @@ trailing newline). Informational — does not affect the exit code.
 
 ### DOC-7002: Frontmatter style issues
 
-**Rule:** `format-frontmatter-style` · **Severity:** info · **Category:** format · **Autofix:** Yes (normalize)
+**Rule:** `format-frontmatter-style` · **Severity:** info · **Category:** format · **Autofix:** Yes (normalize) · **Reachability:** disk (rule-level)
 
 **Description:** SKILL.md frontmatter should use LF line endings, no trailing
 whitespace on frontmatter lines, and proper `---` delimiters (no UTF-8 BOM).
@@ -641,15 +854,22 @@ Informational — does not affect the exit code.
 
 | Range     | Count  | Severities                              | With fixes |
 | --------- | ------ | --------------------------------------- | ---------- |
-| DOC-1xxx  | 7      | 5 error, 2 warning                      | 4          |
-| DOC-2xxx  | 6      | 5 error, 1 warning                      | 2          |
-| DOC-3xxx  | 6      | 6 error                                 | 2          |
+| DOC-1xxx  | 8      | 6 error, 2 warning                      | 4          |
+| DOC-2xxx  | 7      | 6 error, 1 warning                      | 2          |
+| DOC-3xxx  | 7      | 7 error                                 | 2          |
 | DOC-4xxx  | 3      | 3 critical                              | 0          |
 | DOC-5xxx  | 3      | 2 error, 1 info                         | 1          |
 | DOC-6xxx  | 2      | 1 error, 1 warning                      | 1          |
 | DOC-7xxx  | 2      | 2 info                                  | 2          |
-| **Total** | **29** | 19 error, 4 warning, 3 critical, 3 info | 12         |
+| **Total** | **32** | 22 error, 4 warning, 3 critical, 3 info | 12         |
 
-See [RULES.md](RULES.md) for the rule implementations behind these codes and
-[SPEC_SUPPORT.md](SPEC_SUPPORT.md) for coverage details (including which
-codes are reachable from disk and which are enforced by the schemas first).
+`DOC-1008`, `DOC-2099`, and `DOC-3007` (3 of the 22 errors across the
+DOC-1xxx, DOC-2xxx, and DOC-3xxx rows) are emitted by the parser, not by a
+rule. See [RULES.md](RULES.md) for the rule implementations behind the
+remaining codes and [SPEC_SUPPORT.md](SPEC_SUPPORT.md) for coverage details.
+
+By reachability: 20 codes are disk-reachable (3 of them parser-level), 11 are
+SDK-only, and 1 (`DOC-6002`) is intentionally dead under the v1.0.0 default
+configuration. This catalog's
+[Diagnostic Reachability](#diagnostic-reachability) table is the authoritative
+per-code classification.

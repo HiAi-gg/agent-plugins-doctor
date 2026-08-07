@@ -23,6 +23,7 @@ export const jsonFormattingRule: Rule = {
     'JSON files should be formatted with 2-space indentation and a trailing newline.',
   enabledByDefault: true,
   files: ['./plugin.json', './mcp.json'],
+  requiresPlugin: false,
 
   check(ctx) {
     const diagnostics = [];

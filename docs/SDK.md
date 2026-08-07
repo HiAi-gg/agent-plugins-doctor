@@ -12,14 +12,14 @@ on.
 
 ## Overview
 
-| Package                              | Purpose                                                     | Key exports                                                                                   |
-| ------------------------------------ | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `@agent-plugin-doctor/core`          | Canonical types, spec constants, diagnostics, path security | `resolveSpecVersion`, `resolvePluginPath`, `isWithinPath`, all domain types                   |
-| `@agent-plugin-doctor/parser`        | Filesystem loading and parsing                              | `loadPlugin`, `parsePluginManifest`, `parseMcpConfig`, `parseSkillFrontmatter`, error classes |
-| `@agent-plugin-doctor/rules`         | Validation engine, rule registry, auto-fixes                | `validatePlugin`, `applyFixes`, `createDefaultRegistry`, `ValidationEngine`                   |
-| `@agent-plugin-doctor/compatibility` | Client-compatibility checking                               | `checkCompatibility`, `createDefaultClientRegistry`, `CompatibilityChecker`                   |
-| `@agent-plugin-doctor/report`        | Report rendering                                            | `generateReport`, `getFormatter` (`human` \| `json` \| `markdown`)                            |
-| `@agent-plugin-doctor/cli`           | CLI wrapper and the exit-code contract                      | `createProgram`, `main`, `computeExitCode`, `EXIT_CODES`                                      |
+| Package                              | Purpose                                                     | Key exports                                                                                                 |
+| ------------------------------------ | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `@agent-plugin-doctor/core`          | Canonical types, spec constants, diagnostics, path security | `resolveSpecVersion`, `resolvePluginPath`, `isWithinPath`, all domain types                                 |
+| `@agent-plugin-doctor/parser`        | Filesystem loading and parsing                              | `loadPlugin`, `scanPlugin`, `parsePluginManifest`, `parseMcpConfig`, `parseSkillFrontmatter`, error classes |
+| `@agent-plugin-doctor/rules`         | Validation engine, rule registry, auto-fixes                | `validatePlugin`, `applyFixes`, `createDefaultRegistry`, `ValidationEngine`                                 |
+| `@agent-plugin-doctor/compatibility` | Client-compatibility checking                               | `checkCompatibility`, `createDefaultClientRegistry`, `CompatibilityChecker`, `CompatibilityLevel`           |
+| `@agent-plugin-doctor/report`        | Report rendering                                            | `generateReport`, `getFormatter` (`human` \| `json` \| `markdown`)                                          |
+| `@agent-plugin-doctor/cli`           | CLI wrapper and the exit-code contract                      | `createProgram`, `main`, `computeExitCode`, `EXIT_CODES`                                                    |
 
 The typical pipeline:
 
@@ -102,7 +102,7 @@ The `v1` namespace re-exports the v1.0.0 constants directly (see below), and
 | `SPEC_VERSION`              | `'1.0.0'`                                                      |
 | `PLUGIN_SCHEMA_URL`         | `'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json'` |
 | `MCP_SCHEMA_URL`            | `'https://agent-plugins.org/schemas/1.0.0/mcp.schema.json'`    |
-| `NAME_PATTERN`              | `/^(?!.*(?:--                                                  | \.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/` |
+| `NAME_PATTERN`              | `/^(?!.*(?:--\|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/`       |
 | `NAME_MAX_LENGTH`           | `64`                                                           |
 | `SKILL_NAME_PATTERN`        | `/^(?!.*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/`                  |
 | `SKILL_NAME_MAX_LENGTH`     | `64`                                                           |
@@ -202,8 +202,10 @@ interface Fix {
 
 ```ts
 interface ValidationResult {
-  plugin: Plugin;
-  specVersion: string;
+  // null when validated from a ScanResult whose plugin.json could not be
+  // loaded (scan mode); the report formatters render "(unavailable)" then.
+  plugin: Plugin | null;
+  specVersion: string; // '' when the plugin could not be loaded
   diagnostics: Diagnostic[];
   summary: ValidationSummary;
   compatible: boolean;
@@ -223,11 +225,17 @@ interface ValidationSummary {
 
 #### `CompatibilityResult`
 
+A per-client compatibility entry merged into `ValidationResult.compatibility`.
+`compatible` is derived from `level` (`true` only for `'full'`).
+
 ```ts
 interface CompatibilityResult {
   clientId: string;
   clientName: string;
-  compatible: boolean;
+  level: 'full' | 'partial' | 'unsupported' | 'unknown';
+  compatible: boolean; // derived: level === 'full'
+  working: string[]; // capabilities the plugin uses that the client supports
+  unsupported: string[]; // capabilities the plugin uses that the client lacks
   issues: string[]; // human-readable issue messages
   evidence: 'docs' | 'runtime' | 'expected' | 'none';
 }
@@ -298,20 +306,29 @@ follows the spec's failure-isolation rules: `plugin.json` failures are fatal,
 while `mcp.json`, skill, and extension failures are isolated to their
 component type.
 
-### 2.1 `loadPlugin(rootDir: string, options?: LoadOptions): Promise<Plugin>`
+### 2.1 `loadPlugin(rootDir: string, options?: LoadOptions): Promise<LoadResult>`
 
 Loads a complete plugin from a directory.
 
 - **Parameters**
   - `rootDir` — absolute path to the plugin root.
   - `options` — optional; see `LoadOptions` below.
-- **Returns** a fully loaded `Plugin`.
+- **Returns** a `LoadResult` containing the (possibly partial) `Plugin` and
+  the raw parse diagnostics collected while loading it.
 - **Description** Discovers and parses `plugin.json` (required), `mcp.json`
   (optional), `SKILL.md` files in immediate children of `skills/` (fixed
   depth), and reverse-domain extension directories. Enforces path security
   through `resolvePluginPath`; plugin code is never executed. When
   `options.cache` is provided, unchanged files are served from the parsed-file
   cache instead of being re-parsed.
+- **Failure isolation** follows the spec: `plugin.json` failures are fatal
+  (throws), while a skill that fails to load (malformed frontmatter, invalid
+  YAML, missing required fields, or a `SKILL.md` that escapes the plugin root)
+  is omitted from the plugin and reported as a `DOC-2099` parse diagnostic in
+  `parseDiagnostics` instead of being silently dropped. Other skills still
+  load. Callers that run rules should merge `parseDiagnostics` into the rule
+  diagnostics (see the CLI's `loadAndValidate`) so malformed input is a
+  validation error (exit 1).
 - **Errors**
   - `LoadError` — root missing or not a directory, `plugin.json` missing or
     escaping the root, or an unsupported `$schema`.
@@ -321,8 +338,21 @@ Loads a complete plugin from a directory.
 ```ts
 import { loadPlugin } from '@agent-plugin-doctor/parser';
 
-const plugin = await loadPlugin('./my-plugin');
-console.log(plugin.manifest.name, plugin.skills.length);
+const { plugin, parseDiagnostics } = await loadPlugin('./my-plugin');
+console.log(
+  plugin.manifest.name,
+  plugin.skills.length,
+  parseDiagnostics.length,
+);
+```
+
+#### `LoadResult`
+
+```ts
+interface LoadResult {
+  plugin: Plugin; // partially loaded; failed skills are omitted
+  parseDiagnostics: Diagnostic[]; // DOC-2099 parse/load errors, ruleId "parser"
+}
 ```
 
 #### `LoadOptions`
@@ -336,6 +366,72 @@ interface LoadOptions {
 When `cache` is provided, `plugin.json`, `mcp.json`, and each SKILL.md are
 re-parsed only when their mtime or size changed. A single cache instance can
 be shared across plugins and calls (watch mode, incremental validation).
+
+#### `scanPlugin(rootDir: string, options?: ScanOptions): Promise<ScanResult>`
+
+Diagnostic-oriented variant of `loadPlugin`: scans a plugin directory and
+**never throws**. Every parse/schema/load error is collected into
+`ScanResult.diagnostics`, and the components that loaded successfully are
+still returned so the validation engine can run rules on the partial plugin
+without executing any plugin code. Malformed input is a validation error
+(exit 1), not a tool failure (exit 3).
+
+- **Parameters**
+  - `rootDir` — absolute path to the plugin root.
+  - `options` — optional; `ScanOptions` currently equals `LoadOptions`
+    (shared parsed-file cache).
+- **Returns** a `ScanResult`:
+  ```ts
+  interface ScanResult {
+    rootDir: string; // absolute path of the scanned plugin root
+    plugin: Plugin | null; // null when plugin.json could not be loaded
+    diagnostics: Diagnostic[]; // all parse/schema/load errors, ruleId "parser"
+    loaded: {
+      manifest: boolean; // plugin.json read, parsed, and validated
+      mcpConfig: boolean; // mcp.json present and loaded
+      skills: number; // skills loaded successfully
+      skillsFailed: number; // discovered skills that failed to load
+      extensions: number; // extensions discovered
+    };
+  }
+  ```
+- **Failure isolation** mirrors `loadPlugin`: a `plugin.json` failure leaves
+  `plugin` null but scanning continues over the remaining components, so a
+  broken manifest does not hide skill or mcp.json problems. Skills that fail
+  to load are reported as `DOC-2099`, a top-level `mcp.json` failure as
+  `DOC-3007` (one diagnostic per schema violation), and a manifest failure as
+  `DOC-1008` (one diagnostic per schema violation). All are severity `error`
+  with `ruleId: "parser"`.
+
+```ts
+import { scanPlugin } from '@agent-plugin-doctor/parser';
+
+const { plugin, diagnostics, loaded } = await scanPlugin('./my-plugin');
+console.log(plugin?.manifest.name, loaded.skills, loaded.skillsFailed);
+for (const d of diagnostics) console.log(d.code, d.message);
+```
+
+#### When to use `scanPlugin` vs `loadPlugin`
+
+- **`loadPlugin()`** — strict loading for SDK consumers that require a fully
+  valid parsed plugin. Throws on errors (`LoadError`, `ParseError`,
+  `SchemaValidationError`).
+- **`scanPlugin()`** — diagnostic-oriented loading for maximum diagnostic
+  yield. Collects errors as diagnostics and returns a partial plugin; it
+  never throws.
+
+#### Exit code semantics
+
+With `scanPlugin()`:
+
+- Malformed user input → exit 1 (validation error)
+- Tool failure (filesystem inaccessible) → exit 3 (tool failure)
+
+This differs from `loadPlugin()`, where malformed input throws and the caller
+must map the exception to a tool failure (exit 3). In the CLI this is
+observable: `check`, `fix`, and `report` load via `scanPlugin`, so a broken
+plugin is a validation error (exit 1), and only an inaccessible root or an
+internal rule failure (`DOC-0000`) is a tool failure (exit 3).
 
 ### 2.2 `parsePluginManifest(filePath: string): PluginManifest`
 
@@ -374,11 +470,11 @@ Parses SKILL.md content into frontmatter and body, using gray-matter.
   }
   ```
 - **Description** Handles quoted strings, multiline descriptions, BOM
-  stripping, YAML lists, and normalizes `allowed-tools` to a string array
-  (a space-separated string is split; a YAML list is accepted as-is).
+  stripping, YAML lists, and preserves `allowed-tools` verbatim (any YAML
+  value — the DOC-2005 rule diagnoses non-string forms; see
+  `AllowedToolsValue` below).
 - **Throws** `ParseError` when the file does not start with `---`, the YAML
-  is malformed, `name`/`description` are missing, or `allowed-tools` has an
-  invalid type.
+  is malformed, or `name`/`description` are missing.
 
 ```ts
 import { parseSkillFrontmatter } from '@agent-plugin-doctor/parser';
@@ -475,9 +571,10 @@ The validation engine, rule registry, and auto-fix engine. 29 rules across 7
 categories run by default. See [DIAGNOSTICS.md](DIAGNOSTICS.md) for the rule
 catalog and [RULES.md](RULES.md) for implementation details.
 
-### 3.1 `validatePlugin(plugin: Plugin, options?: ValidationOptions): Promise<ValidationResult>`
+### 3.1 `validatePlugin(pluginOrScanResult: Plugin | ScanResult, options?: ValidationOptions): Promise<ValidationResult>`
 
-Validates a loaded plugin with the default registry.
+Validates a plugin with the default registry. Accepts either a loaded
+`Plugin` (strict mode) or a `ScanResult` from `scanPlugin` (diagnostic mode).
 
 - **Description** Runs every applicable rule (honoring `enabledByDefault`,
   `options.rules`, `options.excludeRules`, and spec-version support), attaches
@@ -485,15 +582,31 @@ Validates a loaded plugin with the default registry.
   When `options.fix` is true, available fixes are applied to disk during
   validation. Diagnostics are sorted deterministically (severity, code, file,
   message).
+- **Scan mode** — when given a `ScanResult`, the parser's parse/schema/load
+  diagnostics (`ruleId: "parser"`) are merged ahead of the rule diagnostics,
+  so malformed input is reported as a validation error (exit 1) rather than
+  silently dropped. When `scanResult.plugin` is null (plugin.json could not
+  be loaded), the returned `ValidationResult.plugin` is null, `specVersion`
+  is `''`, and only the rules that inspect the raw tree
+  (`requiresPlugin: false`: structure and JSON-formatting rules) run; rules
+  that need the loaded plugin model are skipped. The result's summary and
+  exit code are computed over the merged diagnostic set.
 - **Does not throw** for invalid plugins — problems are returned as
   diagnostics. A rule that throws internally becomes a `DOC-0000` diagnostic.
 - **Errors** None (invalid plugins are reported, not thrown).
 
 ```ts
 import { validatePlugin } from '@agent-plugin-doctor/rules';
+import { scanPlugin } from '@agent-plugin-doctor/parser';
 
+// Strict mode: a loaded plugin.
 const result = await validatePlugin(plugin, { strict: true });
 console.log(result.summary.counts); // { info, warning, error, critical }
+
+// Diagnostic mode: scan results, merged with rule diagnostics.
+const scanResult = await scanPlugin('./my-plugin');
+const merged = await validatePlugin(scanResult);
+console.log(merged.plugin?.manifest.name); // null when plugin.json failed
 ```
 
 ### 3.2 `validateIncremental(plugin: Plugin, previous: ValidationResult, changedFiles: string[], options?: ValidationOptions): Promise<ValidationResult>`
@@ -530,12 +643,14 @@ const result = await validateIncremental(plugin, previousResult, [
 `new ValidationEngine(registry: RuleRegistry)` — runs rules from a custom
 registry.
 
-- `validate(plugin, options?)` — same as `validatePlugin` with the engine's registry.
+- `validate(pluginOrScanResult, options?)` — same as `validatePlugin` with the
+  engine's registry (accepts `Plugin | ScanResult`).
 - `validateIncremental(plugin, previous, changedFiles, options?)` — same as
   `validateIncremental` with the engine's registry.
-- `runRules(plugin, rules)` — runs a specific rule list over a plugin
+- `runRules(plugin, rootDir, rules)` — runs a specific rule list over a plugin
   (normalizing `ruleId`/`category` and attaching fixes); exposed for engines
-  that compose rule subsets.
+  that compose rule subsets. `plugin` may be null only when every rule
+  declares `requiresPlugin: false`.
 - `computeSummary(diagnostics)` — public helper returning `ValidationSummary`.
 - `computeExitCode(diagnostics, options?)` — public helper mirroring the CLI
   exit-code contract (3 > 2 > 1 > 0).
@@ -580,6 +695,8 @@ interface Rule {
   enabledByDefault: boolean;
   files?: string[]; // plugin-relative raw files read in check(); used by
   // incremental validation to decide when the rule must re-run
+  requiresPlugin?: boolean; // false = reads only rootDir, so it runs even when
+  // no plugin model was loaded (scan mode); defaults to true
   check(ctx: RuleContext): Diagnostic[];
   fix?(ctx: RuleContext, diagnostic: Diagnostic): Fix | null;
 }
@@ -593,7 +710,9 @@ interface RuleContext {
 Rules are plain objects — register custom rules by implementing this shape.
 Raw-file rules (those that read parser-stripped data from disk, e.g.
 `manifest-unknown-fields`) declare `files` so incremental validation re-runs
-them precisely.
+them precisely. Rules that inspect only the raw tree (e.g. the structure and
+JSON-formatting rules) declare `requiresPlugin: false` so they still run in
+scan mode when `plugin.json` could not be loaded.
 
 ### 3.7 `applyFixes(rootDir: string, diagnostics: Diagnostic[], options?: ApplyFixesOptions): Promise<FixResult>`
 
@@ -654,9 +773,13 @@ Checks a plugin against every client in the registry.
 - **Returns** `CompatibilityResult` with one `CompatibilityCheck` per client.
 - **Description** Conservative: a missing client capability produces an
   issue instead of assuming compatibility. Errors are blocking (unsupported
-  spec version, skills, or MCP transports); warnings cover optional features
-  such as extensions that clients may safely ignore. A client is
-  `compatible` when it has no error-severity issues.
+  spec version, skills, or MCP transports); extensions are optional and
+  safely ignored per spec §8, so they only ever produce warnings or info
+  based on the client's extension support (`extensions: true` means the
+  mechanism is supported and unknown namespaces are safely ignored, §8.2).
+  Each check carries a `CompatibilityLevel` plus `working`/`unsupported`
+  capability lists and an `extensionsHandling` field; the derived
+  `compatible` field is `true` only for `FULL`.
 
 ```ts
 import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
@@ -689,6 +812,7 @@ interface ClientProfile {
   capabilities: ClientCapabilities;
   evidence: EvidenceLevel;
   source: string; // documentation URL
+  verificationNote: string; // when and against what the profile was verified
 }
 
 interface ClientCapabilities {
@@ -696,17 +820,52 @@ interface ClientCapabilities {
   mcpStdio: boolean;
   mcpStreamableHttp: boolean;
   mcpLegacySse: boolean;
+  // Whether the client supports the extension mechanism and safely ignores
+  // unknown extension namespaces (spec §8.2). This does NOT mean the client
+  // understands every namespace — that must be verified per namespace.
   extensions: boolean;
+  // Clarification of what `extensions` means for this client (e.g. which
+  // namespaces are verified, or how unknown namespaces are handled).
+  extensionsNote?: string;
 }
 
+// How a client handles the plugin's extension namespaces in a check (§8).
+type ExtensionsHandling = 'supported' | 'ignored' | 'unsupported' | 'unknown';
+// supported   — client verifiably understands the namespace(s) (explicit list)
+// ignored     — mechanism supported; unknown namespaces safely ignored (§8.2)
+// unsupported — client does not support extensions
+// unknown     — insufficient evidence about extension behavior
+
 type EvidenceLevel = 'docs' | 'runtime' | 'expected' | 'none';
+
+enum CompatibilityLevel {
+  FULL = 'full', // every plugin capability the client honors is supported
+  PARTIAL = 'partial', // some capabilities work, at least one does not
+  UNSUPPORTED = 'unsupported', // no capabilities work (e.g. spec version unsupported)
+  UNKNOWN = 'unknown', // insufficient evidence to determine (e.g. evidence: 'none')
+}
+
+// The capabilities a plugin can use; `working`/`unsupported` list these ids.
+// Extensions are not included: they are optional and safely ignored, so they
+// never appear in these lists.
+type CapabilityId = 'skills' | 'mcp-stdio' | 'mcp-streamable-http' | 'mcp-sse';
 
 interface CompatibilityCheck {
   clientId: string;
   clientName: string;
-  compatible: boolean;
+  level: CompatibilityLevel;
+  compatible: boolean; // derived: level === CompatibilityLevel.FULL
+  working: CapabilityId[];
+  unsupported: CapabilityId[];
   issues: CompatibilityIssue[];
   evidence: EvidenceLevel;
+  // How the plugin's extensions are handled; undefined when the plugin
+  // declares none. 'ignored' for `extensions: true` clients (mechanism
+  // supported, unknown namespaces safely ignored), 'unsupported' when the
+  // client lacks the mechanism, 'unknown' for profiles with
+  // `evidence: 'none'`, and 'supported' only for explicitly verified
+  // namespaces.
+  extensionsHandling?: ExtensionsHandling;
 }
 
 interface CompatibilityIssue {
@@ -848,8 +1007,17 @@ export interface SkillFrontmatter {
   license?: string;
   compatibility?: string;
   metadata?: Record<string, string>;
-  'allowed-tools'?: string | string[]; // normalized to string[] by the parser
+  'allowed-tools'?: AllowedToolsValue; // raw YAML value, preserved verbatim
 }
+
+/**
+ * The YAML value of the `allowed-tools` frontmatter field. The Agent Skills
+ * spec defines it as a space-separated string; the parser preserves any
+ * value verbatim and the DOC-2005 rule diagnoses non-string forms (YAML list
+ * → warning, any other type → error).
+ */
+export type AllowedToolsValue =
+  string | number | boolean | unknown[] | Record<string, unknown>;
 
 export interface McpConfig {
   $schema: string;
@@ -956,8 +1124,16 @@ Doctor distinguishes two kinds of failure:
 
 1. **Plugin problems** — returned as `Diagnostic[]`, never thrown.
    `validatePlugin`, `checkCompatibility`, and `applyFixes` do not throw for
-   invalid plugins.
-2. **Tool failures** — thrown by the loader/parser. Map to exit code `3`:
+   invalid plugins. Manifest load failures (malformed or schema-invalid
+   `plugin.json`), skill-level load failures (malformed `SKILL.md`, invalid
+   frontmatter), and invalid `mcp.json` are also plugin problems: the CLI
+   loads via `scanPlugin`, which never throws and returns them as
+   `DOC-1008`/`DOC-2099`/`DOC-3007` parser diagnostics, driving exit code `1`
+   (validation error).
+2. **Tool failures** — thrown by the strict `loadPlugin`/parser APIs for the
+   plugin as a whole, and by the CLI only when the plugin root is
+   inaccessible (missing directory) or a rule fails internally (`DOC-0000`).
+   Map to exit code `3`:
 
 | Error                   | When                                                                          | Fields             |
 | ----------------------- | ----------------------------------------------------------------------------- | ------------------ |
@@ -965,15 +1141,28 @@ Doctor distinguishes two kinds of failure:
 | `ParseError`            | unreadable/invalid JSON or YAML                                               | `file`, `cause?`   |
 | `SchemaValidationError` | manifest/MCP violates the vendored schemas                                    | `file`, `errors[]` |
 
-Recommended pattern (mirrors the CLI and Builder):
+Recommended pattern (mirrors the CLI and Builder). The CLI uses `scanPlugin`
+and passes the `ScanResult` to `validatePlugin`, which merges the parser
+diagnostics ahead of the rule diagnostics so malformed input is a validation
+error (exit 1). The same merge can be done manually with the strict
+`loadPlugin` (skills that failed to load):
 
 ```ts
+import { loadPlugin } from '@agent-plugin-doctor/parser';
+import { validatePlugin, computeSummary } from '@agent-plugin-doctor/rules';
+import { generateReport } from '@agent-plugin-doctor/report';
+import { computeExitCode } from '@agent-plugin-doctor/cli';
+
 try {
-  const plugin = await loadPlugin(dir);
+  const { plugin, parseDiagnostics } = await loadPlugin(dir);
   const result = await validatePlugin(plugin);
+  const diagnostics = [...parseDiagnostics, ...result.diagnostics];
   return {
-    exitCode: computeExitCode(result.diagnostics),
-    report: generateReport(result, { format: 'human' }),
+    exitCode: computeExitCode(diagnostics),
+    report: generateReport(
+      { ...result, diagnostics, summary: computeSummary(diagnostics) },
+      { format: 'human' },
+    ),
   };
 } catch (error) {
   // LoadError | ParseError | SchemaValidationError -> tool failure
@@ -1000,14 +1189,14 @@ import { generateReport } from '@agent-plugin-doctor/report';
 import { computeExitCode } from '@agent-plugin-doctor/cli';
 
 // 1. Load
-const plugin = await loadPlugin('./my-plugin');
+const { plugin, parseDiagnostics } = await loadPlugin('./my-plugin');
 
 // 2. Validate
 const result = await validatePlugin(plugin);
 
 // 3. Apply safe fixes, then re-validate
 const fixOutcome = await applyFixes(plugin.rootDir, result.diagnostics);
-const fixed = await loadPlugin('./my-plugin');
+const { plugin: fixed } = await loadPlugin('./my-plugin');
 const after = await validatePlugin(fixed);
 
 // 4. Compatibility
@@ -1056,7 +1245,7 @@ const customRule: Rule = {
 const registry = createDefaultRegistry();
 registry.register(customRule);
 
-const plugin = await loadPlugin('./my-plugin');
+const { plugin } = await loadPlugin('./my-plugin');
 const result = await validatePlugin(plugin); // default registry; pass your own
 // To use the custom registry: new ValidationEngine(registry).validate(plugin)
 ```
@@ -1079,7 +1268,8 @@ registry.register({
     mcpStdio: true,
     mcpStreamableHttp: true,
     mcpLegacySse: false,
-    extensions: false,
+    extensions: true, // mechanism supported; unknown namespaces safely ignored
+    extensionsNote: 'Safely ignores unknown namespaces per spec §8.2',
   },
   evidence: 'docs',
   source: 'https://example.com/docs',

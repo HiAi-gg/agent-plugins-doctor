@@ -5,6 +5,7 @@
 // COLLAPSIBLE_THRESHOLD diagnostics are wrapped in <details> elements.
 
 import type {
+  CompatibilityLevel,
   CompatibilityResult,
   Diagnostic,
   Severity,
@@ -51,12 +52,14 @@ export class MarkdownReportFormatter implements ReportFormatter {
   }
 
   private formatHeader(result: ValidationResult): string {
+    const name =
+      result.plugin === null ? '(unavailable)' : result.plugin.manifest.name;
     return [
       '# Agent Plugin Doctor Report',
       '',
       '## Plugin',
-      `- **Name:** ${result.plugin.manifest.name}`,
-      `- **Spec Version:** ${result.specVersion}`,
+      `- **Name:** ${name}`,
+      `- **Spec Version:** ${result.specVersion || 'unknown'}`,
     ].join('\n');
   }
 
@@ -123,7 +126,7 @@ export class MarkdownReportFormatter implements ReportFormatter {
 
   private formatCompatibility(compatibility: CompatibilityResult[]): string {
     const rows = compatibility.map((entry) => {
-      const status = entry.compatible ? '✓ Compatible' : '✗ Incompatible';
+      const status = this.statusLabel(entry.level);
       return `| ${entry.clientName} | ${status} |`;
     });
     return [
@@ -133,6 +136,20 @@ export class MarkdownReportFormatter implements ReportFormatter {
       '|--------|--------|',
       ...rows,
     ].join('\n');
+  }
+
+  /** Level-aware status label for the compatibility matrix. */
+  private statusLabel(level: CompatibilityLevel): string {
+    switch (level) {
+      case 'full':
+        return '✓ Compatible';
+      case 'partial':
+        return '~ Partial';
+      case 'unsupported':
+        return '✗ Unsupported';
+      case 'unknown':
+        return '? Unknown';
+    }
   }
 
   private formatFixes(result: ValidationResult): string {

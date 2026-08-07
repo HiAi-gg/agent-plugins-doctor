@@ -24,7 +24,7 @@ found in [docs/ARCHITECTURE.md](ARCHITECTURE.md),
 - Version-isolated spec layer (`spec/v1/`, future `spec/v2/` — ADR-004)
 - Vendored schemas (never fetched at runtime)
 - Rules declare supported spec versions
-- Clear error message for unsupported versions (exit 3)
+- Clear error message for unsupported versions (DOC-1008 diagnostic, exit 1)
 
 **Status:** ✅ Mitigated
 

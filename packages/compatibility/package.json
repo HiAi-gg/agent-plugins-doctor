@@ -1,16 +1,37 @@
 {
   "name": "@agent-plugin-doctor/compatibility",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "description": "Client compatibility checking for Agent Plugin Doctor",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HiAi-gg/agent-plugin-doctor.git",
+    "directory": "packages/compatibility"
+  },
+  "bugs": "https://github.com/HiAi-gg/agent-plugin-doctor/issues",
+  "homepage": "https://github.com/HiAi-gg/agent-plugin-doctor#readme",
+  "license": "MIT",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "bun build ./src/index.ts --outdir ./dist",
-    "clean": "rm -rf dist"
+    "build": "bun build ./src/index.ts --outdir ./dist --target node && tsc --emitDeclarationOnly --declaration --outDir ./dist --rootDir ./src --target ES2022 --module ES2022 --moduleResolution bundler --esModuleInterop --resolveJsonModule --skipLibCheck --strict src/index.ts && cp ../../LICENSE ./dist/LICENSE && cp ../../README.md ./dist/README.md",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@agent-plugin-doctor/core": "workspace:*"
+    "@agent-plugin-doctor/core": "^0.0.2"
   },
   "devDependencies": {
     "typescript": "^5.9.0"

@@ -44,7 +44,15 @@ export interface Fix {
 }
 
 export interface ValidationResult {
-  plugin: Plugin;
+  /**
+   * The validated plugin, or null when it was validated from a scan result
+   * whose plugin.json could not be loaded (see ScanResult).
+   */
+  plugin: Plugin | null;
+  /**
+   * The resolved spec version, or '' when unknown (plugin is null because the
+   * manifest could not be loaded).
+   */
   specVersion: string;
   diagnostics: Diagnostic[];
   summary: ValidationSummary;
@@ -58,10 +66,27 @@ export interface ValidationSummary {
   byCategory: Record<RuleCategory, number>;
 }
 
+/**
+ * Compatibility level of a client check.
+ *
+ * Aligned with the `CompatibilityLevel` enum in
+ * `@agent-plugin-doctor/compatibility` (identical string values):
+ * `full` | `partial` | `unsupported` | `unknown`. Core keeps its own type so
+ * the foundation package stays dependency-free; the CLI bridge converts
+ * between the two.
+ */
+export type CompatibilityLevel = 'full' | 'partial' | 'unsupported' | 'unknown';
+
 export interface CompatibilityResult {
   clientId: string;
   clientName: string;
+  level: CompatibilityLevel;
+  /** Derived from `level`: `true` only for `'full'`. */
   compatible: boolean;
+  /** Capabilities the plugin uses that the client supports. */
+  working: string[];
+  /** Capabilities the plugin uses that the client does not support. */
+  unsupported: string[];
   issues: string[];
   evidence: 'docs' | 'runtime' | 'expected' | 'none';
 }

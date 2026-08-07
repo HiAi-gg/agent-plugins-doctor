@@ -53,11 +53,11 @@ describe('structure/extra-files (DOC-5003)', () => {
     const root = makeTempDir();
     try {
       writeTree(root, { 'plugin.json': '{}' });
-      mkdirSync(join(root, 'scripts'));
+      mkdirSync(join(root, 'random-dir'));
       const plugin = makePlugin({ rootDir: root });
       const diagnostics = checkRule(extraFilesRule, plugin, root);
       const scriptDiag = byCode(diagnostics, 'DOC-5003').find((d) =>
-        d.message.includes('scripts'),
+        d.message.includes('random-dir'),
       );
       expect(scriptDiag?.message).toContain('directory');
     } finally {

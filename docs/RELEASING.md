@@ -100,14 +100,23 @@ git push origin v0.1.0
 ## 7. Publish to npm (when ready)
 
 The packages are published from the `packages/*` workspaces. Doctor is not yet
-published; when it is:
+published; when it is, use the publish automation
+([PUBLISHING.md](../PUBLISHING.md)):
 
 ```bash
-# From each package directory (or via a release tool), in dependency order:
+# Build all packages and show exactly what would be published (safe)
+bun run publish:dry-run
+
+# Build all packages and publish in dependency order
 # core → parser → compatibility → report → rules → cli
-npm publish packages/core
-# ...
+bun run publish:all
 ```
+
+`scripts/publish.ts` builds first, verifies that all six packages share one
+version, checks `npm whoami` (real publish only), and publishes each package
+from its own directory via `npm publish` (or `npm publish --dry-run` in dry
+run mode). Each package's `prepublishOnly` runs `bun run build` again as a
+safety net, so the tarball always matches the source on disk.
 
 The CLI package's `bin` field (`agent-plugin-doctor`) makes it available via
 `bunx agent-plugin-doctor` once published.

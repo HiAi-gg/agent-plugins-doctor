@@ -26,21 +26,25 @@ import { computeExitCode } from '@agent-plugin-doctor/cli';
 
 1. **Load** the generated plugin with `loadPlugin(outputDir)` — it discovers
    and parses `plugin.json`, `mcp.json`, and `skills/*/SKILL.md`, enforcing
-   the spec and path security (no code is ever executed).
+   the spec and path security (no code is ever executed). Skills that fail to
+   load are reported as `DOC-2099` parse diagnostics instead of being
+   silently dropped.
 2. **Validate** with `validatePlugin(plugin)` — all 29 rules across 7
-   categories run against the loaded plugin.
+   categories run against the loaded plugin. The example merges the parser's
+   `parseDiagnostics` into the rule diagnostics so malformed input is a
+   validation error (exit `1`).
 3. **Report** with `generateReport(result, { format: 'human' })` (also
    `'json'` and `'markdown'`) for user-facing output.
 4. **Exit** with `computeExitCode(result.diagnostics)`.
 
 ## Exit code contract
 
-| Code | Meaning                                                                           |
-| ---- | --------------------------------------------------------------------------------- |
-| `0`  | Valid (warnings/info allowed unless `--strict`)                                   |
-| `1`  | Spec validation errors                                                            |
-| `2`  | Security-critical findings                                                        |
-| `3`  | Tool failure (load/parse error, internal rule failure, or Builder-side exception) |
+| Code | Meaning                                                                                        |
+| ---- | ---------------------------------------------------------------------------------------------- |
+| `0`  | Valid (warnings/info allowed unless `--strict`)                                                |
+| `1`  | Spec validation errors (including skill parse failures, `DOC-2099`)                            |
+| `2`  | Security-critical findings                                                                     |
+| `3`  | Tool failure (plugin-level load/parse error, internal rule failure, or Builder-side exception) |
 
 `computeExitCode` is exported from `@agent-plugin-doctor/cli` so Builder's
 process exit codes always match the Doctor CLI.
@@ -48,10 +52,13 @@ process exit codes always match the Doctor CLI.
 ## Error handling
 
 Wrap the whole pipeline in `try/catch`: `loadPlugin` throws `LoadError` /
-`ParseError` / `SchemaValidationError` for unloadable plugins. Those become
-exit code `3` (tool failure). `validatePlugin` itself does not throw for
-invalid plugins — it returns diagnostics. See `validate-after-generate.ts`
-for the complete pattern.
+`ParseError` / `SchemaValidationError` for plugins that cannot be loaded at
+the plugin level. Those become exit code `3` (tool failure). Skill-level
+parse failures are **not** thrown — they are returned as `DOC-2099`
+diagnostics in `LoadResult.parseDiagnostics` and become exit code `1` once
+merged (see `validate-after-generate.ts` for the complete pattern).
+`validatePlugin` itself does not throw for invalid plugins — it returns
+diagnostics.
 
 ## Run it
 

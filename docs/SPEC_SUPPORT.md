@@ -6,10 +6,10 @@ why.
 
 ## Supported spec versions
 
-| Version                      | Status                  | Notes                                                                                              |
-| ---------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------- |
-| Agent Plugins v1.0.0         | **Supported (current)** | `$schema` `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json` and `…/mcp.schema.json`     |
-| Future versions (e.g. 2.0.0) | Not supported           | Plugins declaring them fail to load (exit 3) per the spec's "must not silently ignore" requirement |
+| Version                      | Status                  | Notes                                                                                                                        |
+| ---------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Agent Plugins v1.0.0         | **Supported (current)** | `$schema` `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json` and `…/mcp.schema.json`                               |
+| Future versions (e.g. 2.0.0) | Not supported           | Plugins declaring them surface a `DOC-1008` parser diagnostic (exit 1) per the spec's "must not silently ignore" requirement |
 
 Related standards validated alongside the core spec:
 
@@ -40,18 +40,23 @@ changes how existing versions are validated. See §5 for the mechanism.
 
 ### skills/ (Agent Skills)
 
-| Feature                | Mechanism                             | Examples                                                |
-| ---------------------- | ------------------------------------- | ------------------------------------------------------- |
-| Frontmatter parsing    | `parseSkillFrontmatter` (gray-matter) | quoted strings, multiline descriptions, YAML lists, BOM |
-| Required fields        | Parser + DOC-2002                     | `name`, `description`                                   |
-| Name/directory match   | DOC-2001, DOC-5002                    | frontmatter `name` == directory name                    |
-| Name pattern/length    | Schema-adjacent + DOC-5002            | `SKILL_NAME_PATTERN`, ≤ 64                              |
-| Description length     | DOC-2003                              | ≤ 1024 chars                                            |
-| Compatibility length   | DOC-2004                              | ≤ 500 chars                                             |
-| `allowed-tools`        | Parser normalization + DOC-2005       | list or space-separated string                          |
-| Body size              | DOC-2006                              | < 5000 tokens (recommendation)                          |
-| Body/frontmatter style | DOC-7002                              | LF endings, no BOM/trailing whitespace, delimiters      |
-| Skill discovery        | Loader                                | fixed depth: `skills/*/SKILL.md` only                   |
+| Feature                | Mechanism                             | Examples                                                                                                         |
+| ---------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Frontmatter parsing    | `parseSkillFrontmatter` (gray-matter) | quoted strings, multiline descriptions, YAML lists, BOM                                                          |
+| Required fields        | Parser + DOC-2002                     | `name`, `description`                                                                                            |
+| Name/directory match   | DOC-2001, DOC-5002                    | frontmatter `name` == directory name                                                                             |
+| Name pattern/length    | Schema-adjacent + DOC-5002            | `SKILL_NAME_PATTERN`, ≤ 64                                                                                       |
+| Description length     | DOC-2003                              | ≤ 1024 chars                                                                                                     |
+| Compatibility length   | DOC-2004                              | ≤ 500 chars                                                                                                      |
+| `allowed-tools`        | DOC-2005 (type + tokens)              | canonical space-separated string (e.g. `Bash(git:*) Bash(jq:*) Read`); YAML list = Doctor extension, not in spec |
+| Body size              | DOC-2006                              | < 5000 tokens (recommendation)                                                                                   |
+| Body/frontmatter style | DOC-7002                              | LF endings, no BOM/trailing whitespace, delimiters                                                               |
+| Skill discovery        | Loader                                | fixed depth: `skills/*/SKILL.md` only                                                                            |
+
+The space-separated string form of `allowed-tools` is canonical per the
+Agent Skills spec. The YAML list form is a Doctor extension, not
+spec-compliant: the parser preserves the raw value and DOC-2005 warns on the
+list form and errors on other non-string types (from disk and from the SDK).
 
 ### mcp.json (MCP)
 
@@ -69,12 +74,12 @@ changes how existing versions are validated. See §5 for the mechanism.
 
 ### extensions
 
-| Feature          | Mechanism                                | Examples                                      |
-| ---------------- | ---------------------------------------- | --------------------------------------------- |
-| Namespace format | Loader (reverse-domain regex) + DOC-1005 | `com.example.client`                          |
-| Path containment | `resolvePluginPath`                      | symlink/traversal escapes denied              |
-| Extension data   | Loader (best-effort)                     | `extension.json` read when present; no schema |
-| Client impact    | Compatibility checker                    | warning when a client ignores extensions      |
+| Feature          | Mechanism                                | Examples                                                                                                  |
+| ---------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Namespace format | Loader (reverse-domain regex) + DOC-1005 | `com.example.client`                                                                                      |
+| Path containment | `resolvePluginPath`                      | symlink/traversal escapes denied                                                                          |
+| Extension data   | Loader (best-effort)                     | `extension.json` read when present; no schema                                                             |
+| Client impact    | Compatibility checker                    | `extensions: true` → none (unknown namespaces safely ignored, §8.2); `false` → warning; unverified → info |
 
 ### Security (whole plugin)
 
@@ -91,9 +96,12 @@ The compatibility checker validates against 5 verified client profiles
 (docs-verified: `evidence: "docs"`): VS Code, Cursor, GitHub Copilot,
 ChatGPT & Codex (the only client without MCP legacy SSE), and Kiro. Checks
 are conservative — an unsupported spec version, skills, or MCP transport is
-an error (incompatible); unsupported extensions are a warning (optional, the
-plugin still works). See [README.md](../README.md#supported-clients) for the
-capability matrix.
+an error (incompatible); extensions are optional per §8 and all five verified
+clients have `extensions: true` (mechanism supported, unknown namespaces
+safely ignored per §8.2), so a plugin with extensions never raises a
+compatibility issue against them. See
+[README.md](../README.md#supported-clients) for the capability matrix and
+[docs/COMPATIBILITY.md](COMPATIBILITY.md) for extension semantics.
 
 ## Not validated (and why)
 
@@ -110,12 +118,16 @@ capability matrix.
 ## Known limitations
 
 1. **Schema-enforced rules are unreachable from disk.** The vendored schemas
-   already enforce name patterns, `$schema` constness, reserved env keys,
-   cwd patterns, and server types, so DOC-1002, DOC-1003, DOC-1007, DOC-3001,
-   DOC-3003, DOC-3004, DOC-6001 (and parts of DOC-4001/DOC-5002) fire only
-   for programmatically-built plugins, not from `check` on disk. This is by
-   design — the rules exist so SDK consumers get diagnostics regardless of
-   how the plugin was constructed. See [RULES.md](RULES.md#reachability-notes).
+   already enforce required fields, name patterns, `$schema` constness,
+   author strictness, reserved env keys, cwd patterns, and server types, so
+   DOC-1001, DOC-1002, DOC-1003, DOC-1006, DOC-1007, DOC-2002, DOC-3001,
+   DOC-3003, DOC-3004, DOC-4002, and DOC-6001 fire only for
+   programmatically-built plugins, not from `check` on disk (parts of
+   DOC-1005 and DOC-3006 are likewise shadowed). This is by design — the
+   rules exist so SDK consumers get diagnostics regardless of how the plugin
+   was constructed. See
+   [DIAGNOSTICS.md](DIAGNOSTICS.md#diagnostic-reachability) for the
+   authoritative per-code table.
 2. **No diagnostic ranges.** Diagnostics report plugin-relative `file` paths
    but never line/column `range`s. Human output shows the file path; it
    cannot yet point at a specific line.
@@ -131,8 +143,9 @@ capability matrix.
 6. **mcp.json failure modes.** A top-level violation (bad `$schema`,
    non-object `mcpServers`, non-object server entry) disables MCP for the
    plugin instead of failing the whole load (§7.2.2).
-7. **`allowed-tools` string fix only.** DOC-2005 can auto-fix the
-   space-separated string form; invalid types must be corrected by hand.
+7. **`allowed-tools` whitespace fix only.** DOC-2005 auto-fixes whitespace
+   in the space-separated string form; it never converts a string into a
+   YAML list, and invalid types must be corrected by hand.
 
 ## Future spec version support
 
@@ -152,9 +165,10 @@ Adding a new spec version (e.g. 2.0.0) is **additive** and requires:
    register a map with `deprecatedFieldsRule()` (rules package) once the new
    version deprecates fields.
 
-Unsupported `$schema` URLs are rejected at load time (exit 3), never
-silently ignored, so plugins for future versions fail loudly until Doctor
-adds support.
+Unsupported `$schema` URLs are rejected at load time — never silently
+ignored, so plugins for future versions fail loudly until Doctor adds
+support. In the CLI they surface as `DOC-1008` parser diagnostics (exit 1);
+the strict `loadPlugin` API throws instead.
 
 See [SDK.md](SDK.md) for the API behind these mechanisms,
 [DIAGNOSTICS.md](DIAGNOSTICS.md) for the code catalog, and

@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { expectTypeOf } from 'bun:test';
 import type {
+  AllowedToolsValue,
   Author,
   CompatibilityResult,
   Diagnostic,
@@ -181,7 +182,10 @@ describe('diagnostic types', () => {
         {
           clientId: 'client-a',
           clientName: 'Client A',
+          level: 'unsupported',
           compatible: false,
+          working: [],
+          unsupported: ['mcp-sse'],
           issues: ['x'],
           evidence: 'docs',
         },
@@ -192,6 +196,8 @@ describe('diagnostic types', () => {
     expect(result.summary.counts.error).toBe(3);
     expect(result.compatible).toBe(false);
     expect(result.compatibility[0].evidence).toBe('docs');
+    expect(result.compatibility[0].level).toBe('unsupported');
+    expect(result.compatibility[0].unsupported).toEqual(['mcp-sse']);
 
     const options: ValidationOptions = {
       fix: true,
@@ -260,7 +266,7 @@ describe('type relationships', () => {
       url?: string;
     }>();
     expectTypeOf<SkillFrontmatter>().toExtend<{
-      'allowed-tools'?: string | string[];
+      'allowed-tools'?: AllowedToolsValue;
     }>();
     expectTypeOf<DiagnosticRange>().toExtend<{
       start: { line: number; column: number };
@@ -271,6 +277,16 @@ describe('type relationships', () => {
   test('evidence is the canonical union', () => {
     expectTypeOf<CompatibilityResult['evidence']>().toEqualTypeOf<
       'docs' | 'runtime' | 'expected' | 'none'
+    >();
+  });
+
+  test('compatibility level is the canonical union', () => {
+    expectTypeOf<CompatibilityResult['level']>().toEqualTypeOf<
+      'full' | 'partial' | 'unsupported' | 'unknown'
+    >();
+    expectTypeOf<CompatibilityResult['working']>().toEqualTypeOf<string[]>();
+    expectTypeOf<CompatibilityResult['unsupported']>().toEqualTypeOf<
+      string[]
     >();
   });
 });

@@ -13,6 +13,7 @@ import chalk, {
   type ColorSupportLevel,
 } from 'chalk';
 import type {
+  CompatibilityLevel,
   CompatibilityResult,
   Diagnostic,
   Severity,
@@ -87,11 +88,13 @@ export class HumanReportFormatter implements ReportFormatter {
   }
 
   private formatHeader(result: ValidationResult): string {
+    const name =
+      result.plugin === null ? '(unavailable)' : result.plugin.manifest.name;
     const lines: string[] = [
       this.c.bold('Agent Plugin Doctor'),
       '',
-      `Plugin: ${result.plugin.manifest.name}`,
-      `Spec: Agent Plugins ${result.specVersion}`,
+      `Plugin: ${name}`,
+      `Spec: Agent Plugins ${result.specVersion || 'unknown'}`,
       '',
     ];
     const total = this.totalCount(result);
@@ -165,16 +168,33 @@ export class HumanReportFormatter implements ReportFormatter {
   private formatCompatibility(compatibility: CompatibilityResult[]): string {
     const lines = ['Compatibility:'];
     for (const entry of compatibility) {
-      if (entry.compatible) {
-        lines.push(`  ${entry.clientName}: ${this.c.green('✓')}`);
-      } else {
-        lines.push(`  ${entry.clientName}: ${this.c.red('✗')}`);
+      const symbol = this.compatibilitySymbol(entry.level);
+      const suffix = entry.level === 'full' ? '' : ` (${entry.level})`;
+      lines.push(`  ${entry.clientName}: ${symbol}${suffix}`);
+      if (entry.level !== 'full') {
+        if (entry.unsupported.length > 0) {
+          lines.push(`    Unsupported: ${entry.unsupported.join(', ')}`);
+        }
         for (const issue of entry.issues) {
           lines.push(`    ${issue}`);
         }
       }
     }
     return lines.join('\n');
+  }
+
+  /** Level-aware status symbol: ✓ full, ~ partial, ✗ unsupported, ? unknown. */
+  private compatibilitySymbol(level: CompatibilityLevel): string {
+    switch (level) {
+      case 'full':
+        return this.c.green('✓');
+      case 'partial':
+        return this.c.yellow('~');
+      case 'unsupported':
+        return this.c.red('✗');
+      case 'unknown':
+        return this.c.dim('?');
+    }
   }
 
   private formatFixes(result: ValidationResult): string {

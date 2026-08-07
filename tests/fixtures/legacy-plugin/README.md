@@ -14,19 +14,20 @@ A plugin that declares an outdated spec version (`0.9.0`) in its `$schema`.
 agent-plugin-doctor check tests/fixtures/legacy-plugin
 ```
 
-Exit code: `3` (tool/load failure)
+Exit code: `1` (validation error)
 
-Output (stderr):
+Output (stdout):
 
 ```
-Failed to load plugin: plugin.json does not conform to plugin.schema.json (1 violation)
+ERROR DOC-1008
+plugin.json
 ```
 
 > Note: the `compatibility-spec-version` rule (`DOC-6001` "Unsupported plugin
 > spec version") exists for programmatic use, but a 0.9.0 manifest never
 > reaches the rules engine through the CLI: `parsePluginManifest` rejects the
-> `$schema` value against the vendored 1.0.0 schema first, and `loadPlugin`
-> surfaces that as a load failure (exit 3), not a diagnostic (exit 1).
+> `$schema` value against the vendored 1.0.0 schema first, and the CLI reports
+> it as a `DOC-1008` parser diagnostic (exit 1), not a rule diagnostic.
 
 ## Setup
 

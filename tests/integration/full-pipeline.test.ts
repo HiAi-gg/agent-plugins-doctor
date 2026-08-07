@@ -6,7 +6,6 @@ import { describe, expect, test } from 'bun:test';
 import type {
   CompatibilityResult,
   Diagnostic,
-  Plugin,
   ValidationResult,
 } from '@agent-plugin-doctor/core';
 import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
@@ -30,7 +29,7 @@ const engine = new ValidationEngine(createDefaultRegistry());
 
 /** Run the full CLI pipeline (load -> validate -> compatibility merge). */
 async function fullValidate(fixture: string): Promise<ValidationResult> {
-  const plugin: Plugin = await loadPlugin(fixturePath(fixture));
+  const { plugin } = await loadPlugin(fixturePath(fixture));
   const result = await validatePlugin(plugin);
   const compatibility = checkCompatibility(plugin);
   return {
@@ -148,6 +147,11 @@ describe('full validation pipeline', () => {
     expect(ids).toEqual(['codex', 'copilot', 'cursor', 'kiro', 'vscode']);
     for (const entry of result.compatibility) {
       expect(typeof entry.compatible).toBe('boolean');
+      expect(['full', 'partial', 'unsupported', 'unknown']).toContain(
+        entry.level,
+      );
+      expect(Array.isArray(entry.working)).toBe(true);
+      expect(Array.isArray(entry.unsupported)).toBe(true);
       expect(Array.isArray(entry.issues)).toBe(true);
       expect(['docs', 'runtime', 'expected', 'none']).toContain(entry.evidence);
     }
@@ -169,7 +173,7 @@ describe('full validation pipeline', () => {
           },
         }),
       });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       const result = await validatePlugin(plugin);
       const compat = checkCompatibility(plugin);
       const merged: ValidationResult = {
@@ -178,9 +182,12 @@ describe('full validation pipeline', () => {
       };
       const codex = merged.compatibility.find((c) => c.clientId === 'codex');
       expect(codex?.compatible).toBe(false);
+      expect(codex?.level).toBe('unsupported');
+      expect(codex?.unsupported).toEqual(['mcp-sse']);
       expect(codex?.issues.join(' ')).toContain('sse');
       const vscode = merged.compatibility.find((c) => c.clientId === 'vscode');
       expect(vscode?.compatible).toBe(true);
+      expect(vscode?.level).toBe('full');
     } finally {
       cleanup(dir);
     }

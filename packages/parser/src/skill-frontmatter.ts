@@ -1,5 +1,8 @@
 import matter from 'gray-matter';
-import type { SkillFrontmatter } from '@agent-plugin-doctor/core';
+import type {
+  AllowedToolsValue,
+  SkillFrontmatter,
+} from '@agent-plugin-doctor/core';
 import { ParseError } from './errors.js';
 
 export interface ParsedSkill {
@@ -16,7 +19,6 @@ export interface ParsedSkill {
  * - Multiline descriptions
  * - Colons in values (when quoted, as YAML requires)
  * - Empty fields
- * - YAML lists (allowed-tools can be string or array)
  *
  * @param content - Full content of SKILL.md file
  * @param filePath - File path for error messages
@@ -93,36 +95,30 @@ export function parseSkillFrontmatter(
     frontmatter.metadata = data.metadata as Record<string, string>;
   }
   if (data['allowed-tools'] !== undefined && data['allowed-tools'] !== null) {
-    frontmatter['allowed-tools'] = normalizeAllowedTools(
-      data['allowed-tools'],
-      filePath,
-    );
+    const allowedTools = data['allowed-tools'];
+    // The Agent Skills specification defines `allowed-tools` as a
+    // space-separated string (YAML scalar), so string values are preserved
+    // verbatim. Other YAML types (lists, numbers, booleans, mappings) are
+    // preserved as-is too: the DOC-2005 rule is the gatekeeper for this
+    // field and diagnoses non-string forms (YAML list → warning, anything
+    // else → error), so malformed input surfaces as a validation error
+    // rather than a load failure.
+    if (isAllowedToolsValue(allowedTools)) {
+      frontmatter['allowed-tools'] = allowedTools;
+    }
   }
 
   return { frontmatter, body };
 }
 
-/**
- * Normalize the `allowed-tools` field to a string array. The Agent Skills
- * specification defines it as a space-separated string; an explicit YAML
- * list is also accepted. Any other value is malformed.
- */
-function normalizeAllowedTools(value: unknown, filePath: string): string[] {
-  if (typeof value === 'string') {
-    return value.split(/\s+/).filter((tool) => tool.length > 0);
-  }
-  if (Array.isArray(value)) {
-    if (!value.every((tool) => typeof tool === 'string')) {
-      throw new ParseError(
-        "'allowed-tools' must be a string or a list of strings",
-        filePath,
-      );
-    }
-    return value as string[];
-  }
-  throw new ParseError(
-    "'allowed-tools' must be a string or a list of strings",
-    filePath,
+/** True for any YAML value the DOC-2005 rule knows how to diagnose. */
+function isAllowedToolsValue(value: unknown): value is AllowedToolsValue {
+  return (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean' ||
+    Array.isArray(value) ||
+    isPlainObject(value)
   );
 }
 

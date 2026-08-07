@@ -28,6 +28,8 @@ export const checkCommand = new Command('check')
       const result = await runCheck(dir, options, noColor);
       process.exitCode = result;
     } catch (cause) {
+      // Parse errors are diagnostics in result.diagnostics, not exceptions, so
+      // this only catches true tool failures (inaccessible root, etc.).
       handleCommandError(cause);
     }
   });

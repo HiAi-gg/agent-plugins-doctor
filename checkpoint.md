@@ -1,63 +1,76 @@
-# Checkpoint — Phase 16-17: Performance, Extensibility, and Release
+# Checkpoint — Phase 3.2a: CLI loads via scanPlugin
 
 ## Active intent
 
-Phase 16-17 for Agent Plugin Doctor: parser caching + bounded traversal +
-incremental validation, performance benchmarks, extensibility docs
-(ARCHITECTURE, COMPATIBILITY, EXTENSIBILITY), release preparation
-(RELEASING.md, CHANGELOG v0.1.0), and documentation of the git-tag process.
-All quality gates green.
+Switch the CLI from `loadPlugin` (strict, throws → exit 3) to `scanPlugin`
+(diagnostic-oriented, never throws) so malformed user input is a validation
+error (exit 1) with parser diagnostics instead of a tool failure (exit 3).
+All four commands (check/fix/report/compatibility) now scan; the only
+remaining exit-3 paths are an inaccessible root and internal rule failures
+(DOC-0000).
 
 ## Next action
 
-None pending. Follow-ups if desired: publish to npm (blocked until tagged —
-see docs/RELEASING.md), and keep the benchmark budgets in mind when adding
-rules (each new rule must not push 1-skill cold load over 100ms).
+None pending. All quality gates green (537 tests, typecheck, lint, prettier,
+self-hosting exit 0).
 
 ## Task tree
 
-- [x] Fix pre-existing self-hosting failure: checkpoint.md/notes.md → structure-extra-files whitelist
-- [x] Parser caching: ParsedFileCache (cache.ts) + LoadOptions wired into loadPlugin
-- [x] Bounded traversal: walkPluginFiles + constants (traverse.ts); loader discovery skips hidden/system entries
-- [x] Incremental validation: Rule.files?, ValidationEngine.validateIncremental/runRules, validateIncremental free fn
-- [x] `files` declarations on 4 raw-file rules (unknown-fields, author-strictness, deprecated-fields, json-formatting)
-- [x] Tests: cache.test.ts (8), traverse.test.ts (6), incremental.test.ts (9)
-- [x] Benchmarks: tests/benchmarks/benchmark.ts + benchmark.test.ts (5) — budgets enforced
-- [x] docs/ARCHITECTURE.md, docs/COMPATIBILITY.md, docs/EXTENSIBILITY.md, docs/RELEASING.md
-- [x] CHANGELOG.md rewritten for v0.1.0; AGENTS.md release checklist → RELEASING.md; README doc links
-- [x] SDK.md updated (parser LoadOptions/ParsedFileCache/walkPluginFiles; rules validateIncremental/runRules/files)
-- [x] api-stability.test.ts pins new exports
-- [x] EXTENSIBILITY example compile-verified (temp rule + test, then removed; DOC-2007 is free)
+- [x] `packages/cli/src/utils/run.ts`: `loadAndValidate` uses `scanPlugin()` +
+      `validatePlugin(scanResult, options)`; compatibility attached only when
+      plugin non-null; new `assertRootAccessible` (statSync → LoadError, exit
+      3 for missing/non-directory root); `mergeDiagnostics`/`isPluginLoadError`
+      kept for backward compat
+- [x] `packages/cli/src/commands/check.ts`: catch now only fires for true tool
+      failures (comment updated)
+- [x] `packages/cli/src/commands/fix.ts`: revalidation via
+      `validatePlugin(await scanPlugin(pluginDir))` (engine merges parser
+      diagnostics); unused mergeDiagnostics/computeSummary imports dropped
+- [x] `packages/cli/src/commands/report.ts`: unchanged (uses loadAndValidate)
+- [x] `packages/cli/src/commands/compatibility.ts`: scans; null plugin →
+      prints parser diagnostics + exit 1; `assertRootAccessible` before scan
+- [x] `packages/cli/src/utils/exit-codes.ts`: comment documents parser
+      diagnostics → exit 1 (logic already correct)
+- [x] `tests/e2e/scan-exit-codes.test.ts` (new): malformed plugin.json →
+      1/DOC-1008, malformed SKILL.md → 1/DOC-2099, missing $schema →
+      1/DOC-1008, inaccessible root → 3, valid → 0
+- [x] e2e fixtures updated: invalid-plugin/unicode-names/legacy-plugin/
+      future-spec exit 3 → 1 (DOC-1008); e2e fix invalid-plugin test → 1
+- [x] exit-codes.test.ts: +1 parser-diagnostic test
+- [x] Docs: fixtures READMEs (4), tests/fixtures/README.md, CHANGELOG.md,
+      MEMORY.md, docs/{ARCHITECTURE,SPEC_SUPPORT,BUILDER_INTEGRATION,RULES,
+      DIAGNOSTICS,SDK,RISK_ASSESSMENT}.md, rules-parser.test.ts comment
 
 ## Files/code
 
-- Created: packages/parser/src/{cache,traverse}.ts, packages/rules/tests/incremental.test.ts,
-  packages/parser/tests/{cache,traverse}.test.ts, tests/benchmarks/{benchmark.ts,benchmark.test.ts},
-  docs/{ARCHITECTURE,COMPATIBILITY,EXTENSIBILITY,RELEASING}.md
-- Modified: packages/parser/src/{index,plugin-loader}.ts, packages/rules/src/{rule,engine}.ts,
-  4 raw-file rules, packages/rules/src/rules/structure/extra-files.ts,
-  tests/integration/api-stability.test.ts, CHANGELOG.md, AGENTS.md, README.md,
-  docs/SDK.md, MEMORY.md
+- Modified: packages/cli/src/{utils/run.ts,utils/exit-codes.ts,commands/check.ts,
+  commands/fix.ts,commands/compatibility.ts}, packages/cli/tests/exit-codes.test.ts,
+  tests/e2e/{check,fix}.test.ts, tests/e2e/scan-exit-codes.test.ts (new),
+  tests/integration/rules-parser.test.ts, tests/fixtures/{README.md,
+  invalid-plugin,legacy-plugin,future-spec,edge-cases/unicode-names}/README.md,
+  CHANGELOG.md, MEMORY.md, docs/{ARCHITECTURE,SPEC_SUPPORT,BUILDER_INTEGRATION,
+  RULES,DIAGNOSTICS,SDK,RISK_ASSESSMENT}.md
+- Pre-existing uncommitted worktree changes (NOT mine, do not revert): Phase
+  3.2a engine ScanResult support, scanPlugin parser API, allowed-tools,
+  compatibility-levels work — all already in CHANGELOG and passing.
 
 ## Errors/fixes
 
-- ParsedFileCache generic default `unknown` → boundary casts in loader helpers (manifest/mcp/skill).
-- Lint: unused `options` param on runRules → removed; unused `Plugin` import in incremental.test.ts.
-- Prettier: 7 files (3 docs + 4 ts) auto-fixed.
-- traverse.test.ts ordering: walker uses localeCompare (case-insensitive) so scripts/run.sh < SKILL.md.
-- cache.test.ts: mkdirSync missing import; skill parent dir must be created before writeFileSync.
-- incremental.test.ts: manifest() needed trailing newline (DOC-7001); JSON replace() regex broke on trailing newline → rebuild object.
-- bun test does not discover benchmark.ts (filename must contain .test/.spec) → paired benchmark.test.ts.
-- EXTENSIBILITY example initially used nonexistent makeTestPlugin → corrected to makePlugin/makeSkill.
-- SDK.md section renumbering after inserting 3.2/3.3 (createDefaultRegistry 3.4→3.5, Rule 3.5→3.6, applyFixes 3.6→3.7, INTERNAL_ERROR_CODE 3.7→3.8).
+- JSON.stringify without indentation in e2e valid-plugin test triggered
+  DOC-7001; switched to canonical 2-space + trailing newline.
+- compatibility command with null plugin: previously loadPlugin threw → exit
+  3; now prints parser diagnostics and returns exit 1 (SPEC_ERRORS).
+- The e2e FIXTURE_EXITS table and 4 fixture READMEs still claimed exit 3 for
+  schema-violation fixtures; updated to 1 with DOC-1008 after verifying real
+  binary behavior.
 
 ## Verification (all green)
 
-- bun test: 483 pass / 0 fail (65 files) — was 455/61 at baseline
+- bun test: 537 pass / 0 fail (69 files, incl. new scan-exit-codes e2e)
 - bun run typecheck: exit 0 all 6 packages
 - bun run lint: exit 0
-- bunx prettier --check .: all matched files pass
+- bunx prettier --check .: all files pass
 - Self-hosting: ./packages/cli/bin/agent-plugin-doctor check . → exit 0
-- bun run build: exit 0 all 6 packages
-- bun test tests/benchmarks/: 5 pass; benchmarks: 1-skill 80ms, 10-skill 2ms, 100-skill 9ms (budgets 100/200/2000ms); whole file < 10s
-- EXTENSIBILITY rule example compiled + passed its tests (temp files removed after)
+- Manual CLI: malformed plugin.json → DOC-1008, exit 1 (not 3); missing dir →
+  "Failed to load plugin: Plugin root does not exist", exit 3; report/fix/
+  compatibility on bad plugin → exit 1; fix leaves files untouched

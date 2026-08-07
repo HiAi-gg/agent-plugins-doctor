@@ -111,14 +111,17 @@ describe('MarkdownReportFormatter', () => {
         {
           clientId: 'kiro',
           clientName: 'Kiro',
+          level: 'unsupported',
           compatible: false,
+          working: [],
+          unsupported: ['mcp-sse'],
           issues: ['Client "Kiro" does not support legacy SSE MCP servers'],
           evidence: 'docs',
         },
       ],
     });
     const output = new MarkdownReportFormatter().format(result);
-    expect(output).toContain('| Kiro | ✗ Incompatible |');
+    expect(output).toContain('| Kiro | ✗ Unsupported |');
   });
 
   test('shows fix availability', () => {

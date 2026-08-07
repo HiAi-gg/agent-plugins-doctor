@@ -7,8 +7,8 @@
 
 import { Command } from 'commander';
 import { createInterface } from 'node:readline';
-import type { Diagnostic, ValidationResult } from '@agent-plugin-doctor/core';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
+import type { Diagnostic } from '@agent-plugin-doctor/core';
+import { scanPlugin } from '@agent-plugin-doctor/parser';
 import {
   applyFixes,
   type AppliedFix,
@@ -61,6 +61,9 @@ export async function runFix(
 ): Promise<number> {
   const pluginDir = resolvePluginDir(dir);
   const initial = await loadAndValidate(pluginDir);
+  // loadAndValidate uses scanPlugin: when the manifest could not be loaded the
+  // plugin is null, so the name falls back to a placeholder.
+  const pluginName = initial.plugin?.manifest.name ?? 'unknown';
   const fixable = initial.diagnostics.filter(
     (diagnostic) => diagnostic.fix !== undefined,
   );
@@ -71,7 +74,7 @@ export async function runFix(
       process.stdout.write(
         JSON.stringify(
           {
-            plugin: initial.plugin.manifest.name,
+            plugin: pluginName,
             dryRun: options.dryRun === true,
             applied: 0,
             failed: 0,
@@ -98,7 +101,7 @@ export async function runFix(
       process.stdout.write(
         JSON.stringify(
           {
-            plugin: initial.plugin.manifest.name,
+            plugin: pluginName,
             dryRun: true,
             fixesAvailable: fixable.length,
             fixes: preview.fixes.map(serializeAppliedFix),
@@ -119,7 +122,7 @@ export async function runFix(
       process.stdout.write(
         JSON.stringify(
           {
-            plugin: initial.plugin.manifest.name,
+            plugin: pluginName,
             dryRun: false,
             aborted: true,
             applied: 0,
@@ -140,17 +143,19 @@ export async function runFix(
     return EXIT_CODES.SUCCESS;
   }
 
-  // Apply fixes, then re-load and re-validate so every rule sees the changes
+  // Apply fixes, then re-scan and re-validate so every rule sees the changes
   // (raw-file rules read from disk; in-memory state is stale after edits).
+  // validatePlugin accepts the ScanResult directly and merges the parser
+  // diagnostics, so skills that could not be loaded (no auto-fix) still count
+  // against the remaining issues.
   const fixResult = await applyFixes(pluginDir, fixable);
-  const revalidatedPlugin = await loadPlugin(pluginDir);
-  const revalidated: ValidationResult = await validatePlugin(revalidatedPlugin);
+  const revalidated = await validatePlugin(await scanPlugin(pluginDir));
 
   if (options.json === true) {
     process.stdout.write(
       JSON.stringify(
         {
-          plugin: initial.plugin.manifest.name,
+          plugin: pluginName,
           dryRun: false,
           applied: fixResult.applied,
           failed: fixResult.failed,

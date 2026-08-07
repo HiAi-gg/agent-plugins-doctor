@@ -52,7 +52,7 @@ async function cleanPlugin(): Promise<Plugin> {
     'mcp.json': MCP_JSON,
     'skills/summarize/SKILL.md': SKILL_MD,
   });
-  const plugin = await loadPlugin(root);
+  const { plugin } = await loadPlugin(root);
   return plugin;
 }
 
@@ -230,7 +230,7 @@ describe('ValidationEngine', () => {
             2,
           ) + '\n',
       });
-      const plugin = await loadPlugin(root);
+      const { plugin } = await loadPlugin(root);
       const engine = new ValidationEngine(createDefaultRegistry());
       const before = await engine.validate(plugin, {
         rules: ['manifest-unknown-fields'],

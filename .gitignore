@@ -10,6 +10,8 @@ dist/
 coverage/
 .bob/
 *.tsbuildinfo
+# npm pack artifacts from the external-install E2E test (cleaned up by the test)
+*.tgz
 
 # Local agent tooling configuration (not part of the product)
 .opencode/

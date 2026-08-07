@@ -96,12 +96,15 @@ generator changes that break the contract fail fast. See §5.
 
 ```ts
 import { loadPlugin } from '@agent-plugin-doctor/parser';
-import { validatePlugin } from '@agent-plugin-doctor/rules';
+import { validatePlugin, computeSummary } from '@agent-plugin-doctor/rules';
 
-const plugin = await loadPlugin(outputDir);
+const { plugin, parseDiagnostics } = await loadPlugin(outputDir);
 const result = await validatePlugin(plugin);
+// Merge parser-level parse diagnostics (skills that failed to load, DOC-2099)
+// with the rule diagnostics so malformed input is a validation error (exit 1).
+const diagnostics = [...parseDiagnostics, ...result.diagnostics];
 // result.diagnostics: Diagnostic[]
-// result.summary: { counts, byCategory }
+// result.summary: { counts, byCategory } (recompute over `diagnostics`)
 // result.compatible: boolean
 ```
 
@@ -168,7 +171,14 @@ const parsed = parseSkillFrontmatter(content, filePath);
   `tests/fixtures/builder-generated/*` fixture loads and validates with zero
   error/critical diagnostics; `parseSkillFrontmatter` handles every Builder
   frontmatter shape; exit codes map to Builder's expectations
-  (0/1/2/3, load failures → 3).
+  (0/1/2/3, manifest load errors → 1, inaccessible root → 3).
+- `tests/integration/builder-real.test.ts` — the **real Builder binary's**
+  output (cloned from https://github.com/HiAi-gg/agent-plugin-builder and
+  built at commit `7a0b9bd8`, pinned in
+  `tests/fixtures/builder-generated/real-builder/`) validates with zero
+  error/critical diagnostics and exit 0. See
+  `docs/BUILDER_REAL_INTEGRATION.md` for the generation procedure and
+  classification of every fixture.
 - `tests/integration/api-stability.test.ts` — pins the public exports of
   every package Builder imports. Renames/removals fail here first.
 - `tests/e2e/check.test.ts` — runs the **real binary** against every fixture,
@@ -176,6 +186,9 @@ const parsed = parseSkillFrontmatter(content, filePath);
 - `tests/fixtures/builder-generated/` — simulated Builder output from
   `init`, `migrate --from claude`, `migrate --from cursor`, and `create`.
   Each directory is a standalone plugin with its own README.
+- `tests/fixtures/builder-generated/real-builder/` — byte-exact copies of
+  output from the **real** Builder binary (see
+  `docs/BUILDER_REAL_INTEGRATION.md`).
 
 Manual verification loop:
 
@@ -197,27 +210,43 @@ done
 
 ## 6. Exit code contract
 
-| Code | Name                | Condition                                                                           |
-| ---- | ------------------- | ----------------------------------------------------------------------------------- |
-| `0`  | `SUCCESS`           | No error/critical diagnostics (warnings/info allowed, unless strict)                |
-| `1`  | `SPEC_ERRORS`       | At least one `error` diagnostic (or a `warning` under `--strict`)                   |
-| `2`  | `SECURITY_CRITICAL` | At least one `critical` diagnostic                                                  |
-| `3`  | `TOOL_FAILURE`      | `DOC-0000` (internal rule failure), a load/parse error, or a Builder-side exception |
+| Code | Name                | Condition                                                                                                                                                                                     |
+| ---- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0`  | `SUCCESS`           | No error/critical diagnostics (warnings/info allowed, unless strict)                                                                                                                          |
+| `1`  | `SPEC_ERRORS`       | At least one `error` diagnostic (or a `warning` under `--strict`) — including parser diagnostics (`DOC-1008` unloadable manifest, `DOC-2099` skill load failure, `DOC-3007` invalid mcp.json) |
+| `2`  | `SECURITY_CRITICAL` | At least one `critical` diagnostic                                                                                                                                                            |
+| `3`  | `TOOL_FAILURE`      | `DOC-0000` (internal rule failure), an inaccessible plugin root, or a Builder-side exception                                                                                                  |
 
 Priority: `3 > 2 > 1 > 0`. When multiple conditions apply the highest code
-wins. Builder maps **load failures** to `3` in its own `catch` — `loadPlugin`
-throws `LoadError`/`ParseError`/`SchemaValidationError`, it never returns a
-half-loaded plugin silently.
+wins. The CLI loads plugins via `scanPlugin`, which never throws: malformed
+user input is collected as parser diagnostics and drives exit `1`. Builder
+mapping **plugin-level load failures** to `3` in its own `catch` is only
+relevant when it calls the strict `loadPlugin` API directly — `loadPlugin`
+throws `LoadError`/`ParseError`/`SchemaValidationError` for an unloadable
+plugin, it never returns a half-loaded plugin silently. Skill-level parse
+failures (malformed `SKILL.md`) are _not_ thrown: they are returned as
+`DOC-2099` diagnostics in `LoadResult.parseDiagnostics` and drive exit `1`
+once merged into the validation results — merge them or the bad skill is
+silently ignored.
 
 ## 7. Error handling patterns
 
 ```ts
+import { loadPlugin } from '@agent-plugin-doctor/parser';
+import { validatePlugin, computeSummary } from '@agent-plugin-doctor/rules';
+import { generateReport } from '@agent-plugin-doctor/report';
+import { computeExitCode } from '@agent-plugin-doctor/cli';
+
 try {
-  const plugin = await loadPlugin(dir); // throws on unloadable plugins
+  const { plugin, parseDiagnostics } = await loadPlugin(dir); // throws on unloadable plugins
   const result = await validatePlugin(plugin); // never throws for invalid plugins
+  const diagnostics = [...parseDiagnostics, ...result.diagnostics];
   return {
-    exitCode: computeExitCode(result.diagnostics),
-    report: generateReport(result, { format: 'human' }),
+    exitCode: computeExitCode(diagnostics),
+    report: generateReport(
+      { ...result, diagnostics, summary: computeSummary(diagnostics) },
+      { format: 'human' },
+    ),
   };
 } catch (error) {
   return { exitCode: 3, report: `Validation failed: ${error.message}` };
@@ -242,8 +271,9 @@ rest of the plugin still loads (spec §7.2.2).
   `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json`).
 - `resolveSpecVersion(schemaUrl)` returns the spec for known schema URLs and
   `null` for unknown ones; `getCurrentSpecVersion()` returns v1.0.0.
-- Plugins with a `$schema` Doctor does not support fail to load (exit 3), per
-  the spec's "must not silently ignore" requirement.
+- Plugins with a `$schema` Doctor does not support surface a `DOC-1008`
+  parser diagnostic (exit 1) in the CLI — the strict `loadPlugin` API throws
+  instead — per the spec's "must not silently ignore" requirement.
 - The vendored schemas are byte-exact official copies; Doctor never fetches
   schemas at load time (spec §4.1), so Builder can use it offline.
 - Doctor's own packages follow semver. The API-stability test pins the
@@ -263,8 +293,11 @@ of using relative paths.
 
 - Skill directory name must equal the skill `name` in frontmatter
   (`DOC-2001`/`DOC-5002`): lowercase alphanumerics and hyphens, no `--`.
-- `allowed-tools` must be a YAML list or a space-separated string, never
-  comma-separated (`DOC-2005`).
+- `allowed-tools` must be a space-separated string (e.g.
+  `Bash(git:*) Read`), never a YAML list — the parser preserves any
+  non-string value and DOC-2005 diagnoses it (YAML list → warning, any other
+  type → error, exit 1). DOC-2005 validates the individual tool names (a
+  comma+space list gets a warning) and normalizes whitespace.
 - Plugin name: 1–64 chars, lowercase alphanumerics + hyphens/periods, no `--`
   or `..` (schema `pattern`, also `DOC-1002`/`DOC-1004`).
 
@@ -276,12 +309,15 @@ of using relative paths.
 - `PLUGIN_ROOT` / `PLUGIN_DATA` are reserved env keys — never emit them
   (`DOC-3003`).
 
-### Generated plugin exits 3 (tool failure)
+### Generated plugin exits 1 (manifest load errors)
 
 - `plugin.json` violates the schema: wrong `$schema`, missing `name`, unknown
-  fields beyond the permitted set, invalid `author` shape.
+  fields beyond the permitted set, invalid `author` shape. These surface as
+  `DOC-1008` parser diagnostics (exit 1) — the CLI loads via `scanPlugin`, so
+  a bad manifest is a validation error, not a tool failure.
 - The generator wrote non-canonical JSON that still parses — that is only an
-  informational `DOC-7001`, not exit 3. Unparseable JSON is a load error.
+  informational `DOC-7001`, not exit 1. Unparseable JSON is a `DOC-1008`
+  manifest load error (exit 1).
 
 ### Builder's old regex parser and Doctor disagree
 

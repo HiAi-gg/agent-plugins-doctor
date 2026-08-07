@@ -40,13 +40,14 @@ describe('loadPlugin', () => {
     const root = makeTempDir();
     try {
       writeTree(root, { 'plugin.json': MINIMAL_MANIFEST });
-      const plugin = await loadPlugin(root);
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
       expect(plugin.rootDir).toBe(root);
       expect(plugin.specVersion).toBe('1.0.0');
       expect(plugin.manifest.name).toBe('minimal-plugin');
       expect(plugin.mcpConfig).toBeUndefined();
       expect(plugin.skills).toEqual([]);
       expect(plugin.extensions).toEqual([]);
+      expect(parseDiagnostics).toEqual([]);
     } finally {
       cleanup(root);
     }
@@ -80,7 +81,7 @@ describe('loadPlugin', () => {
         }),
         'com.example.client/extension.json': JSON.stringify({ feature: true }),
       });
-      const plugin = await loadPlugin(root);
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
       expect(plugin.manifest.name).toBe('complex-plugin');
       expect(plugin.specVersion).toBe('1.0.0');
 
@@ -104,6 +105,7 @@ describe('loadPlugin', () => {
       expect(plugin.extensions[0].namespace).toBe('com.example.client');
       expect(plugin.extensions[0].path).toBe('com.example.client');
       expect(plugin.extensions[0].data).toEqual({ feature: true });
+      expect(parseDiagnostics).toEqual([]);
     } finally {
       cleanup(root);
     }
@@ -151,7 +153,7 @@ describe('loadPlugin', () => {
         'plugin.json': MINIMAL_MANIFEST,
         'mcp.json': '{ not valid json',
       });
-      const plugin = await loadPlugin(root);
+      const { plugin } = await loadPlugin(root);
       expect(plugin.manifest.name).toBe('minimal-plugin');
       expect(plugin.mcpConfig).toBeUndefined();
     } finally {
@@ -172,15 +174,17 @@ describe('loadPlugin', () => {
         'skills/b/SKILL.md':
           '---\nname: b\ndescription: Skill B\n---\nBody B\n',
       });
-      const plugin = await loadPlugin(root);
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
       const names = plugin.skills.map((s) => s.name).sort();
       expect(names).toEqual(['a', 'b']);
+      // The nested SKILL.md is not a candidate at fixed depth: no diagnostics.
+      expect(parseDiagnostics).toEqual([]);
     } finally {
       cleanup(root);
     }
   });
 
-  test('non-conforming skill directories are skipped', async () => {
+  test('non-conforming skill directories are skipped without diagnostics', async () => {
     const root = makeTempDir();
     try {
       writeTree(root, {
@@ -191,14 +195,16 @@ describe('loadPlugin', () => {
         'skills/not-a-dir.md': 'a file, not a directory',
         'skills/bad/SKILL.txt': 'wrong file name',
       });
-      const plugin = await loadPlugin(root);
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
       expect(plugin.skills.map((s) => s.name)).toEqual(['good']);
+      // Entries that are not skill candidates (no SKILL.md) are not reported.
+      expect(parseDiagnostics).toEqual([]);
     } finally {
       cleanup(root);
     }
   });
 
-  test('skill with invalid frontmatter is skipped', async () => {
+  test('SKILL.md without frontmatter is skipped and reported as a parse diagnostic', async () => {
     const root = makeTempDir();
     try {
       writeTree(root, {
@@ -207,8 +213,77 @@ describe('loadPlugin', () => {
           '---\nname: good\ndescription: Good skill\n---\nBody\n',
         'skills/bad/SKILL.md': 'no frontmatter here',
       });
-      const plugin = await loadPlugin(root);
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
       expect(plugin.skills.map((s) => s.name)).toEqual(['good']);
+      expect(parseDiagnostics).toHaveLength(1);
+      const diagnostic = parseDiagnostics[0];
+      expect(diagnostic.code).toBe('DOC-2099');
+      expect(diagnostic.severity).toBe('error');
+      expect(diagnostic.ruleId).toBe('parser');
+      expect(diagnostic.category).toBe('skills');
+      expect(diagnostic.file).toBe('skills/bad/SKILL.md');
+      expect(diagnostic.message).toContain('Failed to load skill');
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  test('malformed YAML frontmatter is reported as a parse diagnostic', async () => {
+    const root = makeTempDir();
+    try {
+      writeTree(root, {
+        'plugin.json': MINIMAL_MANIFEST,
+        'skills/bad/SKILL.md': '---\nname: [unclosed\n---\nBody\n',
+      });
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
+      expect(plugin.skills).toEqual([]);
+      expect(parseDiagnostics).toHaveLength(1);
+      expect(parseDiagnostics[0].code).toBe('DOC-2099');
+      expect(parseDiagnostics[0].file).toBe('skills/bad/SKILL.md');
+      expect(parseDiagnostics[0].message).toContain(
+        'Malformed YAML frontmatter',
+      );
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  test('frontmatter missing required fields is reported as a parse diagnostic', async () => {
+    const root = makeTempDir();
+    try {
+      writeTree(root, {
+        'plugin.json': MINIMAL_MANIFEST,
+        'skills/bad/SKILL.md': '---\ndescription: no name here\n---\nBody\n',
+      });
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
+      expect(plugin.skills).toEqual([]);
+      expect(parseDiagnostics).toHaveLength(1);
+      expect(parseDiagnostics[0].code).toBe('DOC-2099');
+      expect(parseDiagnostics[0].file).toBe('skills/bad/SKILL.md');
+      expect(parseDiagnostics[0].message).toContain(
+        "missing required field 'name'",
+      );
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  test('a failing skill does not prevent other skills from loading (failure isolation)', async () => {
+    const root = makeTempDir();
+    try {
+      writeTree(root, {
+        'plugin.json': MINIMAL_MANIFEST,
+        'skills/a/SKILL.md':
+          '---\nname: a\ndescription: Skill A\n---\nBody A\n',
+        'skills/broken/SKILL.md': 'not a skill file at all',
+        'skills/b/SKILL.md':
+          '---\nname: b\ndescription: Skill B\n---\nBody B\n',
+      });
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
+      // One malformed skill does not prevent the valid ones from loading.
+      expect(plugin.skills.map((s) => s.name).sort()).toEqual(['a', 'b']);
+      expect(parseDiagnostics).toHaveLength(1);
+      expect(parseDiagnostics[0].file).toBe('skills/broken/SKILL.md');
     } finally {
       cleanup(root);
     }
@@ -226,7 +301,7 @@ describe('loadPlugin', () => {
         'skills/summarize/SKILL.md':
           '---\nname: summarize\ndescription: X\n---\nBody\n',
       });
-      const plugin = await loadPlugin(root);
+      const { plugin } = await loadPlugin(root);
       const namespaces = plugin.extensions.map((e) => e.namespace).sort();
       expect(namespaces).toEqual(['com.example.client', 'org.tool.hooks']);
       const client = plugin.extensions.find(
@@ -245,7 +320,7 @@ describe('loadPlugin', () => {
         'plugin.json': MINIMAL_MANIFEST,
         'com.example.client/hooks/hooks.json': JSON.stringify({ hooks: [] }),
       });
-      const plugin = await loadPlugin(root);
+      const { plugin } = await loadPlugin(root);
       expect(plugin.extensions).toHaveLength(1);
       expect(plugin.extensions[0].data).toEqual({});
     } finally {
@@ -266,7 +341,7 @@ describe('loadPlugin', () => {
     }
   });
 
-  test('symlinked skill directory escaping the root is skipped', async () => {
+  test('symlinked skill directory escaping the root is skipped (not a candidate)', async () => {
     const root = makeTempDir();
     const outside = makeTempDir();
     try {
@@ -279,9 +354,43 @@ describe('loadPlugin', () => {
         'SKILL.md': '---\nname: evil\ndescription: Evil skill\n---\nBody\n',
       });
       symlinkSync(outside, join(root, 'skills', 'evil'));
-      const plugin = await loadPlugin(root);
-      // The escaping skill is skipped; the valid one still loads.
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
+      // Discovery never follows symlinks: the escaping link is not a skill
+      // candidate, so it is skipped silently (no diagnostic). The valid skill
+      // still loads. A SKILL.md inside a real directory that escapes is
+      // reported (see the next test).
       expect(plugin.skills.map((s) => s.name)).toEqual(['good']);
+      expect(parseDiagnostics).toEqual([]);
+    } finally {
+      cleanup(root);
+      cleanup(outside);
+    }
+  });
+
+  test('symlinked SKILL.md file escaping the root is skipped and reported', async () => {
+    const root = makeTempDir();
+    const outside = makeTempDir();
+    try {
+      writeTree(root, {
+        'plugin.json': MINIMAL_MANIFEST,
+        'skills/good/SKILL.md':
+          '---\nname: good\ndescription: Good skill\n---\nBody\n',
+        'skills/evil/placeholder.txt': 'the dir exists, the file is a link',
+      });
+      writeFileSync(
+        join(outside, 'SKILL.md'),
+        '---\nname: evil\ndescription: Evil skill\n---\nBody\n',
+      );
+      symlinkSync(
+        join(outside, 'SKILL.md'),
+        join(root, 'skills', 'evil', 'SKILL.md'),
+      );
+      const { plugin, parseDiagnostics } = await loadPlugin(root);
+      expect(plugin.skills.map((s) => s.name)).toEqual(['good']);
+      expect(parseDiagnostics).toHaveLength(1);
+      expect(parseDiagnostics[0].code).toBe('DOC-2099');
+      expect(parseDiagnostics[0].file).toBe('skills/evil/SKILL.md');
+      expect(parseDiagnostics[0].message).toContain('Path escapes plugin root');
     } finally {
       cleanup(root);
       cleanup(outside);
@@ -298,7 +407,7 @@ describe('loadPlugin', () => {
         JSON.stringify({ $schema: MCP_SCHEMA, mcpServers: {} }),
       );
       symlinkSync(join(outside, 'mcp.json'), join(root, 'mcp.json'));
-      const plugin = await loadPlugin(root);
+      const { plugin } = await loadPlugin(root);
       expect(plugin.manifest.name).toBe('minimal-plugin');
       expect(plugin.mcpConfig).toBeUndefined();
     } finally {

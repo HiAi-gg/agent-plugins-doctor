@@ -137,8 +137,10 @@ interface RawEdit {
  * document root to the object containing it; top-level members have path [])
  * and the member key.
  *
- * Removal spans include the trailing comma (or the preceding comma for the
- * last member) so the result stays valid JSON.
+ * Removal spans cover the member's leading whitespace through its value,
+ * without any separator comma; the fix engine cleans up the surrounding
+ * comma when it applies (see fixes.ts), which keeps removal fixes
+ * order-independent when several members of the same object are removed.
  *
  * @returns The list of edits, or null when the text is not valid JSON
  */
@@ -222,18 +224,13 @@ function scanJsonMembers(
 
       const action = visit(path, keyInfo.value);
       if (action.type === 'remove') {
-        let s = lead;
-        let e = valueEnd;
-        const q = skipWs(valueEnd);
-        if (raw[q] === ',') {
-          // Middle member: include the trailing comma so the separator stays
-          // balanced after removal.
-          e = q + 1;
-        } else if (raw[lead - 1] === ',') {
-          // Last member: include the preceding comma (lead starts right after
-          // it), so no trailing comma is left behind.
-          s = lead - 1;
-        }
+        // The span covers the member's leading whitespace through its value,
+        // without any separator comma. Keeping commas out of the span makes
+        // the member's text independent of its neighbors, so removal fixes
+        // applied one at a time against a changing file are order-independent;
+        // the fix engine cleans up the surrounding comma when it applies.
+        const s = lead;
+        const e = valueEnd;
         // Drop any nested edits recorded inside the removed member.
         for (let i = edits.length - 1; i >= 0; i--) {
           if (edits[i].start >= s && edits[i].end <= e) edits.splice(i, 1);
@@ -365,10 +362,59 @@ export function rewriteJsonMembers(
   return applyEdits(raw, edits);
 }
 
+function isJsonWhitespace(ch: string): boolean {
+  return ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r';
+}
+
+/**
+ * Locate the value token span inside a member span produced by
+ * `findJsonMemberSpans`. A member span covers `[ws] "key" : value [,]` — it
+ * may start with the preceding comma (last member of an object) and may end
+ * with the trailing comma (middle member). This helper returns the exact byte
+ * span of the value token only, so a fix can rewrite just the value and leave
+ * every other byte of the file untouched, regardless of whitespace around the
+ * key or colon.
+ *
+ * @returns The value span, or null when the span does not parse as a member
+ */
+export function jsonMemberValueSpan(
+  raw: string,
+  span: JsonMemberSpan,
+): { start: number; end: number } | null {
+  const n = span.end;
+  let p = span.start;
+  if (raw[p] === ',') p++; // preceding comma of a last member
+  while (p < n && isJsonWhitespace(raw[p])) p++;
+  if (raw[p] !== '"') return null;
+  p++; // skip the quoted key (honoring escapes)
+  while (p < n) {
+    if (raw[p] === '\\') {
+      p += 2;
+      continue;
+    }
+    if (raw[p] === '"') {
+      p++;
+      break;
+    }
+    p++;
+  }
+  while (p < n && isJsonWhitespace(raw[p])) p++;
+  if (raw[p] !== ':') return null;
+  p++;
+  while (p < n && isJsonWhitespace(raw[p])) p++;
+  let end = span.end;
+  while (end > p && isJsonWhitespace(raw[end - 1])) end--;
+  if (end > p && raw[end - 1] === ',') end--; // trailing comma of a middle member
+  while (end > p && isJsonWhitespace(raw[end - 1])) end--;
+  if (p >= end) return null;
+  return { start: p, end };
+}
+
 /**
  * Build a delete-style fix that removes one member of a JSON file.
- * `oldText` is the exact span of the member in the raw text, so applying the
- * fix leaves every other byte of the file untouched.
+ * `oldText` is the exact span of the member (leading whitespace through its
+ * value, without separators), so applying the fix leaves every other byte of
+ * the file untouched; the fix engine removes the surrounding comma.
  */
 export function memberRemovalFix(
   raw: string,

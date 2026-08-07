@@ -36,6 +36,15 @@ export interface Rule {
    */
   files?: string[];
 
+  /**
+   * When false, `check()` inspects only the raw tree (via `ctx.rootDir`) and
+   * never dereferences `ctx.plugin`, so the rule can run on a scan result
+   * whose plugin model could not be loaded (plugin.json missing or
+   * unparseable). Defaults to true: rules without this flag require a valid
+   * Plugin and are skipped when only scan diagnostics are available.
+   */
+  requiresPlugin?: boolean;
+
   check(ctx: RuleContext): Diagnostic[];
   fix?(ctx: RuleContext, diagnostic: Diagnostic): Fix | null;
 }

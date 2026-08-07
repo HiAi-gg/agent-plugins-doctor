@@ -42,7 +42,12 @@ describe('e2e compatibility command', () => {
     const data = JSON.parse(result.stdout) as {
       plugin: { name: string };
       summary: { total: number; compatible: number; incompatible: number };
-      clients: { clientId: string; clientName: string; compatible: boolean }[];
+      clients: {
+        clientId: string;
+        clientName: string;
+        level: string;
+        compatible: boolean;
+      }[];
     };
     expect(data.plugin.name).toBe('minimal-plugin');
     expect(data.summary.total).toBe(5);
@@ -52,6 +57,7 @@ describe('e2e compatibility command', () => {
     const ids = data.clients.map((c) => c.clientId).sort();
     expect(ids).toEqual(['codex', 'copilot', 'cursor', 'kiro', 'vscode']);
     expect(data.clients.every((c) => c.compatible)).toBe(true);
+    expect(data.clients.every((c) => c.level === 'full')).toBe(true);
   });
 
   test('--json --client codex returns a single client entry', async () => {

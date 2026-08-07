@@ -5,6 +5,7 @@ import { unknownFieldsRule } from '../src/rules/manifest/unknown-fields.js';
 import { jsonFormattingRule } from '../src/rules/format/json-formatting.js';
 import { nameMatchRule } from '../src/rules/skill/name-match.js';
 import {
+  CANONICAL_PLUGIN_JSON,
   cleanup,
   checkRule,
   makePlugin,
@@ -270,6 +271,46 @@ describe('applyFixes', () => {
       ]);
       expect(result.failed).toBe(1);
       expect(result.fixes[0].error).toContain('escapes plugin root');
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  test('content fixes apply before directory renames in one pass', async () => {
+    const root = makeTempDir();
+    try {
+      // The same skill needs a frontmatter-style content fix (CRLF) and a
+      // directory rename (name mismatch). Renames run last, so the content
+      // fix lands in the file before the directory moves; neither fix fails
+      // and the content survives at the new path.
+      writeTree(root, {
+        'plugin.json': CANONICAL_PLUGIN_JSON,
+        'skills/wrong-name/SKILL.md':
+          '---\r\nname: right-name\r\ndescription: d\r\n---\r\n# Body\r\n',
+      });
+      const renameDiag = diagnosticWithFix({
+        kind: 'rename',
+        file: 'skills/wrong-name',
+        description: 'Rename directory',
+        oldPath: 'skills/wrong-name',
+        newPath: 'skills/right-name',
+      });
+      const contentDiag = diagnosticWithFix({
+        kind: 'replace',
+        file: 'skills/wrong-name/SKILL.md',
+        description: 'Normalize frontmatter style',
+        oldText:
+          '---\r\nname: right-name\r\ndescription: d\r\n---\r\n# Body\r\n',
+        newText: '---\nname: right-name\ndescription: d\n---\n# Body\n',
+      });
+      // Hand the rename first: the engine must still apply the content fix.
+      const result = await applyFixes(root, [renameDiag, contentDiag]);
+      expect(result.failed).toBe(0);
+      expect(result.applied).toBe(2);
+      const moved = readFile(root, 'skills/right-name/SKILL.md');
+      expect(moved).not.toBeNull();
+      expect(moved).not.toContain('\r');
+      expect(readFile(root, 'skills/wrong-name/SKILL.md')).toBeNull();
     } finally {
       cleanup(root);
     }

@@ -2,9 +2,12 @@
 
 import { Command } from 'commander';
 import type { CompatibilityCheck } from '@agent-plugin-doctor/compatibility';
-import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
+import {
+  checkCompatibility,
+  CompatibilityLevel,
+} from '@agent-plugin-doctor/compatibility';
 import type { Plugin } from '@agent-plugin-doctor/core';
-import { loadPlugin } from '@agent-plugin-doctor/parser';
+import { scanPlugin } from '@agent-plugin-doctor/parser';
 import { EXIT_CODES } from '../utils/exit-codes.js';
 import {
   error,
@@ -12,7 +15,11 @@ import {
   resolveChalk,
   setColorEnabled,
 } from '../utils/output.js';
-import { handleCommandError, resolvePluginDir } from '../utils/run.js';
+import {
+  assertRootAccessible,
+  handleCommandError,
+  resolvePluginDir,
+} from '../utils/run.js';
 
 export const compatibilityCommand = new Command('compatibility')
   .description('Check compatibility with Agent Plugin clients')
@@ -43,7 +50,18 @@ export async function runCompatibility(
   },
   noColor: boolean,
 ): Promise<number> {
-  const plugin: Plugin = await loadPlugin(resolvePluginDir(dir));
+  const rootDir = resolvePluginDir(dir);
+  assertRootAccessible(rootDir);
+  const scanResult = await scanPlugin(rootDir);
+  if (scanResult.plugin === null) {
+    // plugin.json could not be loaded: report the parser diagnostics as a
+    // validation error (exit 1) instead of failing with a tool error.
+    for (const diagnostic of scanResult.diagnostics) {
+      error(`${diagnostic.code}: ${diagnostic.message}`);
+    }
+    return EXIT_CODES.SPEC_ERRORS;
+  }
+  const plugin = scanResult.plugin;
   const compat = checkCompatibility(plugin);
   const checks =
     options.client === undefined
@@ -81,13 +99,17 @@ function toJson(plugin: Plugin, checks: CompatibilityCheck[]) {
     clients: checks.map((check) => ({
       clientId: check.clientId,
       clientName: check.clientName,
+      level: check.level,
       compatible: check.compatible,
+      working: check.working,
+      unsupported: check.unsupported,
       issues: check.issues.map((issue) => ({
         severity: issue.severity,
         message: issue.message,
         component: issue.component ?? null,
       })),
       evidence: check.evidence,
+      extensionsHandling: check.extensionsHandling ?? null,
     })),
   };
 }
@@ -106,12 +128,23 @@ function printHuman(
     '',
   ];
   for (const check of checks) {
-    if (check.compatible) {
-      lines.push(c.green(`✓ ${check.clientName}`));
-    } else {
-      lines.push(c.red(`✗ ${check.clientName}`));
+    lines.push(`  ${compatLabel(c, check)}`);
+    if (check.extensionsHandling !== undefined) {
+      lines.push(...formatExtensions(plugin, check));
+    }
+    if (check.level !== CompatibilityLevel.FULL) {
+      if (check.unsupported.length > 0) {
+        lines.push(`    Unsupported: ${check.unsupported.join(', ')}`);
+      }
       for (const issue of check.issues) {
-        lines.push(`  - ${issue.message}`);
+        // Extension findings are covered by the extension section above.
+        if (
+          check.extensionsHandling !== undefined &&
+          issue.component === 'extensions'
+        ) {
+          continue;
+        }
+        lines.push(`    - ${issue.message}`);
       }
     }
   }
@@ -120,4 +153,55 @@ function printHuman(
     `Summary: ${compatible} compatible, ${checks.length - compatible} incompatible`,
   );
   process.stdout.write(lines.join('\n') + '\n');
+}
+
+/**
+ * Per-client extension handling lines, shown even for FULL clients so users
+ * can see how a plugin's extension namespaces are treated. Doctor never
+ * claims a client "understands" a namespace unless it is explicitly listed
+ * in the profile.
+ */
+function formatExtensions(plugin: Plugin, check: CompatibilityCheck): string[] {
+  const lines: string[] = [];
+  for (const extension of plugin.extensions) {
+    lines.push(`    Extension namespace ${extension.namespace}:`);
+    switch (check.extensionsHandling) {
+      case 'supported':
+        lines.push(`      Supported by this client.`);
+        break;
+      case 'ignored':
+        lines.push(`      Unknown to this client.`);
+        lines.push(`      Plugin portable components remain usable.`);
+        lines.push(`      (Client safely ignores unknown extensions per spec)`);
+        break;
+      case 'unsupported':
+        lines.push(`      Not supported by this client.`);
+        lines.push(`      Plugin portable components remain usable.`);
+        lines.push(`      (Client will ignore these extensions)`);
+        break;
+      case 'unknown':
+        lines.push(`      How this client handles extensions is unverified.`);
+        break;
+      case undefined:
+        break;
+    }
+  }
+  return lines;
+}
+
+/** Colored, level-aware per-client status line. */
+function compatLabel(
+  c: ReturnType<typeof resolveChalk>,
+  check: CompatibilityCheck,
+): string {
+  switch (check.level) {
+    case CompatibilityLevel.FULL:
+      return `${c.green('✓')} ${check.clientName}`;
+    case CompatibilityLevel.PARTIAL:
+      return `${c.yellow('~')} ${check.clientName} (partial)`;
+    case CompatibilityLevel.UNSUPPORTED:
+      return `${c.red('✗')} ${check.clientName} (unsupported)`;
+    case CompatibilityLevel.UNKNOWN:
+      return `${c.dim('?')} ${check.clientName} (unknown)`;
+  }
 }

@@ -18,6 +18,7 @@ interface Rule {
   supportedSpecVersions: string[]; // ["1.0.0"] or ["*"]
   description: string;
   enabledByDefault: boolean;
+  requiresPlugin?: boolean; // false = reads only rootDir, runs in scan mode
   check(ctx: RuleContext): Diagnostic[];
   fix?(ctx: RuleContext, diagnostic: Diagnostic): Fix | null;
 }
@@ -49,9 +50,16 @@ Several rules are **enforced by the vendored schemas before the rules engine
 runs**, so they are unreachable from on-disk plugins (the loader rejects or
 isolates the plugin first). They still fire for programmatically-built
 plugins, which is why they exist as rules. Marked **"schema-enforced"**
-below, these are: DOC-1002, DOC-1003, DOC-1007, DOC-3001, DOC-3003, DOC-3004,
-DOC-4001 (partially — cwd), DOC-5002 (pattern part), DOC-6001 (unsupported
-`$schema` rejects at load).
+below, these are: DOC-1001, DOC-1002, DOC-1003, DOC-1006, DOC-1007, DOC-2002,
+DOC-3001, DOC-3003, DOC-3004, DOC-4002, DOC-6001.
+
+DOC-1005 (non-object `extensions` value) and DOC-3006 (non-string header) are
+partially schema-enforced: their other branches are reachable from disk.
+DOC-4001 and DOC-5002 are fully reachable from disk in both branches.
+DOC-6002 emits nothing under the default (empty) deprecated-fields map.
+
+[DIAGNOSTICS.md](DIAGNOSTICS.md#diagnostic-reachability) carries the
+authoritative per-code reachability table.
 
 ---
 
@@ -86,31 +94,36 @@ Source: `packages/rules/src/rules/manifest/`
   plugin's resolved spec so it also catches version mismatches.
 - **Reachability**: the schema enforces name pattern/length (`pattern` +
   `maxLength`), `$schema` (`const`), and author shape
-  (`additionalProperties: false` rejects at parse → exit 3). DOC-1002/1003/
-  1007 are therefore mostly reachable through the SDK on programmatic
-  plugins; DOC-1004 and DOC-1005 are the disk-reachable manifest rules.
+  (`additionalProperties: false` rejects at parse → `DOC-1008`, exit 1).
+  DOC-1002/1003/1007 are therefore mostly reachable through the SDK on
+  programmatic plugins; DOC-1004 and DOC-1005 are the disk-reachable
+  manifest rules.
 
 ## Skill rules (skills, DOC-2xxx)
 
 Source: `packages/rules/src/rules/skill/`
 
-| Rule id                      | Code     | Severity | Fix                 | Checks                                                      |
-| ---------------------------- | -------- | -------- | ------------------- | ----------------------------------------------------------- |
-| `skill-name-match`           | DOC-2001 | error    | rename (directory)  | frontmatter `name` equals directory name                    |
-| `skill-required-fields`      | DOC-2002 | error    | —                   | `name` and `description` present and non-empty              |
-| `skill-description-length`   | DOC-2003 | error    | —                   | description ≤ `DESCRIPTION_MAX_LENGTH` (1024)               |
-| `skill-compatibility-length` | DOC-2004 | error    | —                   | `compatibility` ≤ `COMPATIBILITY_MAX_LENGTH` (500)          |
-| `skill-allowed-tools-format` | DOC-2005 | error    | replace (YAML list) | `allowed-tools` is a non-empty string list (or string form) |
-| `skill-body-size`            | DOC-2006 | warning  | —                   | body < `BODY_TOKEN_LIMIT` (5000 words)                      |
+| Rule id                      | Code     | Severity | Fix                  | Checks                                                                                  |
+| ---------------------------- | -------- | -------- | -------------------- | --------------------------------------------------------------------------------------- |
+| `skill-name-match`           | DOC-2001 | error    | rename (directory)   | frontmatter `name` equals directory name                                                |
+| `skill-required-fields`      | DOC-2002 | error    | —                    | `name` and `description` present and non-empty                                          |
+| `skill-description-length`   | DOC-2003 | error    | —                    | description ≤ `DESCRIPTION_MAX_LENGTH` (1024)                                           |
+| `skill-compatibility-length` | DOC-2004 | error    | —                    | `compatibility` ≤ `COMPATIBILITY_MAX_LENGTH` (500)                                      |
+| `skill-allowed-tools-format` | DOC-2005 | error    | replace (whitespace) | `allowed-tools` is a space-separated string; YAML list = warning, invalid types = error |
+| `skill-body-size`            | DOC-2006 | warning  | —                    | body < `BODY_TOKEN_LIMIT` (5000 words)                                                  |
 
 ### Implementation notes
 
 - **`skill-name-match`** renames the directory to `skills/<name>` via a
   `rename` fix (`oldPath`/`newPath`), refused when the target exists.
-- **`skill-allowed-tools-format`**: only the space-separated _string_ form is
-  fixable; the fix rewrites the `allowed-tools:` line into a YAML list
-  preserving indentation. Invalid types (numbers, mixed lists) cannot be
-  normalized and must be fixed by hand.
+- **`skill-allowed-tools-format`**: the space-separated _string_ form (e.g.
+  `Bash(git:*) Bash(jq:*) Read`) is canonical per the Agent Skills spec. YAML
+  lists are a Doctor extension (warning), invalid types (numbers, booleans,
+  objects, mixed lists) are errors, and empty/whitespace-only or
+  comma+space-separated strings are warnings. The parser preserves the raw
+  `allowed-tools` value so this rule diagnoses non-string forms from disk.
+  The fix only normalizes whitespace in the string form — it never converts
+  a string into a list.
 - **`skill-body-size`** exports `countTokens(text)` — a whitespace-split
   word count. It is a recommendation (warning), not a hard limit.
 - **Reachability**: DOC-2001/DOC-5002 fire on disk (skill dir/frontmatter
@@ -218,8 +231,9 @@ Source: `packages/rules/src/rules/compatibility/`
 ### Implementation notes
 
 - **`compatibility-spec-version`** supports `['*']` (applies to every version
-  under validation). Unsupported `$schema` values are rejected at load time
-  (exit 3), so the rule mainly fires for programmatically-built plugins.
+  under validation). Unsupported `$schema` values are rejected at parse time
+  as a `DOC-1008` parser diagnostic (exit 1), so the rule mainly fires for
+  programmatically-built plugins.
 - **`compatibility-deprecated-fields`** is a **factory**:
   `deprecatedFieldsRule(map = DEFAULT_DEPRECATED_FIELDS)`. v1.0.0 deprecates
   no fields, so the default map is empty and the rule is silent by default.

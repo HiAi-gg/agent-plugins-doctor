@@ -1,18 +1,25 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import {
+  canonicalJson,
   cleanup,
   makeTempDir,
+  PLUGIN_SCHEMA,
   runCli,
   ssePlugin,
   validPlugin,
+  writeTree,
 } from './helpers.js';
 
 interface JsonCheck {
   clientId: string;
   clientName: string;
+  level: string;
   compatible: boolean;
+  working: string[];
+  unsupported: string[];
   issues: { severity: string; message: string }[];
   evidence: string;
+  extensionsHandling: string | null;
 }
 
 interface JsonResult {
@@ -78,7 +85,10 @@ describe('compatibility command', () => {
       'kiro',
     ]);
     for (const client of data.clients) {
+      expect(client.level).toBe('full');
       expect(client.compatible).toBe(true);
+      expect(client.working).toEqual([]);
+      expect(client.unsupported).toEqual([]);
       expect(client.issues).toEqual([]);
       expect(client.evidence).toMatch(/^(docs|runtime|expected|none)$/);
     }
@@ -93,7 +103,10 @@ describe('compatibility command', () => {
 
     const codex = data.clients.find((client) => client.clientId === 'codex');
     expect(codex).toBeDefined();
+    expect(codex?.level).toBe('unsupported');
     expect(codex?.compatible).toBe(false);
+    expect(codex?.working).toEqual([]);
+    expect(codex?.unsupported).toEqual(['mcp-sse']);
     expect(codex?.issues.length).toBeGreaterThan(0);
     expect(codex?.issues[0].message).toContain('does not support sse');
 
@@ -111,5 +124,41 @@ describe('compatibility command', () => {
     expect(result.stdout).toContain('does not support sse MCP servers');
     expect(result.stdout).toContain('Summary: 4 compatible, 1 incompatible');
     expect(result.exitCode).toBe(1);
+  });
+
+  test('plugin with extensions reports ignored handling in JSON', async () => {
+    writeTree(dir, {
+      'plugin.json': canonicalJson({
+        $schema: PLUGIN_SCHEMA,
+        name: 'ext-plugin',
+      }),
+      'com.example.foo/extension.json': canonicalJson({ feature: true }),
+    });
+    const result = await runCli(['compatibility', dir, '--json']);
+    const data = JSON.parse(result.stdout) as JsonResult;
+    for (const client of data.clients) {
+      // Every verified client supports the mechanism, so unknown namespaces
+      // are safely ignored — never "supported"/"understood".
+      expect(client.extensionsHandling).toBe('ignored');
+      expect(client.issues).toEqual([]);
+    }
+    expect(result.exitCode).toBe(0);
+  });
+
+  test('human output explains unknown extension namespaces', async () => {
+    writeTree(dir, {
+      'plugin.json': canonicalJson({
+        $schema: PLUGIN_SCHEMA,
+        name: 'ext-plugin',
+      }),
+      'com.example.foo/extension.json': canonicalJson({ feature: true }),
+    });
+    const result = await runCli(['compatibility', dir, '--no-color']);
+    expect(result.stdout).toContain('Extension namespace com.example.foo:');
+    expect(result.stdout).toContain('Unknown to this client.');
+    expect(result.stdout).toContain(
+      '(Client safely ignores unknown extensions per spec)',
+    );
+    expect(result.exitCode).toBe(0);
   });
 });

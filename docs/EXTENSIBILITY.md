@@ -288,7 +288,8 @@ const FORMATS: readonly ReportFormat[] = ['human', 'json', 'markdown', 'xml'];
         "mcpStdio": true,
         "mcpStreamableHttp": true,
         "mcpLegacySse": false,
-        "extensions": true
+        "extensions": true,
+        "extensionsNote": "Safely ignores unknown namespaces per spec §8.2"
       },
       "evidence": "docs",
       "source": "https://acme.example/docs/plugins"

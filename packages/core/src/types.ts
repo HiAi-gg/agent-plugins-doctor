@@ -40,13 +40,28 @@ export interface Skill {
   allowedTools?: string[];
 }
 
+/**
+ * The YAML value of the `allowed-tools` frontmatter field.
+ *
+ * The Agent Skills specification defines `allowed-tools` as a
+ * space-separated string (YAML scalar). The parser preserves the raw value
+ * verbatim — including non-string forms (YAML lists, numbers, booleans,
+ * mappings) — so the DOC-2005 rule, not the parser, is the gatekeeper for
+ * the field: strings are validated token-by-token, YAML lists warn as a
+ * Doctor-specific extension, and any other type is an error.
+ */
+export type AllowedToolsValue =
+  string | number | boolean | unknown[] | Record<string, unknown>;
+
 export interface SkillFrontmatter {
   name: string;
   description: string;
   license?: string;
   compatibility?: string;
   metadata?: Record<string, string>;
-  'allowed-tools'?: string | string[];
+  // Agent Skills specification: space-separated string (YAML scalar).
+  // Non-string values are preserved so DOC-2005 can diagnose them.
+  'allowed-tools'?: AllowedToolsValue;
 }
 
 export interface McpConfig {

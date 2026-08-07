@@ -76,40 +76,55 @@ export const EXAMPLE_DIAGNOSTICS: Diagnostic[] = [
   },
 ];
 
-/** The five verified Agent Plugins clients, all compatible. */
+/** The five verified Agent Plugins clients, all fully compatible. */
 export const EXAMPLE_COMPATIBILITY: CompatibilityResult[] = [
   {
     clientId: 'vscode',
     clientName: 'VS Code',
+    level: 'full',
     compatible: true,
+    working: [],
+    unsupported: [],
     issues: [],
     evidence: 'docs',
   },
   {
     clientId: 'cursor',
     clientName: 'Cursor',
+    level: 'full',
     compatible: true,
+    working: [],
+    unsupported: [],
     issues: [],
     evidence: 'docs',
   },
   {
     clientId: 'copilot',
     clientName: 'GitHub Copilot',
+    level: 'full',
     compatible: true,
+    working: [],
+    unsupported: [],
     issues: [],
     evidence: 'docs',
   },
   {
     clientId: 'codex',
     clientName: 'ChatGPT & Codex',
+    level: 'full',
     compatible: true,
+    working: [],
+    unsupported: [],
     issues: [],
     evidence: 'docs',
   },
   {
     clientId: 'kiro',
     clientName: 'Kiro',
+    level: 'full',
     compatible: true,
+    working: [],
+    unsupported: [],
     issues: [],
     evidence: 'docs',
   },

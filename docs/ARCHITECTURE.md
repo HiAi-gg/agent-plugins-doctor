@@ -183,8 +183,10 @@ Spec support is version-isolated:
   at runtime** (spec §4.1 requires clients not to fetch schemas at load
   time). AJV validators are compiled lazily and cached module-level.
 - `$schema` selection: `loadPlugin` reads `manifest.$schema`, maps it via
-  `resolveSpecVersion`, and rejects plugins whose schema URL is unknown
-  (exit 3) — per the spec's "must not silently ignore" requirement.
+  `resolveSpecVersion`, and rejects plugins whose schema URL is unknown —
+  in strict mode (`loadPlugin`) this throws (`LoadError`, exit 3 in the
+  CLI's error path), while `scanPlugin` collects it as a `DOC-1008` parser
+  diagnostic (exit 1) per the spec's "must not silently ignore" requirement.
 - Rules declare `supportedSpecVersions`; a rule that applies to all versions
   uses `"*"`. Future spec versions are additive: a new `v<N>` directory, a
   registry entry, and rules declaring the new version.
@@ -223,6 +225,37 @@ Extensibility is registry-based, not fork-based:
   `applyFixes` engine.
 
 See [docs/EXTENSIBILITY.md](EXTENSIBILITY.md) for worked examples of each.
+
+### ADR-007: Diagnostic Pipeline
+
+The diagnostic pipeline separates scanning from strict loading. `scanPlugin`
+(parser) drives the scanning half — it never throws, so every problem is
+collected as a diagnostic instead of aborting at the first failure:
+
+```
+filesystem discovery
+      ↓
+raw JSON/YAML parse diagnostics (DOC-1008, DOC-2099, DOC-3007)
+      ↓
+schema diagnostics
+      ↓
+recoverable partial representation
+      ↓
+component-specific diagnostics
+      ↓
+semantic rules
+      ↓
+compatibility
+```
+
+This allows maximum useful diagnostics without executing plugin code: a
+broken `plugin.json` (DOC-1008) does not hide a malformed SKILL.md (DOC-2099)
+or an invalid `mcp.json` (DOC-3007), and the components that did load are
+still handed to the rules engine as a partial `Plugin`. The CLI runs this
+pipeline through `loadAndValidate` (`scanPlugin` → `validatePlugin`, which
+merges the parser diagnostics ahead of the rule diagnostics), so malformed
+input is a validation error (exit 1) and only an inaccessible root or an
+internal rule failure (`DOC-0000`) is a tool failure (exit 3).
 
 ## Data Flow
 
@@ -277,8 +310,9 @@ package:
 - **`PluginManifest`** — the sanitized `plugin.json` (unknown fields and
   non-object `extensions` are stripped per §5.2/§8.1).
 - **`Skill`** — parsed SKILL.md: `name`, `description`, `body`,
-  `frontmatter`, `directory` (plugin-relative), plus normalized
-  `allowedTools`.
+  `frontmatter`, `directory` (plugin-relative), plus `allowedTools` (the
+  raw space-separated `allowed-tools` string split into a list; `undefined`
+  for non-string values, which DOC-2005 diagnoses).
 - **`McpConfig` / `McpServer`** — typed union of `stdio` | `streamable-http`
   | `sse` servers.
 - **`Diagnostic`** — `code` (stable `DOC-xxxx`), `severity`, `message`,
@@ -291,6 +325,13 @@ type it can import. The parser produces `Plugin`-compatible shapes (proven by
 `tests/integration/core-parser.test.ts` with explicit type annotations), and
 the CLI maps the compatibility package's checks onto the core
 `CompatibilityResult` shape so report formatters need only the core types.
+Each compatibility entry carries a `CompatibilityLevel`
+(`full` | `partial` | `unsupported` | `unknown`) with `working`/`unsupported`
+capability lists; `compatible` is derived from the level (`true` only for
+`full`) for backward compatibility. Core keeps its own `CompatibilityLevel`
+string-union type (identical values) so the foundation package stays
+dependency-free; the CLI bridge in `packages/cli/src/utils/run.ts` converts
+between the compatibility enum and the core union.
 
 ## Testing Strategy
 

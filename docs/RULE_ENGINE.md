@@ -35,6 +35,8 @@ interface Rule {
   enabledByDefault: boolean; // Whether the rule runs by default
   files?: string[]; // Plugin-relative paths read directly in check()
   // (used by incremental validation)
+  requiresPlugin?: boolean; // false = inspects only rootDir, so it can run
+  // when no plugin model was loaded (scan mode); defaults to true
 
   check(ctx: RuleContext): Diagnostic[];
   fix?(ctx: RuleContext, diagnostic: Diagnostic): Fix | null;
@@ -45,6 +47,12 @@ The optional `files` field declares which raw plugin-relative paths the rule
 reads from disk in `check()` (e.g. `"./plugin.json"` for rules that detect
 parser-stripped fields). Incremental validation uses it to decide which rules
 must re-run when a file changes.
+
+The optional `requiresPlugin` field marks rules that can run without a loaded
+plugin model: when `validatePlugin` is given a `ScanResult` whose manifest
+could not be loaded (`plugin` null), only rules with `requiresPlugin: false`
+run — they must inspect the tree via `rootDir` only and never dereference
+`ctx.plugin`.
 
 ### Rule Context
 
@@ -76,7 +84,9 @@ locations).
 ### Flow
 
 1. **Load Plugin** — `loadPlugin` parses plugin.json, mcp.json, skills
-   (see [docs/SDK.md](SDK.md))
+   (see [docs/SDK.md](SDK.md)). Skills that fail to load are surfaced as
+   `DOC-2099` parse diagnostics in `LoadResult.parseDiagnostics` (merged
+   into the rule diagnostics by the CLI pipeline) instead of being dropped
 2. **Select Rules** — the engine filters by include/exclude lists, spec-version
    support, and `enabledByDefault` (`selectRules`)
 3. **Execute Rules** — run each selected rule's `check()` (`runRules`)

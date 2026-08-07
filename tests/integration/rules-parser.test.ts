@@ -3,7 +3,7 @@
 // missing components gracefully, honor rule filters, and compute exit codes.
 
 import { describe, expect, test } from 'bun:test';
-import type { Plugin, ValidationResult } from '@agent-plugin-doctor/core';
+import type { ValidationResult } from '@agent-plugin-doctor/core';
 import { loadPlugin, SchemaValidationError } from '@agent-plugin-doctor/parser';
 import {
   createDefaultRegistry,
@@ -34,7 +34,8 @@ const LOADABLE_FIXTURES = [
   'vendor-extensions/invalid-extensions',
 ] as const;
 
-// Fixtures that fail at load time (schema violations -> exit 3).
+// Fixtures that fail at load time under the strict loadPlugin API
+// (schema violations throw SchemaValidationError).
 const UNLOADABLE_FIXTURES = [
   'invalid-plugin',
   'legacy-plugin',
@@ -45,7 +46,7 @@ const UNLOADABLE_FIXTURES = [
 describe('rules engine over parsed plugins', () => {
   test('every loadable fixture validates without throwing', async () => {
     for (const fixture of LOADABLE_FIXTURES) {
-      const plugin: Plugin = await loadPlugin(fixturePath(fixture));
+      const { plugin } = await loadPlugin(fixturePath(fixture));
       const result: ValidationResult = await validatePlugin(plugin);
       expect(result.plugin).toBe(plugin);
       expect(Array.isArray(result.diagnostics)).toBe(true);
@@ -73,30 +74,32 @@ describe('rules engine over parsed plugins', () => {
   });
 
   test('diagnostics reference the correct files', async () => {
-    const warning = await validatePlugin(
-      await loadPlugin(fixturePath('warning-plugin')),
+    const { plugin: warningPlugin } = await loadPlugin(
+      fixturePath('warning-plugin'),
     );
+    const warning = await validatePlugin(warningPlugin);
     const unknownField = warning.diagnostics.find((d) => d.code === 'DOC-1004');
     expect(unknownField?.file).toBe('./plugin.json');
 
-    const huge = await validatePlugin(
-      await loadPlugin(fixturePath('edge-cases', 'huge-description')),
+    const { plugin: hugePlugin } = await loadPlugin(
+      fixturePath('edge-cases', 'huge-description'),
     );
+    const huge = await validatePlugin(hugePlugin);
     const longDesc = huge.diagnostics.find((d) => d.code === 'DOC-2003');
     expect(longDesc?.file).toBe('skills/huge-description/SKILL.md');
 
-    const secrets = await validatePlugin(
-      await loadPlugin(fixturePath('security-plugin', 'embedded-secrets')),
+    const { plugin: secretsPlugin } = await loadPlugin(
+      fixturePath('security-plugin', 'embedded-secrets'),
     );
+    const secrets = await validatePlugin(secretsPlugin);
     const secret = secrets.diagnostics.find((d) => d.code === 'DOC-4003');
     expect(secret?.file).toBe('./mcp.json');
     expect(secret?.severity).toBe('critical');
   });
 
   test('diagnostics carry well-formed ranges when present', async () => {
-    const warning = await validatePlugin(
-      await loadPlugin(fixturePath('warning-plugin')),
-    );
+    const { plugin } = await loadPlugin(fixturePath('warning-plugin'));
+    const warning = await validatePlugin(plugin);
     for (const diagnostic of warning.diagnostics) {
       if (diagnostic.range === undefined) continue;
       expect(diagnostic.range.start.line).toBeGreaterThanOrEqual(1);
@@ -117,7 +120,7 @@ describe('rules engine over parsed plugins', () => {
           name: 'components-missing',
         }),
       });
-      const plugin = await loadPlugin(dir);
+      const { plugin } = await loadPlugin(dir);
       expect(plugin.mcpConfig).toBeUndefined();
       expect(plugin.skills).toEqual([]);
       expect(plugin.extensions).toEqual([]);
@@ -131,7 +134,7 @@ describe('rules engine over parsed plugins', () => {
   });
 
   test('rule include filter restricts which rules run', async () => {
-    const plugin = await loadPlugin(fixturePath('warning-plugin'));
+    const { plugin } = await loadPlugin(fixturePath('warning-plugin'));
     const result = await validatePlugin(plugin, {
       rules: ['manifest-unknown-fields'],
     });
@@ -141,7 +144,7 @@ describe('rules engine over parsed plugins', () => {
   });
 
   test('rule exclude filter drops rules', async () => {
-    const plugin = await loadPlugin(fixturePath('complex-plugin'));
+    const { plugin } = await loadPlugin(fixturePath('complex-plugin'));
     const all = await validatePlugin(plugin);
     expect(all.diagnostics.some((d) => d.code === 'DOC-5003')).toBe(true);
 
@@ -154,31 +157,31 @@ describe('rules engine over parsed plugins', () => {
   test('exit codes are computed from engine results', async () => {
     const engine = new ValidationEngine(createDefaultRegistry());
 
-    const minimal = await validatePlugin(
-      await loadPlugin(fixturePath('minimal-plugin')),
-    );
-    expect(engine.computeExitCode(minimal.diagnostics)).toBe(0);
+    const { plugin: minimal } = await loadPlugin(fixturePath('minimal-plugin'));
+    const minimalResult = await validatePlugin(minimal);
+    expect(engine.computeExitCode(minimalResult.diagnostics)).toBe(0);
 
     // Warning-level only: 0 normally, 1 with --strict.
-    const warning = await validatePlugin(
-      await loadPlugin(fixturePath('warning-plugin')),
-    );
-    expect(engine.computeExitCode(warning.diagnostics)).toBe(0);
-    expect(engine.computeExitCode(warning.diagnostics, { strict: true })).toBe(
-      1,
-    );
+    const { plugin: warning } = await loadPlugin(fixturePath('warning-plugin'));
+    const warningResult = await validatePlugin(warning);
+    expect(engine.computeExitCode(warningResult.diagnostics)).toBe(0);
+    expect(
+      engine.computeExitCode(warningResult.diagnostics, { strict: true }),
+    ).toBe(1);
 
     // Error-level: 1.
-    const huge = await validatePlugin(
-      await loadPlugin(fixturePath('edge-cases', 'huge-description')),
+    const { plugin: huge } = await loadPlugin(
+      fixturePath('edge-cases', 'huge-description'),
     );
-    expect(engine.computeExitCode(huge.diagnostics)).toBe(1);
+    const hugeResult = await validatePlugin(huge);
+    expect(engine.computeExitCode(hugeResult.diagnostics)).toBe(1);
 
     // Critical-level: 2.
-    const secrets = await validatePlugin(
-      await loadPlugin(fixturePath('security-plugin', 'embedded-secrets')),
+    const { plugin: secrets } = await loadPlugin(
+      fixturePath('security-plugin', 'embedded-secrets'),
     );
-    expect(engine.computeExitCode(secrets.diagnostics)).toBe(2);
+    const secretsResult = await validatePlugin(secrets);
+    expect(engine.computeExitCode(secretsResult.diagnostics)).toBe(2);
   });
 
   test('unloadable fixtures are classified as load errors by the CLI pipeline', async () => {
@@ -191,7 +194,9 @@ describe('rules engine over parsed plugins', () => {
       }
       expect(caught).toBeDefined();
       expect(caught instanceof SchemaValidationError).toBe(true);
-      // The CLI maps load/parse/schema errors to tool failure (exit 3).
+      // The strict loadPlugin API throws for these; the CLI classifies such
+      // errors via isPluginLoadError (its scan-based pipeline instead
+      // collects them as DOC-1008 diagnostics, exit 1).
       expect(isPluginLoadError(caught)).toBe(true);
     }
   });

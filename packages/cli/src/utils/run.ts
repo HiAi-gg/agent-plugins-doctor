@@ -1,18 +1,21 @@
-// Shared command pipeline: resolve the plugin directory, load the plugin,
+// Shared command pipeline: resolve the plugin directory, scan the plugin,
 // validate it, and attach the compatibility check to the validation result.
 
+import { statSync } from 'node:fs';
+import type { Stats } from 'node:fs';
 import { resolve } from 'node:path';
 import type {
   CompatibilityResult,
+  Diagnostic,
   ValidationOptions,
   ValidationResult,
 } from '@agent-plugin-doctor/core';
 import type { CompatibilityCheck } from '@agent-plugin-doctor/compatibility';
 import { checkCompatibility } from '@agent-plugin-doctor/compatibility';
 import {
-  loadPlugin,
   LoadError,
   ParseError,
+  scanPlugin,
   SchemaValidationError,
 } from '@agent-plugin-doctor/parser';
 import { validatePlugin } from '@agent-plugin-doctor/rules';
@@ -25,21 +28,65 @@ export function resolvePluginDir(dir: string): string {
 }
 
 /**
+ * Verify the plugin root is a readable directory before scanning.
+ *
+ * A missing or non-directory root is a tool failure (exit 3), not a
+ * validation error: `scanPlugin` would collect it as a DOC-1008 diagnostic,
+ * but the CLI keeps tool-failure semantics for an inaccessible root.
+ */
+export function assertRootAccessible(rootDir: string): void {
+  let stat: Stats;
+  try {
+    stat = statSync(rootDir);
+  } catch (cause) {
+    throw new LoadError(
+      `Plugin root does not exist: ${rootDir}`,
+      rootDir,
+      cause,
+    );
+  }
+  if (!stat.isDirectory()) {
+    throw new LoadError(`Plugin root is not a directory: ${rootDir}`, rootDir);
+  }
+}
+
+/**
  * Load, validate, and check compatibility for a plugin directory.
+ *
+ * Uses `scanPlugin` (diagnostic-oriented loading, never throws): malformed
+ * user input — unparseable or schema-invalid plugin.json (DOC-1008), skills
+ * that fail to load (DOC-2099), invalid mcp.json (DOC-3007) — is collected as
+ * parser diagnostics and merged ahead of the rule diagnostics by
+ * `validatePlugin`, so it surfaces as a validation error (exit 1) instead of
+ * a tool failure (exit 3). Only an inaccessible root (missing directory) is
+ * still a tool failure.
+ *
  * The compatibility check is merged into the validation result so the report
- * formatters render it alongside the diagnostics.
+ * formatters render it alongside the diagnostics. When plugin.json could not
+ * be loaded there is no plugin to check clients against, so the compatibility
+ * array is empty.
  */
 export async function loadAndValidate(
   dir: string,
   options: ValidationOptions = {},
 ): Promise<ValidationResult> {
-  const plugin = await loadPlugin(resolvePluginDir(dir));
-  const result = await validatePlugin(plugin, options);
-  const compatibility = checkCompatibility(plugin);
-  return {
-    ...result,
-    compatibility: toCoreCompatibility(compatibility.checks),
-  };
+  const rootDir = resolvePluginDir(dir);
+  assertRootAccessible(rootDir);
+  const scanResult = await scanPlugin(rootDir);
+  const result = await validatePlugin(scanResult, options);
+  const compatibility =
+    result.plugin === null
+      ? []
+      : toCoreCompatibility(checkCompatibility(result.plugin).checks);
+  return { ...result, compatibility };
+}
+
+/** Merge parser-level parse diagnostics with rule diagnostics. */
+export function mergeDiagnostics(
+  parseDiagnostics: Diagnostic[],
+  ruleDiagnostics: Diagnostic[],
+): Diagnostic[] {
+  return [...parseDiagnostics, ...ruleDiagnostics];
 }
 
 /** Map compatibility package checks onto the core CompatibilityResult shape. */
@@ -49,7 +96,10 @@ export function toCoreCompatibility(
   return checks.map((check) => ({
     clientId: check.clientId,
     clientName: check.clientName,
+    level: check.level,
     compatible: check.compatible,
+    working: check.working,
+    unsupported: check.unsupported,
     issues: check.issues.map((issue) => issue.message),
     evidence: check.evidence,
   }));

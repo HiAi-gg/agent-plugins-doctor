@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import type { AllowedToolsValue } from '@agent-plugin-doctor/core';
 import { ParseError, parseSkillFrontmatter } from '../src/index.js';
 
 const FILE = '/tmp/example-skill/SKILL.md';
@@ -135,36 +136,47 @@ Body
     );
   });
 
-  test('allowed-tools as string is normalized to array', () => {
+  test('allowed-tools as string is preserved as-is', () => {
     const content =
       '---\nname: tools-skill\ndescription: Uses tools\nallowed-tools: Bash(git:*) Bash(jq:*) Read\n---\nBody';
     const { frontmatter } = parseSkillFrontmatter(content, FILE);
-    expect(frontmatter['allowed-tools']).toEqual([
-      'Bash(git:*)',
-      'Bash(jq:*)',
-      'Read',
-    ]);
+    expect(frontmatter['allowed-tools']).toBe('Bash(git:*) Bash(jq:*) Read');
   });
 
-  test('allowed-tools empty string normalizes to empty array', () => {
+  test('allowed-tools preserves whitespace exactly as written', () => {
+    const content =
+      '---\nname: tools-skill\ndescription: Uses tools\nallowed-tools: "Bash  Read  "\n---\nBody';
+    const { frontmatter } = parseSkillFrontmatter(content, FILE);
+    expect(frontmatter['allowed-tools']).toBe('Bash  Read  ');
+  });
+
+  test('allowed-tools empty string is preserved', () => {
     const content =
       '---\nname: tools-skill\ndescription: Uses tools\nallowed-tools: ""\n---\nBody';
     const { frontmatter } = parseSkillFrontmatter(content, FILE);
-    expect(frontmatter['allowed-tools']).toEqual([]);
+    expect(frontmatter['allowed-tools']).toBe('');
   });
 
-  test('allowed-tools as array is preserved', () => {
+  test('allowed-tools as YAML list is preserved for DOC-2005', () => {
     const content =
       '---\nname: tools-skill\ndescription: Uses tools\nallowed-tools: [Read, Bash]\n---\nBody';
     const { frontmatter } = parseSkillFrontmatter(content, FILE);
+    // The parser preserves the raw value; DOC-2005 warns on the list form.
     expect(frontmatter['allowed-tools']).toEqual(['Read', 'Bash']);
   });
 
-  test('allowed-tools of invalid type throws ParseError', () => {
-    const content =
-      '---\nname: tools-skill\ndescription: Uses tools\nallowed-tools: 42\n---\nBody';
-    expect(() => parseSkillFrontmatter(content, FILE)).toThrow(ParseError);
-    expect(() => parseSkillFrontmatter(content, FILE)).toThrow(/allowed-tools/);
+  test('allowed-tools of non-string types is preserved for DOC-2005', () => {
+    const cases: Array<[string, string, AllowedToolsValue]> = [
+      ['number', '42', 42],
+      ['boolean', 'true', true],
+      ['mapping', '{ a: 1 }', { a: 1 }],
+    ];
+    for (const [label, yaml, expected] of cases) {
+      const content = `---\nname: tools-skill\ndescription: Uses tools\nallowed-tools: ${yaml}\n---\nBody`;
+      const { frontmatter } = parseSkillFrontmatter(content, FILE);
+      // The parser preserves the raw value; DOC-2005 flags it as an error.
+      expect(frontmatter['allowed-tools'], `case ${label}`).toEqual(expected);
+    }
   });
 
   test('UTF-8 BOM before the delimiter is tolerated', () => {

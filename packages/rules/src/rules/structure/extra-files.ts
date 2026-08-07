@@ -57,6 +57,8 @@ const EXPECTED_ENTRIES = new Set([
   'packages',
   'tests',
   'examples',
+  'scripts',
+  'PUBLISHING.md',
 ]);
 
 export const extraFilesRule: Rule = {
@@ -69,6 +71,7 @@ export const extraFilesRule: Rule = {
   description:
     'Report unexpected files at the plugin root that are not part of the plugin structure.',
   enabledByDefault: true,
+  requiresPlugin: false,
 
   check(ctx) {
     let entries: string[];

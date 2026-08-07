@@ -12,24 +12,26 @@ import {
 } from './helpers.js';
 
 describe('e2e fix command', () => {
-  test('invalid-plugin: fix refuses to touch a plugin that cannot load', async () => {
+  test('invalid-plugin: fix reports validation errors without touching files', async () => {
     const dir = makeTempDir();
     try {
       copyFixture('invalid-plugin', join(dir, 'plugin'));
       const beforePlugin = readFile(join(dir, 'plugin'), 'plugin.json');
 
+      // Schema violations surface as DOC-1008 diagnostics (exit 1) and there
+      // are no safe fixes for a manifest that could not be loaded.
       const dryRun = await runCli(['fix', join(dir, 'plugin'), '--dry-run']);
-      expect(dryRun.exitCode).toBe(3);
-      expect(dryRun.stderr).toContain('Failed to load plugin');
+      expect(dryRun.exitCode).toBe(1);
+      expect(dryRun.stdout).toContain('No fixes available.');
       expect(readFile(join(dir, 'plugin'), 'plugin.json')).toBe(beforePlugin);
 
       const apply = await runCli(['fix', join(dir, 'plugin'), '--yes']);
-      expect(apply.exitCode).toBe(3);
+      expect(apply.exitCode).toBe(1);
       expect(readFile(join(dir, 'plugin'), 'plugin.json')).toBe(beforePlugin);
 
-      // A follow-up check still reports the load failure.
+      // A follow-up check reports the same validation error.
       const check = await runCli(['check', join(dir, 'plugin')]);
-      expect(check.exitCode).toBe(3);
+      expect(check.exitCode).toBe(1);
     } finally {
       cleanup(dir);
     }

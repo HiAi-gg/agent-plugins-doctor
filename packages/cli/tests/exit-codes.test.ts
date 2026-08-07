@@ -31,6 +31,17 @@ describe('computeExitCode', () => {
     expect(computeExitCode(diagnostics)).toBe(EXIT_CODES.SPEC_ERRORS);
   });
 
+  test('parser diagnostics exit 1, not 3 (scanPlugin contract)', () => {
+    // DOC-1008 (malformed plugin.json) and DOC-2099 (malformed SKILL.md) are
+    // parser-emitted error diagnostics: they must produce a validation error
+    // (exit 1), never a tool failure (exit 3).
+    const parserErrors = [
+      diagnostic({ code: 'DOC-1008', severity: 'error', ruleId: 'parser' }),
+      diagnostic({ code: 'DOC-2099', severity: 'error', ruleId: 'parser' }),
+    ];
+    expect(computeExitCode(parserErrors)).toBe(EXIT_CODES.SPEC_ERRORS);
+  });
+
   test('critical diagnostics exit 2', () => {
     const diagnostics = [
       diagnostic({

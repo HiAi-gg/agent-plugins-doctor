@@ -9,10 +9,12 @@
         "mcpStdio": true,
         "mcpStreamableHttp": true,
         "mcpLegacySse": true,
-        "extensions": true
+        "extensions": true,
+        "extensionsNote": "Supports the extension mechanism; safely ignores unknown extension namespaces per spec §8.2"
       },
       "evidence": "docs",
-      "source": "https://code.visualstudio.com/docs/agent-customization/agent-plugins"
+      "source": "https://code.visualstudio.com/docs/agent-customization/agent-plugins",
+      "verificationNote": "Verified 2026-08-07: Agent Plugins 1.0 skills and MCP servers are portable components; MCP supports stdio, streamable HTTP, and SSE (HTTP Stream first, SSE fallback) per the MCP configuration reference; VS Code ignores client extension data and directories in Agent Plugins 1.0 packages, so extensions: true (mechanism supported; unknown namespaces safely ignored)."
     },
     {
       "id": "cursor",
@@ -23,10 +25,12 @@
         "mcpStdio": true,
         "mcpStreamableHttp": true,
         "mcpLegacySse": true,
-        "extensions": true
+        "extensions": true,
+        "extensionsNote": "Extension support is spec-inferred; safely ignores unknown extension namespaces per spec §8.2"
       },
       "evidence": "docs",
-      "source": "https://cursor.com/docs/plugins"
+      "source": "https://cursor.com/docs/plugins",
+      "verificationNote": "Verified 2026-08-07: plugins doc confirms skills and MCP servers in both Agent Plugins and Cursor Plugins formats; all three MCP transports (stdio, SSE, streamable HTTP) documented in the MCP doc; extension (client-specific data) support not explicitly documented, so it is spec-inferred and extensions: true (mechanism supported; unknown namespaces safely ignored)."
     },
     {
       "id": "copilot",
@@ -37,10 +41,12 @@
         "mcpStdio": true,
         "mcpStreamableHttp": true,
         "mcpLegacySse": true,
-        "extensions": true
+        "extensions": true,
+        "extensionsNote": "Extension support is spec-inferred; safely ignores unknown extension namespaces per spec §8.2"
       },
       "evidence": "docs",
-      "source": "https://docs.github.com/en/copilot/concepts/agents/about-plugins"
+      "source": "https://docs.github.com/en/copilot/concepts/agents/about-plugins",
+      "verificationNote": "Verified 2026-08-07: about-plugins doc confirms skills, hooks, and MCP server configurations; Copilot Chat MCP docs confirm stdio and HTTP/SSE transports; extension (client-specific data) support not explicitly documented, so it is spec-inferred and extensions: true (mechanism supported; unknown namespaces safely ignored)."
     },
     {
       "id": "codex",
@@ -51,10 +57,12 @@
         "mcpStdio": true,
         "mcpStreamableHttp": true,
         "mcpLegacySse": false,
-        "extensions": true
+        "extensions": true,
+        "extensionsNote": "Extension support is spec-inferred; safely ignores unknown extension namespaces per spec §8.2"
       },
       "evidence": "docs",
-      "source": "https://developers.openai.com/plugins"
+      "source": "https://developers.openai.com/plugins",
+      "verificationNote": "Verified 2026-08-07: plugins doc confirms skills and MCP servers; Codex MCP docs confirm stdio and streamable HTTP transports only - legacy SSE is not documented anywhere in OpenAI docs (SSE deprecated in favor of streamable HTTP); extension (client-specific data) support not explicitly documented, so it is spec-inferred and extensions: true (mechanism supported; unknown namespaces safely ignored)."
     },
     {
       "id": "kiro",
@@ -65,10 +73,12 @@
         "mcpStdio": true,
         "mcpStreamableHttp": true,
         "mcpLegacySse": true,
-        "extensions": true
+        "extensions": true,
+        "extensionsNote": "Kiro documents its own extension namespace (dev.kiro/); unknown namespaces are safely ignored per spec §8.2"
       },
       "evidence": "docs",
-      "source": "https://kiro.dev/docs/powers/"
+      "source": "https://kiro.dev/docs/powers/",
+      "verificationNote": "Verified 2026-08-07: powers doc confirms powers follow the Agent Plugins spec (plugin.json, skills/, mcp.json); MCP doc confirms local stdio and remote HTTP/SSE servers; Kiro documents its own extension namespace (dev.kiro/), but unknown namespaces are safely ignored, so extensions: true (mechanism supported; unknown namespaces safely ignored)."
     }
   ]
 }
