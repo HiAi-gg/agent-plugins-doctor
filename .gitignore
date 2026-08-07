@@ -5,6 +5,7 @@ dist/
 # structure-extra-files rule (DOC-5003) has something to report; keep it tracked.
 !tests/fixtures/complex-plugin/notes.log
 .DS_Store
+Thumbs.db
 .env
 .env.local
 coverage/
@@ -15,3 +16,15 @@ coverage/
 
 # Local agent tooling configuration (not part of the product)
 .opencode/
+
+# Internal development files (not for public release)
+MEMORY.md
+checkpoint.md
+notes.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
