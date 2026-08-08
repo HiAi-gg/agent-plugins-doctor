@@ -1,6 +1,6 @@
 {
   "name": "@agent-plugins-doctor/core",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Canonical types, spec constants, and path utilities for Agent Plugin Doctor",
   "type": "module",
   "main": "./dist/index.js",

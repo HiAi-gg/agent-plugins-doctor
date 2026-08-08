@@ -164,7 +164,7 @@ describe('core <-> parser type compatibility', () => {
     const plugin: Plugin = result.plugin;
     expect(result.parseDiagnostics).toEqual([]);
     expect(plugin.manifest.name).toBe('agent-plugins-doctor');
-    expect(plugin.manifest.version).toBe('0.0.4');
+    expect(plugin.manifest.version).toBe('0.0.6');
     expect(plugin.manifest.license).toBe('MIT');
     expect(plugin.skills).toHaveLength(1);
     expect(plugin.skills[0].name).toBe('doctor');

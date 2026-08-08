@@ -1,6 +1,6 @@
 {
   "name": "@hiai-gg/agent-plugins-doctor",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Diagnose and fix Agent Plugins",
   "type": "module",
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "@agent-plugins-doctor/parser",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Filesystem loading and parsing for Agent Plugin Doctor",
   "type": "module",
   "main": "./dist/index.js",
@@ -31,7 +31,7 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@agent-plugins-doctor/core": "^0.0.4",
+    "@agent-plugins-doctor/core": "^0.0.6",
     "ajv": "^8.17.0",
     "gray-matter": "^4.0.3"
   },
