@@ -1,0 +1,19 @@
+.github/workflows/publish.yml
+  s_d241362867854f::t_303118d858207b 1-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f05fc93bf1f2848de154946a306a66c0dc313deb",
+  "prompts": {},
+  "sessions": {
+    "s_d241362867854f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01ee0ddd7ffeLlHp5Zj6OXhX8d",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
