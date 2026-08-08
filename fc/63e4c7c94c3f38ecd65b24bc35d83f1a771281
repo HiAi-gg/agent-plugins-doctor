@@ -1,0 +1,19 @@
+scripts/vendor-dts.ts
+  s_0ed5b94d7c98a0::t_45f43046ae81f5 73-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "fc63e4c7c94c3f38ecd65b24bc35d83f1a771281",
+  "prompts": {},
+  "sessions": {
+    "s_0ed5b94d7c98a0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01d71a5daffe757cYpiozH2KW9",
+        "model": "longcat-2.0-free"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
