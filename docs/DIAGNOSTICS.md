@@ -130,13 +130,14 @@ Legend:
 | DOC-6002 | compatibility | warning          | yes     | dead in v1.0.0 (SDK-only with a custom map) | Deprecated field                 |
 | DOC-7001 | format        | info             | yes     | disk (rule-level)                           | Non-canonical JSON formatting    |
 | DOC-7002 | format        | info             | yes     | disk (rule-level)                           | Frontmatter style issues         |
+| DOC-7003 | format        | error            | no      | disk (rule-level)                           | Duplicate frontmatter block      |
 
 ### Disk-reachable (public CLI)
 
 DOC-1004, DOC-1005, DOC-1008, DOC-1009, DOC-1010, DOC-2001, DOC-2003,
 DOC-2004, DOC-2005, DOC-2006, DOC-2099, DOC-3002, DOC-3005, DOC-3006,
 DOC-3007, DOC-3008, DOC-4001, DOC-4002, DOC-4003, DOC-5001, DOC-5002,
-DOC-5003, DOC-7001, DOC-7002 — 24 codes.
+DOC-5003, DOC-7001, DOC-7002, DOC-7003 — 25 codes.
 
 ### Parser-level (disk-reachable)
 
@@ -957,6 +958,21 @@ Informational — does not affect the exit code.
 
 ---
 
+### DOC-7003: Duplicate frontmatter blocks
+
+**Rule:** `format-duplicate-frontmatter` · **Severity:** error · **Category:** format · **Autofix:** No · **Reachability:** disk (rule-level)
+
+**Description:** SKILL.md must not contain duplicate YAML frontmatter blocks.
+The loader reads only the first `---`-delimited block, so a second block is
+dead content — usually a paste or merge error, and structural corruption.
+Body content that merely _looks_ like frontmatter is not reported: Markdown
+horizontal rules (`---`), `---` lines inside fenced code blocks, and YAML
+examples without surrounding delimiters.
+
+**Fix:** None — remove the duplicate block(s) manually.
+
+---
+
 ## Summary
 
 | Range     | Count  | Severities                              | With fixes |
@@ -967,8 +983,8 @@ Informational — does not affect the exit code.
 | DOC-4xxx  | 3      | 3 critical                              | 0          |
 | DOC-5xxx  | 3      | 2 error, 1 info                         | 1          |
 | DOC-6xxx  | 2      | 1 error, 1 warning                      | 1          |
-| DOC-7xxx  | 2      | 2 info                                  | 2          |
-| **Total** | **35** | 25 error, 4 warning, 3 critical, 3 info | 12         |
+| DOC-7xxx  | 3      | 2 info, 1 error                         | 2          |
+| **Total** | **36** | 26 error, 4 warning, 3 critical, 3 info | 12         |
 
 `DOC-1008`, `DOC-1009`, `DOC-1010`, `DOC-2099`, `DOC-3007`, `DOC-3008`, and
 `DOC-4002` (7 of the 25 errors/critical across the DOC-1xxx, DOC-2xxx,

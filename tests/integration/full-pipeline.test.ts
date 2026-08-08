@@ -62,6 +62,9 @@ const EXPECTED_EXITS: Record<string, number> = {
   // not silently stripped (P1 #6).
   'vendor-extensions/invalid-extensions': 1,
   'non-object-extensions': 1,
+  // DOC-7003 is an error (not info): a duplicate YAML frontmatter block is
+  // structural corruption, so the Builder Contract fails with exit 1.
+  'duplicate-frontmatter': 1,
 };
 
 describe('full validation pipeline', () => {

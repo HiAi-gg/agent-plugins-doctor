@@ -143,7 +143,7 @@ See [docs/BUILDER_INTEGRATION.md](docs/BUILDER_INTEGRATION.md) for integration d
 
 ## Diagnostic Codes
 
-Doctor uses 35 stable diagnostic codes:
+Doctor uses 36 stable diagnostic codes:
 
 - `DOC-1xxx` — Manifest & spec conformance
 - `DOC-2xxx` — Skills
@@ -153,7 +153,7 @@ Doctor uses 35 stable diagnostic codes:
 - `DOC-6xxx` — Compatibility
 - `DOC-7xxx` — Format & quality
 
-Of the 35 codes, 24 are reachable from the public CLI (7 of them emitted by
+Of the 36 codes, 25 are reachable from the public CLI (7 of them emitted by
 the parser during load), 10 fire only through the SDK, and 1 (`DOC-6002`) is
 intentionally dormant under v1.0.0.
 

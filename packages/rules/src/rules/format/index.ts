@@ -2,3 +2,4 @@
 
 export { jsonFormattingRule } from './json-formatting.js';
 export { frontmatterStyleRule } from './frontmatter-style.js';
+export { duplicateFrontmatterRule } from './duplicate-frontmatter.js';

@@ -29,7 +29,7 @@ import { computeExitCode } from '@agent-plugins-doctor/cli';
    the spec and path security (no code is ever executed). Skills that fail to
    load are reported as `DOC-2099` parse diagnostics instead of being
    silently dropped.
-2. **Validate** with `validatePlugin(plugin)` — all 29 rules across 7
+2. **Validate** with `validatePlugin(plugin)` — all 30 rules across 7
    categories run against the loaded plugin. The example merges the parser's
    `parseDiagnostics` into the rule diagnostics so malformed input is a
    validation error (exit `1`).

@@ -51,6 +51,7 @@ changes how existing versions are validated. See §5 for the mechanism.
 | `allowed-tools`        | DOC-2005 (type + tokens)              | canonical space-separated string (e.g. `Bash(git:*) Bash(jq:*) Read`); YAML list = Doctor extension, not in spec |
 | Body size              | DOC-2006                              | < 5000 tokens (recommendation)                                                                                   |
 | Body/frontmatter style | DOC-7002                              | LF endings, no BOM/trailing whitespace, delimiters                                                               |
+| Duplicate frontmatter  | DOC-7003                              | exactly one `---` block; body `---`/code fences/YAML examples ignored                                            |
 | Skill discovery        | Loader                                | fixed depth: `skills/*/SKILL.md` only                                                                            |
 
 The space-separated string form of `allowed-tools` is canonical per the
@@ -108,7 +109,7 @@ compatibility issue against them. See
 | Item                                      | Why not                                                                                                                                        |
 | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `extension.json` content semantics        | The spec defines no portable semantics for extension data (§8) — the loader reads it best-effort but validation is impossible without a schema |
-| SKILL.md body content                     | The body is arbitrary Markdown; only size (DOC-2006) and frontmatter style (DOC-7002) are checked                                              |
+| SKILL.md body content                     | The body is arbitrary Markdown; only size (DOC-2006), frontmatter style (DOC-7002), and duplicate frontmatter (DOC-7003) are checked           |
 | Execution behavior of stdio servers       | Doctor never executes plugin code (security rule) — it validates the _configuration_ only                                                      |
 | Line numbers / source ranges              | No rule currently emits `range`; diagnostics carry plugin-relative `file` paths only                                                           |
 | Plugin licensing/legal review             | Out of scope; `license` is validated only as a schema-typed field                                                                              |

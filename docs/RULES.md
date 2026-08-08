@@ -279,14 +279,16 @@ Source: `packages/rules/src/rules/compatibility/`
 
 Source: `packages/rules/src/rules/format/`
 
-| Rule id                    | Code     | Severity | Fix                      | Checks                                                                  |
-| -------------------------- | -------- | -------- | ------------------------ | ----------------------------------------------------------------------- |
-| `format-json-formatting`   | DOC-7001 | info     | replace (canonical JSON) | `plugin.json`/`mcp.json` use 2-space indent + trailing newline          |
-| `format-frontmatter-style` | DOC-7002 | info     | replace (normalize)      | SKILL.md frontmatter: LF, no BOM/trailing whitespace, proper delimiters |
+| Rule id                        | Code     | Severity | Fix                      | Checks                                                                    |
+| ------------------------------ | -------- | -------- | ------------------------ | ------------------------------------------------------------------------- |
+| `format-json-formatting`       | DOC-7001 | info     | replace (canonical JSON) | `plugin.json`/`mcp.json` use 2-space indent + trailing newline            |
+| `format-frontmatter-style`     | DOC-7002 | info     | replace (normalize)      | SKILL.md frontmatter: LF, no BOM/trailing whitespace, proper delimiters   |
+| `format-duplicate-frontmatter` | DOC-7003 | error    | — (detection only)       | SKILL.md has more than one YAML frontmatter block; only the first is used |
 
 ### Implementation notes
 
-- **Whole-file replace fixes**: both format rules replace the entire file.
+- **Whole-file replace fixes**: the two fixable format rules replace the
+  entire file.
   Because other rules may have rewritten the file first, the fix engine
   re-derives the canonical form from the _current_ content
   (`canonicalJson` / `normalizeSkillFrontmatter`) when the original `oldText`
@@ -298,7 +300,14 @@ Source: `packages/rules/src/rules/format/`
 - **`format-frontmatter-style`** exports `frontmatterStyleIssue(text)` for
   reuse. Its fix normalizes only the frontmatter region; the markdown body
   is preserved byte-for-byte.
-- **Reachability**: fully disk-reachable; both are informational (exit 0).
+- **`format-duplicate-frontmatter`** exports
+  `countDuplicateFrontmatterBlocks(text)` and ships **no autofix** — Doctor
+  never deletes file content automatically. The loader only uses the first
+  `---`-delimited block, so a second block is dead content. Markdown
+  horizontal rules, `---` inside code fences, and YAML examples without
+  delimiters are ignored.
+- **Reachability**: fully disk-reachable; DOC-7001/DOC-7002 are
+  informational (exit 0) and DOC-7003 is an error (exit 1).
 
 ---
 

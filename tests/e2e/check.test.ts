@@ -30,6 +30,11 @@ const FIXTURE_EXITS: Record<string, number> = {
   'unsupported-version': 1,
   'legacy-plugin': 1,
   'future-spec': 1,
+  // ECO-002: duplicate YAML frontmatter blocks are structural corruption
+  // (DOC-7003 error, exit 1) while legitimate Markdown horizontal rules are
+  // not flagged (exit 0).
+  'duplicate-frontmatter': 1,
+  'valid-with-horizontal-rule': 0,
   // Phase 12/13: simulated Builder-generated output must validate cleanly.
   'builder-generated/from-init': 0,
   'builder-generated/from-migrate-claude': 0,
@@ -125,6 +130,25 @@ describe('e2e check command', () => {
     };
     expect(data.diagnostics.some((d) => d.severity === 'critical')).toBe(true);
     expect(data.diagnostics.some((d) => d.code === 'DOC-4003')).toBe(true);
+  });
+
+  test('duplicate frontmatter exits 1 with DOC-7003', async () => {
+    const result = await runCli([
+      'check',
+      fixturePath('duplicate-frontmatter'),
+      '--no-color',
+    ]);
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toContain('DOC-7003');
+  });
+
+  test('valid SKILL.md with horizontal rule exits 0', async () => {
+    const result = await runCli([
+      'check',
+      fixturePath('valid-with-horizontal-rule'),
+      '--no-color',
+    ]);
+    expect(result.exitCode).toBe(0);
   });
 
   test('JSON output from check is parseable and complete', async () => {

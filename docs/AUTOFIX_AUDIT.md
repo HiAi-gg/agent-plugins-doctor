@@ -129,7 +129,7 @@ they are now locked in by the integration suite.
 
 ## Diagnostic Message Audit
 
-Every diagnostic produced by the 30 rules was reviewed (38 `makeDiagnostic`
+Every diagnostic produced by the 30 rules was reviewed (41 `makeDiagnostic`
 call sites) against the five questions:
 
 - **What is wrong?** Every message states the problem concretely, naming the

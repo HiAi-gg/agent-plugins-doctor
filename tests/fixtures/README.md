@@ -16,6 +16,8 @@ directly to `agent-plugins-doctor check <fixture>`.
 | `complex-plugin/` | all features (full manifest, MCP, skills, extensions) | 0 | 3 infos (DOC-5003 notes.log, 2x DOC-7001) |
 | `invalid-plugin/` | multiple deliberate defects | 1 | DOC-1008 errors (schema violations) |
 | `warning-plugin/` | valid plugin with a warning | 0 (1 with `--strict`) | DOC-1004 warning |
+| `duplicate-frontmatter/` | SKILL.md with a second YAML frontmatter block (ECO-002) | 1 | DOC-7003 error |
+| `valid-with-horizontal-rule/` | SKILL.md with a legitimate Markdown horizontal rule | 0 | none |
 | `security-plugin/symlink-escape/` | symlink pointing outside the root | 0 | 1 info (DOC-5003) |
 | `security-plugin/embedded-secrets/` | credentials in MCP env | 2 | DOC-4003 critical |
 | `security-plugin/path-traversal/` | `cwd` escaping the plugin root | 2 | DOC-3008 critical (entry preserved, not silently dropped) |
@@ -30,6 +32,7 @@ directly to `agent-plugins-doctor check <fixture>`.
 | `vendor-extensions/valid-extensions/` | valid reverse-domain extensions | 0 | none |
 | `vendor-extensions/invalid-extensions/` | non-object `extensions` field (§8.1) | 1 | DOC-1009 error (field stripped per §8.1) |
 | `non-object-extensions/` | non-object `extensions` field (§8.1) | 1 | DOC-1009 error (field stripped per §8.1) |
+| `duplicate-frontmatter/` | skill with a duplicate YAML frontmatter block | 1 | DOC-7003 error |
 | `legacy-plugin/` | `$schema` 0.9.0 (unsupported spec) | 1 | DOC-1010 error |
 | `future-spec/` | `$schema` 2.0.0 (unsupported spec) | 1 | DOC-1010 error |
 | `unsupported-version/` | `$schema` 2.0.0 (unsupported spec) | 1 | DOC-1010 error |

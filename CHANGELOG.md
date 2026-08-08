@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Duplicate frontmatter detection — DOC-7003 —
+  `packages/rules/src/rules/format/duplicate-frontmatter.ts`** — new
+  `format-duplicate-frontmatter` rule (error): a SKILL.md may contain only one
+  YAML frontmatter block. The loader reads only the first `---`-delimited
+  block, so a second block is dead content. Fixes ECO-002: the independent
+  ecosystem audit classified duplicated frontmatter as release-blocking
+  structural corruption, so the diagnostic is a validation **error** (exit 1,
+  previously would have been informational). Markdown
+  horizontal rules, `---` inside code fences, and YAML examples without
+  delimiters are ignored (the pure `countDuplicateFrontmatterBlocks` helper
+  is exported for reuse). No autofix — Doctor never deletes content.
+
 - **`ParsedFileCache` hit/miss counters —
   `packages/parser/src/cache.ts`** — the cache now exposes `hits` and
   `misses` (total cache hits/misses since creation), letting callers measure
