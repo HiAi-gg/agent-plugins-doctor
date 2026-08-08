@@ -1,0 +1,20 @@
+tests/integration/external-consumer.test.ts
+  s_c31ac225f365d5::t_965e73e84bfdea 105-108
+  s_c31ac225f365d5::t_946c2c348994c4 109-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "458edcd2e6e5b1d97a9183549a9e9f7f1daaeefa",
+  "prompts": {},
+  "sessions": {
+    "s_c31ac225f365d5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01d9bd947ffeerkf2b4gTUwJH7",
+        "model": "longcat-2.0-free"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
