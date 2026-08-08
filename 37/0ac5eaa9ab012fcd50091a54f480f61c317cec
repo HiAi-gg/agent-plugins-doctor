@@ -1,0 +1,56 @@
+packages/report/package.json
+  s_5b4fa9c331749e::t_36978c7c6da71b 3
+  s_5b4fa9c331749e::t_adba303559c17b 34
+packages/compatibility/package.json
+  s_5b4fa9c331749e::t_2ad8f63e96d8ab 34
+  s_5b4fa9c331749e::t_73d1ce007a24db 3
+CHANGELOG.md
+  s_5b4fa9c331749e::t_69e403931adb78 17
+  s_5b4fa9c331749e::t_1e5000b876c4de 8,12-16,18-22,24-25
+  s_b0cc6507f249da::t_2bc2809953a856 27,29
+packages/core/package.json
+  s_5b4fa9c331749e::t_a46cec376636fc 3
+packages/npm/package.json
+  s_5b4fa9c331749e::t_5999e40926d50c 3
+package.json
+  s_5b4fa9c331749e::t_86256e1a1f69ef 3
+packages/rules/package.json
+  s_5b4fa9c331749e::t_42da8499337c0a 3
+  s_5b4fa9c331749e::t_69e4571793fa40 34-36
+packages/cli/package.json
+  s_5b4fa9c331749e::t_8a43c0e824740f 3
+  s_5b4fa9c331749e::t_b1285c02cc1965 37-41
+packages/parser/package.json
+  s_5b4fa9c331749e::t_e71406ea3cff17 34
+  s_5b4fa9c331749e::t_4591fb4277199c 3
+plugin.json
+  s_5b4fa9c331749e::t_a1524b61542999 4
+tests/integration/core-parser.test.ts
+  s_5b4fa9c331749e::t_66b77ca2ae0761 167
+bun.lock
+  s_b0cc6507f249da::t_d6aa78035ee278 23,28-32,42,44,52,59,63-65,69,71,81,83,92,94-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "370ac5eaa9ab012fcd50091a54f480f61c317cec",
+  "prompts": {},
+  "sessions": {
+    "s_5b4fa9c331749e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01de7f8a6ffefuLjiQER9YJiFB",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": null
+    },
+    "s_b0cc6507f249da": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01dcd2c51ffe6O4avAnzbjxciu",
+        "model": "cline-pass/mimo-v2.5-pro"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
