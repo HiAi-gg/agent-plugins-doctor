@@ -70,7 +70,9 @@ function vendorIndexSpecifier(fromFile: string, pkg: string): string {
     relative(dirname(fromFile), join(vendorDir, pkg, 'index.d.ts')),
   );
   if (!rel.startsWith('.')) rel = `./${rel}`;
-  return rel.replace(/\.d\.ts$/, '.js');
+  // `normalize` emits backslashes on Windows; import specifiers must always use
+  // forward slashes to remain valid cross-platform.
+  return rel.replace(/\.d\.ts$/, '.js').replace(/\\/g, '/');
 }
 
 // 1. Refresh the vendored declaration trees from the freshly built SDK dist.
