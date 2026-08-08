@@ -1,0 +1,58 @@
+packages/cli/src/index.ts
+  s_cbcc5a4f1e876a::t_95b2675bbbc496 5,22-26,30-31,37
+packages/cli/src/utils/run.ts
+  s_cbcc5a4f1e876a::t_7a30dca8f0a3a0 128-138,140,144-155
+CHANGELOG.md
+  s_cbcc5a4f1e876a::t_c800a02aea7bf4 57-73
+  s_cbcc5a4f1e876a::t_dd82532c4d9eb6 12-36
+  s_cbcc5a4f1e876a::t_b80fdeaad09d29 74
+tests/integration/api-stability.test.ts
+  s_cbcc5a4f1e876a::t_565ef9ccbbaa3b 136-140
+  s_cbcc5a4f1e876a::t_71d40a45c2f757 8-11,21-33,38-39,42-55,62,69-73,83-86,93-95,102-104,107,117-135,141-190
+docs/RELEASING.md
+  s_cbcc5a4f1e876a::t_e612a1871000d0 151
+  s_cbcc5a4f1e876a::t_2edf97f491e5ce 51,55-59
+  s_cbcc5a4f1e876a::t_b5cc1be143f119 60
+scripts/check-version-integrity.ts
+  s_cbcc5a4f1e876a::t_f59d703aa5079d 156
+  s_cbcc5a4f1e876a::t_18089620aa562b 1-56,61-77,81-94,98-123,129-138,142-143,147-155,157-166,168-173,177-184,188-203,207-222,224-239,243-248
+  s_cbcc5a4f1e876a::t_565ef9ccbbaa3b 57-60,78-80,95-97,125-128,139-141,144-146,174-176,185-187,204-206,240-242
+  s_cbcc5a4f1e876a::t_e2f167cf9eecb5 167
+  s_cbcc5a4f1e876a::t_d7d29cd90d6eee 223
+  s_cbcc5a4f1e876a::t_909cbd7b41c587 124
+scripts/vendor-dts.ts
+  s_cbcc5a4f1e876a::t_8b09f31d618cce 45-51,69-71
+  s_cbcc5a4f1e876a::t_9f7a96e177adfa 91
+  s_cbcc5a4f1e876a::t_388a98d43ea163 18-19
+  s_cbcc5a4f1e876a::t_6a84f331498348 1-17,20-44,52-68,72-90,92-103
+package.json
+  s_cbcc5a4f1e876a::t_c43d35ccb9cf91 35
+PUBLISHING.md
+  s_cbcc5a4f1e876a::t_79225618350fb1 30-45
+packages/npm/package.json
+  s_cbcc5a4f1e876a::t_e74052d296f15d 44-46
+  s_cbcc5a4f1e876a::t_4102986ef995f4 50
+tests/integration/external-consumer.test.ts
+  s_cbcc5a4f1e876a::t_45a80a05f3eef1 1-100,104-142,148-152,158-166,170-174,178-187,193-196
+  s_cbcc5a4f1e876a::t_8b09f31d618cce 101-103,143-147,153-157,167-169,175-177,188-192
+docs/SDK.md
+  s_cbcc5a4f1e876a::t_4c064db65dcc93 1154-1177
+  s_cbcc5a4f1e876a::t_8b09f31d618cce 26
+  s_cbcc5a4f1e876a::t_6c6e3ef3225f34 1244-1246
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f8ba06cc87b69e8b071550c00390ae4b7913b84a",
+  "prompts": {},
+  "sessions": {
+    "s_cbcc5a4f1e876a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01e039765ffeaB1LBjV9qV32IR",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
