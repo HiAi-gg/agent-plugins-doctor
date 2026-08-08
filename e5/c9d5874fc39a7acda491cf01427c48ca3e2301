@@ -1,0 +1,51 @@
+packages/report/package.json
+  s_767944a4f1e862::t_4d8327d9a7c012 3
+  s_767944a4f1e862::t_3219c007b7b484 34
+packages/cli/src/index.ts
+  s_767944a4f1e862::t_803fcf27e6af9b 30
+packages/parser/package.json
+  s_767944a4f1e862::t_e1dee5f2d2f7a5 3
+  s_767944a4f1e862::t_71809f087ce6b8 34
+tests/integration/core-parser.test.ts
+  s_767944a4f1e862::t_f77496fcd50032 167
+packages/compatibility/package.json
+  s_767944a4f1e862::t_36a04d5c390871 34
+  s_767944a4f1e862::t_ccd04fc290c256 3
+packages/core/package.json
+  s_767944a4f1e862::t_5f12229aebd9fe 3
+CHANGELOG.md
+  s_767944a4f1e862::t_30637f55af9344 8,22-32
+  s_767944a4f1e862::t_39bde00a0d3d99 33
+packages/rules/package.json
+  s_767944a4f1e862::t_dd0e6f8d23100b 3
+  s_767944a4f1e862::t_5f4f8beda3d98e 34-36
+packages/npm/package.json
+  s_767944a4f1e862::t_07cc023fa1dc5d 3
+.github/workflows/publish.yml
+  s_767944a4f1e862::t_0a510dffe63c50 18-19
+plugin.json
+  s_767944a4f1e862::t_5948219988b16b 4
+packages/cli/package.json
+  s_767944a4f1e862::t_a85027cff4425c 3
+  s_767944a4f1e862::t_cb6eef68cea765 37-41
+package.json
+  s_767944a4f1e862::t_f0ce0ad70e90a6 3
+bun.lock
+  s_767944a4f1e862::t_114c998ee83e9c 23,28-32,42,44,52,59,66,68,78,80,89,91-93,149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e5c9d5874fc39a7acda491cf01427c48ca3e2301",
+  "prompts": {},
+  "sessions": {
+    "s_767944a4f1e862": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01edbf3f8fferwe0zbtqfC2ipd",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
