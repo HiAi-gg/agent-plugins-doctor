@@ -102,15 +102,14 @@ describe('external TypeScript consumer', () => {
     // 1. Pack the umbrella package. prepack rebuilds every SDK package,
     //    bundles the CLI, emits declarations, and vendors the SDK type graph.
     //    npm is invoked via a raw spawn (not the Bun shell) with the package
-    //    directory passed as an absolute argument and an explicit pack
-    //    destination, so the invocation is portable to Windows where the Bun
-    //    shell's cwd handling is unreliable. The tarball still lands in
-    //    NPM_PKG_DIR, exactly as before.
-    const pack = spawnSync(
-      NPM_EXE,
-      ['pack', '--silent', '--pack-destination', NPM_PKG_DIR, NPM_PKG_DIR],
-      { cwd: REPO_ROOT, encoding: 'utf-8' },
-    );
+    //    directory as cwd and no positional path or pack-destination, so the
+    //    invocation is portable to Windows where passing the absolute path as
+    //    an argument is unreliable. The tarball lands in NPM_PKG_DIR because
+    //    that is npm's default output location when cwd is the package dir.
+    const pack = spawnSync(NPM_EXE, ['pack', '--silent'], {
+      cwd: NPM_PKG_DIR,
+      encoding: 'utf-8',
+    });
     if (pack.status !== 0) {
       throw new Error(
         `npm pack failed (exit ${pack.status ?? 'null'}): ${
