@@ -1,0 +1,71 @@
+SECURITY.md
+  s_cd42818f33c765::t_05666339bb419e 7-11
+docs/ROADMAP.md
+  s_cd42818f33c765::t_935d98b0f53635 3-7
+docs/RULE_ENGINE.md
+  s_cd42818f33c765::t_44bb844cb88961 337
+docs/BUILDER_INTEGRATION.md
+  s_cd42818f33c765::t_0767af7adf245c 60-65
+PUBLISHING.md
+  s_cd42818f33c765::t_32db33b75a0b97 61
+  s_cd42818f33c765::t_6efdf2f907eba3 169
+scripts/verify-publication.sh
+  s_cd42818f33c765::t_91f794caf6e987 4-10
+  s_cd42818f33c765::t_22cda8caa2f823 54
+  s_cd42818f33c765::t_95e20405a6581f 26-27,31-32,36
+docs/SDK.md
+  s_cd42818f33c765::t_dde76e91520d3b 8-9
+skills/doctor/SKILL.md
+  s_cd42818f33c765::t_8f34f7c30c884d 44,47,50,53,56
+  s_cd42818f33c765::t_6d9c481be2242c 83,86,89,92
+  s_cd42818f33c765::t_0299a9d4b33b36 5,18-19
+docs/RELEASING.md
+  s_cd42818f33c765::t_6f4c1157cc52d5 49
+  s_cd42818f33c765::t_dbbc89217751e4 141
+  s_cd42818f33c765::t_a6df398bd1d36a 87,90,97,99,105
+  s_cd42818f33c765::t_d163da593f4f3e 5
+  s_cd42818f33c765::t_d2f7cd9fd62712 22,24
+CHANGELOG.md
+  s_cd42818f33c765::t_fe6c0825b84965 48-70
+docs/PUBLICATION.md
+  s_cd42818f33c765::t_8428ed311fb765 3-11
+docs/RISK_ASSESSMENT.md
+  s_cd42818f33c765::t_4c9b648920501d 249-252
+docs/REPOSITORY_AUDIT.md
+  s_cd42818f33c765::t_d62d4cee556fe2 5-9
+docs/DUPLICATION_ANALYSIS.md
+  s_cd42818f33c765::t_28426df8158411 3-7
+docs/V0_0_2_HARDENING.md
+  s_cd42818f33c765::t_d555c41a469047 15
+README.md
+  s_cd42818f33c765::t_e81beaf0f2c0da 268
+  s_cd42818f33c765::t_c5ce10c9205635 82-86
+  s_cd42818f33c765::t_68de654e55b0b5 3-5,11-12,19-32,36-37,39-40,42-43,46,49,52-54,62-68,71-72
+  s_cd42818f33c765::t_30e410d4988c5a 13-18
+  s_cd42818f33c765::t_3ec071ab8c5a27 184,186-192
+  s_cd42818f33c765::t_11e94c18b99bd0 97
+  s_cd42818f33c765::t_6a7c57e3abd490 230
+docs/EXTENSIBILITY.md
+  s_cd42818f33c765::t_8f8108355c18b4 371
+.github/ISSUE_TEMPLATE/bug_report.md
+  s_cd42818f33c765::t_16c817013c56b3 33
+scripts/publish-v003.sh
+  s_cd42818f33c765::t_160432a4a6f681 4-12
+  s_cd42818f33c765::t_2b2b2d1b3f02fc 52-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "adc14c9dbd90d14641ca0c12a485e382c11088cc",
+  "prompts": {},
+  "sessions": {
+    "s_cd42818f33c765": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01c93ae6cffes5uRO0xaZcrPfD",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
