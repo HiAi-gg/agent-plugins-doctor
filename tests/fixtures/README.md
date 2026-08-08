@@ -10,6 +10,7 @@ directly to `agent-plugins-doctor check <fixture>`.
 | Fixture | Purpose | Exit code | Key diagnostics |
 | --- | --- | --- | --- |
 | `minimal-plugin/` | smallest valid plugin | 0 | none |
+| `unicode-skill-name/` | valid Unicode (non-ASCII) skill name `café` | 0 | none |
 | `allowed-tools-canonical/` | canonical space-separated `allowed-tools` string | 0 | none |
 | `allowed-tools-invalid/` | non-string `allowed-tools` type (number) | 1 | DOC-2005 error |
 | `complex-plugin/` | all features (full manifest, MCP, skills, extensions) | 0 | 3 infos (DOC-5003 notes.log, 2x DOC-7001) |
@@ -17,15 +18,21 @@ directly to `agent-plugins-doctor check <fixture>`.
 | `warning-plugin/` | valid plugin with a warning | 0 (1 with `--strict`) | DOC-1004 warning |
 | `security-plugin/symlink-escape/` | symlink pointing outside the root | 0 | 1 info (DOC-5003) |
 | `security-plugin/embedded-secrets/` | credentials in MCP env | 2 | DOC-4003 critical |
-| `security-plugin/path-traversal/` | `cwd` escaping the plugin root | 0 | none (schema-isolated) |
+| `security-plugin/path-traversal/` | `cwd` escaping the plugin root | 2 | DOC-3008 critical (entry preserved, not silently dropped) |
+| `mcp-per-server/mixed-valid-invalid/` | 2 valid servers + invalid transport (`websocket`) | 1 | DOC-3008 errors; invalid entry `null`, valid siblings load |
+| `mcp-per-server/reserved-env/` | stdio `env` declares `PLUGIN_ROOT` | 1 | DOC-3008 error |
+| `mcp-per-server/cwd-traversal/` | stdio `cwd` escapes the root (`../escape`) | 2 | DOC-3008 critical |
+| `mcp-per-server/command-traversal/` | stdio `command` escapes the root (`../bin/server`) | 2 | DOC-3008 critical |
 | `edge-cases/empty-plugin/` | minimal manifest, no components | 0 | none |
 | `edge-cases/huge-description/` | description-length limits | 1 | DOC-2003 error |
 | `edge-cases/max-skills/` | 100 skills (stress test) | 0 | none |
 | `edge-cases/unicode-names/` | non-ASCII plugin name | 1 | DOC-1008 error (schema violation) |
 | `vendor-extensions/valid-extensions/` | valid reverse-domain extensions | 0 | none |
-| `vendor-extensions/invalid-extensions/` | non-object `extensions` field | 0 | none (stripped per §8.1) |
-| `legacy-plugin/` | `$schema` 0.9.0 (unsupported spec) | 1 | DOC-1008 error |
-| `future-spec/` | `$schema` 2.0.0 (unsupported spec) | 1 | DOC-1008 error |
+| `vendor-extensions/invalid-extensions/` | non-object `extensions` field (§8.1) | 1 | DOC-1009 error (field stripped per §8.1) |
+| `non-object-extensions/` | non-object `extensions` field (§8.1) | 1 | DOC-1009 error (field stripped per §8.1) |
+| `legacy-plugin/` | `$schema` 0.9.0 (unsupported spec) | 1 | DOC-1010 error |
+| `future-spec/` | `$schema` 2.0.0 (unsupported spec) | 1 | DOC-1010 error |
+| `unsupported-version/` | `$schema` 2.0.0 (unsupported spec) | 1 | DOC-1010 error |
 | `builder-generated/from-init/` | simulated `builder init` output | 0 | none |
 | `builder-generated/from-migrate-claude/` | simulated `builder migrate --from claude` output | 0 | none |
 | `builder-generated/from-migrate-cursor/` | simulated `builder migrate --from cursor` output | 0 | none |
@@ -41,11 +48,14 @@ directly to `agent-plugins-doctor check <fixture>`.
 - `0` — clean (or only warnings/info, unless `--strict`).
 - `1` — spec validation errors (or a warning under `--strict`), including
   parser diagnostics: a manifest that could not be loaded (`DOC-1008`), a
-  skill that failed to load (`DOC-2099`), or an invalid `mcp.json`
-  (`DOC-3007`).
-- `2` — security-critical findings.
-- `3` — tool failure: the plugin root is inaccessible (missing directory), an
-  internal rule failed (`DOC-0000`), or an unexpected exception.
+  skill that failed to load (`DOC-2099`), an invalid `mcp.json`
+  (`DOC-3007`), or an invalid individual MCP server entry (`DOC-3008`).
+- `2` — security-critical findings, including an MCP server entry whose stdio
+  `command` or `cwd` escapes the plugin root (reported as a critical
+  `DOC-3008`).
+- `3` — tool failure: the plugin root is inaccessible (missing directory,
+  permission denied, or not a directory), an internal rule failed (`DOC-0000`),
+  or an unexpected exception.
 
 ## Notes on "expected" diagnostics
 
@@ -55,10 +65,12 @@ Several rule codes (`DOC-1002` name pattern, `DOC-1006` author strictness,
 but are **not reachable from disk** for these fixtures: the vendored JSON
 schemas enforce the same constraints first, and manifest/mcp/skill parsing
 fails or isolates before the rules engine runs. Those scenarios surface as
-`DOC-1008`/`DOC-2099`/`DOC-3007` parser diagnostics (exit 1) or silent
-component skips instead. Each fixture README documents the verified behavior
-precisely; the fixtures are the source of truth for what the CLI actually
-emits.
+`DOC-1008`/`DOC-2099`/`DOC-3007` parser diagnostics (exit 1) instead. The one
+exception: schema-isolated MCP server entries are **reported, not skipped** —
+the parser preserves each invalid entry as `null` and emits `DOC-3008`
+(exit 1), so an invalid server never silently disappears. Each fixture README
+documents the verified behavior precisely; the fixtures are the source of
+truth for what the CLI actually emits.
 
 ## Verification
 

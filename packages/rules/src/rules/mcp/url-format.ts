@@ -23,6 +23,8 @@ export const urlFormatRule: Rule = {
     if (servers === undefined) return [];
     const diagnostics = [];
     for (const [name, server] of Object.entries(servers)) {
+      // A null entry is a server that failed to parse; DOC-3008 reports it.
+      if (server === null) continue;
       if (server.type !== 'streamable-http' && server.type !== 'sse') continue;
       const url = server.url;
       const problem = validateUrl(url);

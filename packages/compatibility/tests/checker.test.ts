@@ -402,6 +402,28 @@ describe('CompatibilityChecker', () => {
       incompatible: 0,
     });
   });
+
+  test('checkCompatibility(null) returns an empty result instead of crashing', () => {
+    const result = checkCompatibility(null);
+    expect(result.plugin).toBeNull();
+    expect(result.checks).toEqual([]);
+    expect(result.summary).toEqual({
+      total: 0,
+      compatible: 0,
+      incompatible: 0,
+    });
+  });
+
+  test('checkCompatibility(undefined) returns an empty result', () => {
+    const result = checkCompatibility(undefined);
+    expect(result.plugin).toBeNull();
+    expect(result.checks).toEqual([]);
+    expect(result.summary).toEqual({
+      total: 0,
+      compatible: 0,
+      incompatible: 0,
+    });
+  });
 });
 
 describe('CompatibilityResult shape', () => {

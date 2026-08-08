@@ -17,6 +17,26 @@ describe('structure/skill-directory-name (DOC-5002)', () => {
     expect(checkRule(skillDirectoryNameRule, plugin)).toEqual([]);
   });
 
+  test('Unicode skill names are accepted (accented Latin, Cyrillic, CJK)', () => {
+    const plugin = makePlugin({
+      skills: [
+        makeSkill({ name: 'café', directory: 'skills/café' }),
+        makeSkill({ name: 'мой-навык', directory: 'skills/мой-навык' }),
+        makeSkill({ name: '技能', directory: 'skills/技能' }),
+      ],
+    });
+    expect(checkRule(skillDirectoryNameRule, plugin)).toEqual([]);
+  });
+
+  test('uppercase Unicode names are rejected (lowercase only)', () => {
+    const plugin = makePlugin({
+      skills: [makeSkill({ name: 'НАВЫК', directory: 'skills/НАВЫК' })],
+    });
+    const diagnostics = checkRule(skillDirectoryNameRule, plugin);
+    expect(byCode(diagnostics, 'DOC-5002')).toHaveLength(1);
+    expect(diagnostics[0].message).toContain('НАВЫК');
+  });
+
   test('an invalid directory name produces an error diagnostic', () => {
     const plugin = makePlugin({
       skills: [makeSkill({ name: 'x', directory: 'skills/Bad_Name' })],

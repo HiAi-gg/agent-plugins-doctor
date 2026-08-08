@@ -12,16 +12,17 @@ This skill provides diagnostic and validation capabilities for Agent Plugins.
 ## Runtime Requirements
 
 Installing this skill does **not** install the Doctor CLI. Doctor is a
-separate package (`@agent-plugins-doctor/cli`) that this skill invokes through
-the terminal:
+separate npm package (`@agent-plugins-doctor/cli`, exposed as the
+`agent-plugins-doctor` binary) that this skill invokes through the terminal:
 
 - **Bun** — `bunx agent-plugins-doctor check <plugin-directory>`
 - **npm** — `npx agent-plugins-doctor check <plugin-directory>`
 
-At least one of Bun or npm must be installed and available on the PATH. The
-Doctor CLI must also be installed (for example, by installing this repository
-or, once published, `npm install -g @agent-plugins-doctor/cli`). If the CLI is
-not available, the commands below fail with a "command not found" error.
+`bunx`/`npx` fetch the CLI from the npm registry on first use and run it —
+no source checkout, workspace build, or global install is required. At
+least one of Bun or npm must be installed, available on the PATH, and able
+to reach the npm registry. If neither is available, the commands below fail
+with a "command not found" error.
 
 ## When to Use
 
@@ -34,7 +35,7 @@ Use this skill when users ask:
 - "Audit this Agent Plugin"
 - "Validate this plugin"
 
-## How to Use
+## Usage
 
 Run the Doctor CLI to validate plugins:
 

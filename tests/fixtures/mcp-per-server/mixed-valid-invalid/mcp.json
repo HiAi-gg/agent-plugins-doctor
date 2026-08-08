@@ -1,0 +1,17 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "valid-stdio": {
+      "type": "stdio",
+      "command": "./server.js"
+    },
+    "invalid-transport": {
+      "type": "websocket",
+      "url": "ws://example.com"
+    },
+    "valid-http": {
+      "type": "streamable-http",
+      "url": "https://api.example.com/mcp"
+    }
+  }
+}

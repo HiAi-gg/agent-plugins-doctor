@@ -38,7 +38,7 @@ export const skillDirectoryNameRule: Rule = {
             ID,
             'structure',
             'error',
-            `Skill directory name "${dirName}" is not a valid skill name (lowercase alphanumerics and hyphens, max ${SKILL_NAME_MAX_LENGTH} chars)`,
+            `Skill directory name "${dirName}" is not a valid skill name (Unicode lowercase alphanumerics and hyphens, max ${SKILL_NAME_MAX_LENGTH} chars)`,
             `${skill.directory}/SKILL.md`,
           ),
         );

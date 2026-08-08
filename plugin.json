@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "agent-plugins-doctor",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Diagnose and fix Agent Plugins",
   "author": {
     "name": "HiAI",

@@ -1,6 +1,6 @@
 {
   "name": "@agent-plugins-doctor/cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Command-line interface for Agent Plugin Doctor",
   "type": "module",
   "main": "./dist/index.js",
@@ -34,11 +34,11 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@agent-plugins-doctor/core": "^0.0.2",
-    "@agent-plugins-doctor/parser": "^0.0.2",
-    "@agent-plugins-doctor/rules": "^0.0.2",
-    "@agent-plugins-doctor/compatibility": "^0.0.2",
-    "@agent-plugins-doctor/report": "^0.0.2",
+    "@agent-plugins-doctor/core": "^0.0.3",
+    "@agent-plugins-doctor/parser": "^0.0.3",
+    "@agent-plugins-doctor/rules": "^0.0.3",
+    "@agent-plugins-doctor/compatibility": "^0.0.3",
+    "@agent-plugins-doctor/report": "^0.0.3",
     "commander": "^13.0.0",
     "chalk": "^5.4.0"
   },

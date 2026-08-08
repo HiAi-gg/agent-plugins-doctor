@@ -107,6 +107,15 @@ describe('SKILL_NAME_PATTERN', () => {
     'summarize',
     'a1',
     'x-y-z',
+    // Unicode is permitted: accented Latin, Cyrillic, and CJK (uncased
+    // scripts pass the reference validator's Unicode-aware lowercase check).
+    'café',
+    'naïve',
+    'résumé',
+    'мой-навык',
+    'навык',
+    '技能',
+    'café-orders',
     'a'.repeat(64),
   ];
 
@@ -120,9 +129,15 @@ describe('SKILL_NAME_PATTERN', () => {
   const invalidNames = [
     '',
     'MySkill',
+    'PDF-Processing',
+    // Uppercase Unicode letters are rejected, even in non-Latin scripts.
+    'НАВЫК',
+    'École',
     'my--skill',
     '-skill',
     'skill-',
+    '-café',
+    'café-',
     'skill_name',
     'skill.name',
     'skill name',

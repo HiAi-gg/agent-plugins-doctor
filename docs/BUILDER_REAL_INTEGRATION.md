@@ -61,7 +61,7 @@ warning, and info diagnostics, and exits `0`.
 All five Builder-generated plugins (init, create-skills, create-mcp,
 migrate-claude, migrate-cursor) pass Doctor validation with exit 0 and no
 diagnostics. Builder's output is byte-valid against the Agent Plugins 1.0.0
-spec as enforced by Doctor's vendored schemas and 29 rules.
+spec as enforced by Doctor's vendored schemas and 30 rules.
 
 ### FAIL-DOCTOR
 

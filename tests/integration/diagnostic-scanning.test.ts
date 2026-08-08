@@ -277,7 +277,7 @@ describe('diagnostic scanning with scanPlugin', () => {
     );
   });
 
-  test('mcp.json with one schema-invalid server: valid servers load, invalid skipped silently', async () => {
+  test('mcp.json with one schema-invalid server: valid servers load, invalid diagnosed, exit 1', async () => {
     await withPluginTree(
       {
         'plugin.json': canonicalJson({
@@ -296,17 +296,33 @@ describe('diagnostic scanning with scanPlugin', () => {
         const { scan, result } = await scanAndValidate(dir);
 
         // Violations inside a server entry are isolated per-server (§7.2.2
-        // rule 3): the invalid server is dropped, the valid one loads, and
-        // no parser diagnostic is emitted — DOC-3007 covers top-level mcp.json
-        // failures only, not individual server entries.
+        // rule 3): the invalid entry is preserved as null and reported as a
+        // DOC-3008 parser diagnostic, the valid one still loads. An invalid
+        // server never silently disappears.
         expect(scan.loaded.mcpConfig).toBe(true);
         expect(Object.keys(scan.plugin?.mcpConfig?.mcpServers ?? {})).toEqual([
           'good',
+          'bad',
         ]);
-        expect(scan.diagnostics).toEqual([]);
-        expect(result.diagnostics).toEqual([]);
-        expect(result.compatible).toBe(true);
-        expect(engine.computeExitCode(result.diagnostics)).toBe(0);
+        expect(scan.plugin?.mcpConfig?.mcpServers['good']).not.toBeNull();
+        expect(scan.plugin?.mcpConfig?.mcpServers['bad']).toBeNull();
+
+        const parserDiag = scan.diagnostics.find((d) => d.code === 'DOC-3008');
+        expect(parserDiag?.severity).toBe('error');
+        expect(parserDiag?.ruleId).toBe('parser');
+        expect(parserDiag?.message).toContain('bad');
+        expect(parserDiag?.file).toBe('mcp.json');
+
+        // The rule engine flags the invalid entry too (DOC-3008), so the
+        // plugin fails validation with exit 1.
+        expect(result.diagnostics.some((d) => d.code === 'DOC-3008')).toBe(
+          true,
+        );
+        expect(result.diagnostics.some((d) => d.message.includes('bad'))).toBe(
+          true,
+        );
+        expect(result.compatible).toBe(false);
+        expectValidationExit(result.diagnostics);
       },
     );
   });

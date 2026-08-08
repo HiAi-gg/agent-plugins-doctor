@@ -1,4 +1,10 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  statSync,
+} from 'node:fs';
 import { join } from 'node:path';
 import type { Dirent, Stats } from 'node:fs';
 import type {
@@ -11,6 +17,7 @@ import type {
   Skill,
 } from '@agent-plugins-doctor/core';
 import {
+  isWithinPath,
   resolvePluginPath,
   resolveSpecVersion,
 } from '@agent-plugins-doctor/core';
@@ -20,6 +27,7 @@ import {
   LoadError,
   ParseError,
   SchemaValidationError,
+  UnsupportedVersionError,
   type SchemaValidationErrorDetail,
 } from './errors.js';
 import { parseMcpConfig } from './mcp-config.js';
@@ -57,6 +65,9 @@ export interface LoadOptions {
  * Failure isolation follows the spec: plugin.json failures are fatal (loadPlugin
  * throws), while skill load failures never prevent independently valid skills
  * from loading — each failure is collected here as a parse diagnostic instead.
+ * Invalid individual MCP server entries are likewise collected here as
+ * DOC-3008 parse diagnostics (the entry is preserved as `null` in
+ * `mcpConfig.mcpServers`, so it is never silently dropped).
  * Callers that run rules should merge `parseDiagnostics` into the rule
  * diagnostics so malformed user input is reported as a validation error
  * (exit 1) rather than silently dropped.
@@ -78,7 +89,9 @@ export interface LoadResult {
  * `plugin` is null only when plugin.json could not be loaded at all (missing,
  * unparseable, schema-invalid, or declaring an unsupported $schema). Skill,
  * mcp.json, and extension failures never prevent the rest of the plugin from
- * being represented.
+ * being represented. Invalid individual MCP server entries never prevent
+ * their valid siblings from loading: each entry is preserved (as `null` in
+ * `mcpConfig.mcpServers`) and reported as a DOC-3008 parser diagnostic.
  */
 export interface ScanResult {
   /** Absolute path of the scanned plugin root directory. */
@@ -112,8 +125,9 @@ export type ScanOptions = LoadOptions;
 
 /**
  * Parser-level diagnostic code: a discovered skill could not be loaded
- * (malformed SKILL.md, invalid frontmatter, or a path that escapes the plugin
- * root). Emitted by the parser, not by a rule (ruleId "parser").
+ * (malformed SKILL.md or invalid frontmatter). Emitted by the parser, not by
+ * a rule (ruleId "parser"). A component symlink escape is reported as
+ * DOC-4002 instead (see symlinkEscapeDiagnostic).
  */
 export const SKILL_LOAD_ERROR_CODE = 'DOC-2099';
 
@@ -122,7 +136,8 @@ export const SKILL_LOAD_ERROR_CODE = 'DOC-2099';
  * missing, unreadable, unparseable JSON, schema-invalid (one diagnostic per
  * violation), or the path escapes the plugin root. Also used when the plugin
  * root itself does not exist or is not a directory. Emitted by scanPlugin,
- * not by a rule (ruleId "parser").
+ * not by a rule (ruleId "parser"). An unsupported `$schema` version is
+ * reported as DOC-1010 instead.
  */
 export const MANIFEST_LOAD_ERROR_CODE = 'DOC-1008';
 
@@ -175,6 +190,12 @@ function mcpLoadError(message: string): Diagnostic {
     category: 'mcp',
     file: 'mcp.json',
   };
+}
+
+/** Whether a filesystem error is a permission denial (EACCES/EPERM). */
+function isPermissionError(cause: unknown): boolean {
+  const code = (cause as NodeJS.ErrnoException | null)?.code;
+  return code === 'EACCES' || code === 'EPERM';
 }
 
 /**
@@ -245,21 +266,20 @@ async function loadPluginInternal(
   };
 
   // 1. Filesystem discovery: the root must exist and be a directory. A root
-  //    that is missing or a plain file cannot be scanned at all.
+  //    that is missing, a plain file, or not readable cannot be scanned at
+  //    all. Permission denials (EACCES/EPERM) are reported as such — a tool
+  //    failure for the CLI (exit 3), never a bogus "root does not exist".
   let rootStat: Stats;
   try {
     rootStat = statSync(rootDir);
   } catch (error) {
+    const message = isPermissionError(error)
+      ? `Permission denied: ${rootDir}`
+      : `Plugin root does not exist: ${rootDir}`;
     if (strict) {
-      throw new LoadError(
-        `Plugin root does not exist: ${rootDir}`,
-        rootDir,
-        error,
-      );
+      throw new LoadError(message, rootDir, error);
     }
-    diagnostics.push(
-      manifestLoadError(`Plugin root does not exist: ${rootDir}`),
-    );
+    diagnostics.push(manifestLoadError(message));
     return { rootDir, plugin: null, diagnostics, loaded };
   }
   if (!rootStat.isDirectory()) {
@@ -316,7 +336,11 @@ async function loadPluginInternal(
       );
     } else {
       try {
-        manifest = parseManifest(manifestPath, options.cache);
+        const parsed = parseManifest(manifestPath, options.cache);
+        manifest = parsed.manifest;
+        // Non-fatal parse findings (DOC-1009 non-object extensions) are
+        // surfaced alongside the manifest instead of being silently dropped.
+        diagnostics.push(...parsed.diagnostics);
         loaded.manifest = true;
       } catch (error) {
         if (strict) throw error;
@@ -347,12 +371,18 @@ async function loadPluginInternal(
   // 4. Load mcp.json if present (optional). Failures are isolated to the MCP
   //    component type (§7.2.2 rule 2): an invalid mcp.json disables MCP but
   //    does not prevent loading the rest of the plugin. In scan mode the
-  //    failure is also surfaced as a diagnostic (DOC-3007).
+  //    failure is also surfaced as a diagnostic (DOC-3007). Individual
+  //    invalid server entries never disable MCP: they are preserved as `null`
+  //    in mcpConfig.mcpServers, and each one is surfaced here as a DOC-3008
+  //    parser diagnostic (see parseMcpConfig).
   let mcpConfig: McpConfig | undefined;
   try {
     const mcpPath = resolvePluginPath(rootDir, './mcp.json');
     mcpConfig = parseMcp(mcpPath, options.cache);
-    if (mcpConfig !== undefined) loaded.mcpConfig = true;
+    if (mcpConfig !== undefined) {
+      loaded.mcpConfig = true;
+      diagnostics.push(...(mcpConfig.serverDiagnostics ?? []));
+    }
   } catch (error) {
     mcpConfig = undefined;
     if (!strict) recordMcpLoadError(error, diagnostics);
@@ -362,7 +392,7 @@ async function loadPluginInternal(
   //    `diagnostics` (DOC-2099) and never prevent other skills from loading.
   const [skills, extensions] = await Promise.all([
     discoverSkills(rootDir, options.cache, diagnostics),
-    discoverExtensions(rootDir),
+    discoverExtensions(rootDir, diagnostics),
   ]);
   loaded.skills = skills.length;
   loaded.extensions = extensions.length;
@@ -386,7 +416,19 @@ function recordManifestParseError(
   error: unknown,
   diagnostics: Diagnostic[],
 ): void {
-  if (error instanceof ParseError) {
+  if (error instanceof UnsupportedVersionError) {
+    // DOC-1010: the declared $schema version is not supported. parsePluginManifest
+    // already reported this before throwing; surface it here as a parser
+    // diagnostic (a dedicated code, not the generic DOC-1008 const violation).
+    diagnostics.push({
+      code: 'DOC-1010',
+      severity: 'error',
+      message: error.message,
+      file: 'plugin.json',
+      ruleId: 'parser',
+      category: 'spec',
+    });
+  } else if (error instanceof ParseError) {
     diagnostics.push(manifestLoadError(error.message, 'plugin.json'));
   } else if (error instanceof SchemaValidationError) {
     // One diagnostic per schema violation (§5.2).
@@ -488,15 +530,31 @@ export async function scanPlugin(
   return loadPluginInternal(rootDir, false, options);
 }
 
-/** Parse plugin.json, optionally through the parsed-file cache. */
+/** The parsed manifest plus any non-fatal parse diagnostics (DOC-1009). */
+interface ParsedManifest {
+  manifest: PluginManifest;
+  diagnostics: Diagnostic[];
+}
+
+/**
+ * Parse plugin.json, optionally through the parsed-file cache.
+ *
+ * The cache stores the manifest *and* its non-fatal parse diagnostics
+ * together, so a cache hit replays DOC-1009 instead of silently dropping it.
+ * Fatal conditions (ParseError, SchemaValidationError, UnsupportedVersionError)
+ * propagate and are never cached.
+ */
 function parseManifest(
   manifestPath: string,
   cache: ParsedFileCache | undefined,
-): PluginManifest {
-  if (cache === undefined) return parsePluginManifest(manifestPath);
-  return cache.get(manifestPath, () =>
-    parsePluginManifest(manifestPath),
-  ) as PluginManifest;
+): ParsedManifest {
+  const load = (): ParsedManifest => {
+    const diagnostics: Diagnostic[] = [];
+    const manifest = parsePluginManifest(manifestPath, diagnostics);
+    return { manifest, diagnostics };
+  };
+  if (cache === undefined) return load();
+  return cache.get(manifestPath, load) as ParsedManifest;
 }
 
 /** Parse mcp.json, optionally through the parsed-file cache. */
@@ -550,7 +608,10 @@ async function discoverSkills(
   const skills: Skill[] = [];
 
   for (const entry of entries) {
-    if (!entry.isDirectory()) {
+    // A skill candidate is a directory — or a symlink, which is resolved
+    // through the security boundary below (an escaping link is a DOC-4002
+    // finding; a link that stays inside the root is a valid skill dir).
+    if (!entry.isDirectory() && !entry.isSymbolicLink()) {
       // Not a skill candidate (a directory containing SKILL.md is a skill);
       // skipped silently, not reported.
       continue;
@@ -558,17 +619,22 @@ async function discoverSkills(
 
     // Security boundary: the skill directory must resolve inside the plugin
     // root. A symlink escape means the skill cannot be loaded; it is skipped
-    // (§4.1 rule 3) and reported as a load failure.
+    // (§4.1 rule 3) and reported as a DOC-4002 security-critical finding
+    // (matching the security-symlink-escape rule), not a generic DOC-2099.
     let skillDir: string;
     try {
       skillDir = resolvePluginPath(rootDir, `./skills/${entry.name}`);
     } catch (error) {
-      diagnostics.push(
-        skillLoadError(
-          `skills/${entry.name}`,
-          `skill directory cannot be resolved inside the plugin root: ${(error as Error).message}`,
-        ),
-      );
+      if (isSymlinkEscape(rootDir, `skills/${entry.name}`)) {
+        diagnostics.push(symlinkEscapeDiagnostic(`skills/${entry.name}`));
+      } else {
+        diagnostics.push(
+          skillLoadError(
+            `skills/${entry.name}`,
+            `skill directory cannot be resolved inside the plugin root: ${(error as Error).message}`,
+          ),
+        );
+      }
       continue;
     }
 
@@ -581,7 +647,7 @@ async function discoverSkills(
 
     // SKILL.md itself must also resolve inside the plugin root. A file-level
     // symlink escape means the skill cannot be loaded; it is skipped and
-    // reported as a load failure.
+    // reported as a DOC-4002 security-critical finding.
     let skillFileResolved: string;
     try {
       skillFileResolved = resolvePluginPath(
@@ -589,12 +655,17 @@ async function discoverSkills(
         `./skills/${entry.name}/SKILL.md`,
       );
     } catch (error) {
-      diagnostics.push(
-        skillLoadError(
-          `skills/${entry.name}`,
-          `SKILL.md cannot be resolved inside the plugin root: ${(error as Error).message}`,
-        ),
-      );
+      const relPath = `skills/${entry.name}/SKILL.md`;
+      if (isSymlinkEscape(rootDir, relPath)) {
+        diagnostics.push(symlinkEscapeDiagnostic(relPath));
+      } else {
+        diagnostics.push(
+          skillLoadError(
+            `skills/${entry.name}`,
+            `SKILL.md cannot be resolved inside the plugin root: ${(error as Error).message}`,
+          ),
+        );
+      }
       continue;
     }
 
@@ -655,13 +726,27 @@ function parseSkill(
 /**
  * Discover extensions in a plugin directory.
  * Extensions are reverse-domain namespace directories (§8.2).
+ *
+ * Security: an extension namespace that is a symlink escape is reported as a
+ * DOC-4002 security-critical finding (matching the security-symlink-escape
+ * rule) instead of being silently skipped — previously the escape vanished
+ * with no diagnostic.
  */
-async function discoverExtensions(rootDir: string): Promise<Extension[]> {
+async function discoverExtensions(
+  rootDir: string,
+  diagnostics: Diagnostic[],
+): Promise<Extension[]> {
   const entries = listPluginEntries(rootDir);
   const extensions: Extension[] = [];
 
   for (const entry of entries) {
-    if (!entry.isDirectory() || !REVERSE_DOMAIN_PATTERN.test(entry.name)) {
+    // A namespace candidate is a directory — or a symlink, which is resolved
+    // through the security boundary below (an escaping link is a DOC-4002
+    // finding; a link that stays inside the root is a valid namespace).
+    if (
+      (!entry.isDirectory() && !entry.isSymbolicLink()) ||
+      !REVERSE_DOMAIN_PATTERN.test(entry.name)
+    ) {
       continue;
     }
 
@@ -671,6 +756,9 @@ async function discoverExtensions(rootDir: string): Promise<Extension[]> {
     try {
       extensionDir = resolvePluginPath(rootDir, `./${entry.name}`);
     } catch {
+      if (isSymlinkEscape(rootDir, entry.name)) {
+        diagnostics.push(symlinkEscapeDiagnostic(entry.name));
+      }
       continue;
     }
 
@@ -696,4 +784,33 @@ async function discoverExtensions(rootDir: string): Promise<Extension[]> {
   }
 
   return extensions;
+}
+
+/**
+ * Whether a plugin-relative path is a symlink escape: the path (or one of its
+ * ancestors) resolves through a symlink to a real location outside the real
+ * plugin root. Mirrors the containment definition used by the
+ * security-symlink-escape rule (DOC-4002) so parser and rule agree.
+ */
+function isSymlinkEscape(rootDir: string, relPath: string): boolean {
+  try {
+    const realRoot = realpathSync(rootDir);
+    const realTarget = realpathSync(join(rootDir, relPath));
+    return !isWithinPath(realTarget, realRoot);
+  } catch {
+    // Missing or unreadable path: conservative, not an escape.
+    return false;
+  }
+}
+
+/** Build the parser-level DOC-4002 diagnostic for a symlink escape. */
+function symlinkEscapeDiagnostic(relPath: string): Diagnostic {
+  return {
+    code: 'DOC-4002',
+    severity: 'critical',
+    message: `Symbolic link at "${relPath}" escapes the plugin root`,
+    ruleId: 'parser',
+    category: 'security',
+    file: relPath,
+  };
 }

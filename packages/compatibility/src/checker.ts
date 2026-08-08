@@ -55,7 +55,11 @@ function usedCapabilities(plugin: Plugin): CapabilityId[] {
   const servers = plugin.mcpConfig?.mcpServers;
   if (servers !== undefined) {
     const transports = new Set(
-      Object.values(servers).map((server) => TRANSPORT_CAPABILITY[server.type]),
+      Object.values(servers)
+        // A null entry is a server that failed to parse (DOC-3008); it has
+        // no transport, so it contributes no capability.
+        .filter((server): server is McpServer => server !== null)
+        .map((server) => TRANSPORT_CAPABILITY[server.type]),
     );
     for (const capability of [
       'mcpStdio',
@@ -165,6 +169,9 @@ export class CompatibilityChecker {
 
     const counts = new Map<McpServer['type'], number>();
     for (const server of Object.values(servers)) {
+      // A null entry is a server that failed to parse (DOC-3008); it has no
+      // transport to count against a client.
+      if (server === null) continue;
       counts.set(server.type, (counts.get(server.type) ?? 0) + 1);
     }
 
@@ -252,11 +259,27 @@ function determineLevel(
   return CompatibilityLevel.PARTIAL;
 }
 
-/** Check a plugin against the default registry (or a custom one). */
+/**
+ * Check a plugin against the default registry (or a custom one).
+ *
+ * `null`/`undefined` is handled gracefully: the result carries a null plugin
+ * and no checks (total 0), so callers never crash on an unloadable plugin.
+ */
 export function checkCompatibility(
-  plugin: Plugin,
+  plugin: Plugin | null | undefined,
   registry?: ClientProfileRegistry,
 ): CompatibilityResult {
+  if (!plugin) {
+    return {
+      plugin: null,
+      checks: [],
+      summary: {
+        total: 0,
+        compatible: 0,
+        incompatible: 0,
+      },
+    };
+  }
   return new CompatibilityChecker(
     registry ?? createDefaultClientRegistry(),
   ).check(plugin);

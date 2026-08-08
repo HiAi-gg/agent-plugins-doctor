@@ -1,5 +1,7 @@
 // Canonical domain types for Agent Plugin Doctor
 
+import type { Diagnostic } from './diagnostics.js';
+
 export interface Plugin {
   rootDir: string;
   specVersion: string;
@@ -66,7 +68,22 @@ export interface SkillFrontmatter {
 
 export interface McpConfig {
   $schema: string;
-  mcpServers: Record<string, McpServer>;
+  /**
+   * Every server entry declared in mcp.json is preserved, keyed by name.
+   * A `null` value means the entry was present but invalid (schema violation
+   * or a security-relevant stdio command path) and was not loaded; the
+   * reason is recorded as a DOC-3008 parser diagnostic in `serverDiagnostics`
+   * and surfaced again by the `mcp-invalid-server-entry` rule (DOC-3008), so
+   * an invalid server is never silently dropped. Valid sibling servers are
+   * still parsed and validated.
+   */
+  mcpServers: Record<string, McpServer | null>;
+  /**
+   * Per-server parse/schema diagnostics (code DOC-3008, ruleId "parser"):
+   * one per server entry that failed to parse, so callers can surface the
+   * precise reason instead of a silently dropped server.
+   */
+  serverDiagnostics?: Diagnostic[];
 }
 
 export type McpServer = StdioServer | StreamableHttpServer | SseServer;

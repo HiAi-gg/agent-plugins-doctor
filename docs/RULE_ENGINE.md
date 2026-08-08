@@ -75,7 +75,7 @@ interface RuleContext {
 | compatibility | DOC-6xxx   | Client compatibility        |
 | format        | DOC-7xxx   | Formatting & quality        |
 
-Doctor ships 29 rules across the 7 categories (see
+Doctor ships 30 rules across the 7 categories (see
 [docs/RULES.md](RULES.md) for the full catalog with rule IDs and module
 locations).
 
@@ -333,7 +333,7 @@ Every rule has:
 ## Conclusion
 
 The rule engine provides a modular, extensible, and performant validation
-system. It supports 29 rules across 7 categories, with safe auto-fixes and
+system. It supports 30 rules across 7 categories, with safe auto-fixes and
 comprehensive testing (483 tests across 65 files in the full suite). The
 design keeps validation deterministic, error-isolated, and incremental — ready
 for both the CLI and library consumers such as Agent Plugin Builder.

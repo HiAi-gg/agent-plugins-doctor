@@ -66,6 +66,8 @@ export const secretDetectionRule: Rule = {
     const servers = ctx.plugin.mcpConfig?.mcpServers;
     if (servers !== undefined) {
       for (const [name, server] of Object.entries(servers)) {
+        // A null entry is a server that failed to parse; DOC-3008 reports it.
+        if (server === null) continue;
         if (server.type === 'stdio' && server.env !== undefined) {
           for (const [key, value] of Object.entries(server.env)) {
             sources.push({

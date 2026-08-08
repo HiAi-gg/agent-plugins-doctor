@@ -6,3 +6,4 @@ export { reservedEnvKeysRule } from './reserved-env-keys.js';
 export { cwdPatternRule } from './cwd-pattern.js';
 export { urlFormatRule } from './url-format.js';
 export { headerValidationRule } from './header-validation.js';
+export { invalidServerEntryRule } from './invalid-server-entry.js';

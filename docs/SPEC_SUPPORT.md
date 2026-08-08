@@ -6,10 +6,10 @@ why.
 
 ## Supported spec versions
 
-| Version                      | Status                  | Notes                                                                                                                        |
-| ---------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Agent Plugins v1.0.0         | **Supported (current)** | `$schema` `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json` and `…/mcp.schema.json`                               |
-| Future versions (e.g. 2.0.0) | Not supported           | Plugins declaring them surface a `DOC-1008` parser diagnostic (exit 1) per the spec's "must not silently ignore" requirement |
+| Version                      | Status                  | Notes                                                                                                                                                                    |
+| ---------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Agent Plugins v1.0.0         | **Supported (current)** | `$schema` `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json` and `…/mcp.schema.json`                                                                           |
+| Future versions (e.g. 2.0.0) | Not supported           | Plugins declaring them surface a `DOC-1010` parser diagnostic (exit 1) naming the detected and supported versions, per the spec's "must not silently ignore" requirement |
 
 Related standards validated alongside the core spec:
 
@@ -45,7 +45,7 @@ changes how existing versions are validated. See §5 for the mechanism.
 | Frontmatter parsing    | `parseSkillFrontmatter` (gray-matter) | quoted strings, multiline descriptions, YAML lists, BOM                                                          |
 | Required fields        | Parser + DOC-2002                     | `name`, `description`                                                                                            |
 | Name/directory match   | DOC-2001, DOC-5002                    | frontmatter `name` == directory name                                                                             |
-| Name pattern/length    | Schema-adjacent + DOC-5002            | `SKILL_NAME_PATTERN`, ≤ 64                                                                                       |
+| Name pattern/length    | Schema-adjacent + DOC-5002            | `SKILL_NAME_PATTERN` (Unicode), ≤ 64                                                                             |
 | Description length     | DOC-2003                              | ≤ 1024 chars                                                                                                     |
 | Compatibility length   | DOC-2004                              | ≤ 500 chars                                                                                                      |
 | `allowed-tools`        | DOC-2005 (type + tokens)              | canonical space-separated string (e.g. `Bash(git:*) Bash(jq:*) Read`); YAML list = Doctor extension, not in spec |
@@ -60,17 +60,17 @@ list form and errors on other non-string types (from disk and from the SDK).
 
 ### mcp.json (MCP)
 
-| Feature              | Mechanism                                              | Examples                                                                      |
-| -------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| Document conformance | Vendored `mcp.schema.json` (byte-exact copy)           | `$schema`, `mcpServers` object                                                |
-| Server type          | Schema + DOC-3001                                      | `stdio` \| `streamable-http` \| `sse`                                         |
-| stdio command        | DOC-3002                                               | single executable token                                                       |
-| stdio args           | Schema                                                 | string array                                                                  |
-| stdio env            | Schema + DOC-3003 (reserved keys) + DOC-4003 (secrets) | `PLUGIN_ROOT`/`PLUGIN_DATA` reserved                                          |
-| stdio cwd            | Schema + DOC-3004 + DOC-4001                           | `./`, `${PLUGIN_ROOT}`, `${PLUGIN_DATA}`                                      |
-| Remote URLs          | DOC-3005                                               | absolute http/https, no userinfo, no fragment                                 |
-| Headers              | DOC-3006                                               | string values, unique case-insensitive names                                  |
-| Failure isolation    | Loader (§7.2.2)                                        | invalid servers skipped; valid ones survive; top-level violations disable MCP |
+| Feature              | Mechanism                                              | Examples                                                                                             |
+| -------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| Document conformance | Vendored `mcp.schema.json` (byte-exact copy)           | `$schema`, `mcpServers` object                                                                       |
+| Server type          | Schema + DOC-3001 + DOC-3008                           | `stdio` \| `streamable-http` \| `sse`                                                                |
+| stdio command        | DOC-3002 + DOC-3008 (containment)                      | single executable token                                                                              |
+| stdio args           | Schema                                                 | string array                                                                                         |
+| stdio env            | Schema + DOC-3003 (reserved keys) + DOC-4003 (secrets) | `PLUGIN_ROOT`/`PLUGIN_DATA` reserved                                                                 |
+| stdio cwd            | Schema + DOC-3004 + DOC-4001 + DOC-3008                | `./`, `${PLUGIN_ROOT}`, `${PLUGIN_DATA}`                                                             |
+| Remote URLs          | DOC-3005                                               | absolute http/https, no userinfo, no fragment                                                        |
+| Headers              | DOC-3006                                               | string values, unique case-insensitive names                                                         |
+| Failure isolation    | Loader (§7.2.2)                                        | invalid servers preserved as `null` + DOC-3008; valid ones survive; top-level violations disable MCP |
 
 ### extensions
 
@@ -121,11 +121,15 @@ compatibility issue against them. See
    already enforce required fields, name patterns, `$schema` constness,
    author strictness, reserved env keys, cwd patterns, and server types, so
    DOC-1001, DOC-1002, DOC-1003, DOC-1006, DOC-1007, DOC-2002, DOC-3001,
-   DOC-3003, DOC-3004, DOC-4002, and DOC-6001 fire only for
+   DOC-3003, DOC-3004, and DOC-6001 fire only for
    programmatically-built plugins, not from `check` on disk (parts of
    DOC-1005 and DOC-3006 are likewise shadowed). This is by design — the
    rules exist so SDK consumers get diagnostics regardless of how the plugin
-   was constructed. See
+   was constructed. From disk, the schema-isolated MCP conditions surface as
+   `DOC-3008` (the parser preserves each invalid server entry as `null` and
+   reports it, so an invalid server never silently disappears), a non-object
+   `extensions` field surfaces as `DOC-1009`, an unsupported `$schema` as
+   `DOC-1010`, and component symlink escapes as `DOC-4002`. See
    [DIAGNOSTICS.md](DIAGNOSTICS.md#diagnostic-reachability) for the
    authoritative per-code table.
 2. **No diagnostic ranges.** Diagnostics report plugin-relative `file` paths
@@ -167,7 +171,7 @@ Adding a new spec version (e.g. 2.0.0) is **additive** and requires:
 
 Unsupported `$schema` URLs are rejected at load time — never silently
 ignored, so plugins for future versions fail loudly until Doctor adds
-support. In the CLI they surface as `DOC-1008` parser diagnostics (exit 1);
+support. In the CLI they surface as `DOC-1010` parser diagnostics (exit 1);
 the strict `loadPlugin` API throws instead.
 
 See [SDK.md](SDK.md) for the API behind these mechanisms,

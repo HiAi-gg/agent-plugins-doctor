@@ -33,6 +33,8 @@ export const headerValidationRule: Rule = {
     if (servers === undefined) return [];
     const diagnostics = [];
     for (const [name, server] of Object.entries(servers)) {
+      // A null entry is a server that failed to parse; DOC-3008 reports it.
+      if (server === null) continue;
       if (server.type === 'stdio' || server.headers === undefined) continue;
       for (const [header, value] of Object.entries(server.headers)) {
         if (typeof value !== 'string') {

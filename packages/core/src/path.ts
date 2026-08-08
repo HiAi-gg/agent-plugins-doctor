@@ -112,3 +112,18 @@ export function isValidPluginPath(
     return false;
   }
 }
+
+/**
+ * Whether a file reference escapes the plugin root: an absolute POSIX path,
+ * an absolute Windows path, or a path with a `..` parent-traversal segment.
+ *
+ * Shared by the parser (mcp.json stdio `command` validation, DOC-3008) and
+ * the security rules (DOC-4001 path traversal) so the containment definition
+ * is identical everywhere.
+ */
+export function isTraversalPath(value: string): boolean {
+  if (value.startsWith('/')) return true; // absolute POSIX path
+  if (/^[A-Za-z]:[\\/]/.test(value)) return true; // absolute Windows path
+  if (value.split(/[\\/]+/).includes('..')) return true; // parent traversal
+  return false;
+}

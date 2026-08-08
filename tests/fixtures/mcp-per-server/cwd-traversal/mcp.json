@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "bad-cwd": {
+      "type": "stdio",
+      "command": "./server.js",
+      "cwd": "../escape"
+    }
+  }
+}

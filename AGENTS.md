@@ -12,7 +12,7 @@ Doctor is a Bun workspaces monorepo with 6 packages:
 
 - `@agent-plugins-doctor/core` — Canonical types, spec constants, path utilities
 - `@agent-plugins-doctor/parser` — Filesystem loading and parsing
-- `@agent-plugins-doctor/rules` — Validation engine with 29 rules
+- `@agent-plugins-doctor/rules` — Validation engine with 30 rules
 - `@agent-plugins-doctor/compatibility` — Client compatibility checking
 - `@agent-plugins-doctor/report` — Report generation (human, JSON, Markdown)
 - `@agent-plugins-doctor/cli` — Command-line interface

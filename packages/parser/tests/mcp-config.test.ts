@@ -154,8 +154,72 @@ describe('parseMcpConfig', () => {
     try {
       const config = parseMcpConfig(filePath);
       expect(config).toBeDefined();
-      expect(Object.keys(config?.mcpServers ?? {})).toEqual(['good']);
+      // Every raw entry is preserved: the valid server stays typed, the
+      // invalid ones become null — nothing silently disappears.
+      expect(Object.keys(config?.mcpServers ?? {})).toEqual([
+        'good',
+        'bad',
+        'worse',
+        'extra',
+      ]);
       expect(config?.mcpServers.good?.type).toBe('streamable-http');
+      expect(config?.mcpServers.bad).toBeNull();
+      expect(config?.mcpServers.worse).toBeNull();
+      expect(config?.mcpServers.extra).toBeNull();
+      // Each invalid entry produces a DOC-3008 parser diagnostic.
+      const serverDiagnostics = config?.serverDiagnostics ?? [];
+      expect(serverDiagnostics).toHaveLength(3);
+      for (const diagnostic of serverDiagnostics) {
+        expect(diagnostic.code).toBe('DOC-3008');
+        expect(diagnostic.severity).toBe('error');
+        expect(diagnostic.file).toBe('mcp.json');
+      }
+      expect(serverDiagnostics[0]?.message).toContain('missing required');
+      expect(serverDiagnostics[1]?.message).toContain('"udp"');
+      // The branch matching the declared type wins: sse is a valid type, so
+      // the real problem (the extra field) is reported, not a type error.
+      expect(serverDiagnostics[2]?.message).toContain("'bogus'");
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  test('valid mcp.json carries no server diagnostics', () => {
+    const { dir, filePath } = makeTempFile(
+      JSON.stringify({
+        $schema: SCHEMA_URL,
+        mcpServers: {
+          good: { type: 'stdio', command: './server.js' },
+        },
+      }),
+    );
+    try {
+      const config = parseMcpConfig(filePath);
+      expect(config?.serverDiagnostics).toBeUndefined();
+      expect(config?.mcpServers.good).not.toBeNull();
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  test('stdio command escaping the plugin root is an invalid server entry', () => {
+    const { dir, filePath } = makeTempFile(
+      JSON.stringify({
+        $schema: SCHEMA_URL,
+        mcpServers: {
+          good: { type: 'stdio', command: './server.js' },
+          evil: { type: 'stdio', command: '../bin/server' },
+        },
+      }),
+    );
+    try {
+      const config = parseMcpConfig(filePath);
+      expect(config?.mcpServers.good?.type).toBe('stdio');
+      expect(config?.mcpServers.evil).toBeNull();
+      const diagnostics = config?.serverDiagnostics ?? [];
+      expect(diagnostics).toHaveLength(1);
+      expect(diagnostics[0]?.message).toContain('evil');
+      expect(diagnostics[0]?.message).toContain('../bin/server');
     } finally {
       cleanup(dir);
     }

@@ -23,6 +23,8 @@ export const serverTypeRule: Rule = {
     if (servers === undefined) return [];
     const diagnostics = [];
     for (const [name, server] of Object.entries(servers)) {
+      // A null entry is a server that failed to parse; DOC-3008 reports it.
+      if (server === null) continue;
       const type = (server as { type?: unknown }).type;
       if (typeof type !== 'string' || !VALID_TYPES.has(type)) {
         diagnostics.push(

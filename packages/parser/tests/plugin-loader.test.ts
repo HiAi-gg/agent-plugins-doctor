@@ -341,7 +341,7 @@ describe('loadPlugin', () => {
     }
   });
 
-  test('symlinked skill directory escaping the root is skipped (not a candidate)', async () => {
+  test('symlinked skill directory escaping the root produces DOC-4002', async () => {
     const root = makeTempDir();
     const outside = makeTempDir();
     try {
@@ -355,19 +355,23 @@ describe('loadPlugin', () => {
       });
       symlinkSync(outside, join(root, 'skills', 'evil'));
       const { plugin, parseDiagnostics } = await loadPlugin(root);
-      // Discovery never follows symlinks: the escaping link is not a skill
-      // candidate, so it is skipped silently (no diagnostic). The valid skill
-      // still loads. A SKILL.md inside a real directory that escapes is
-      // reported (see the next test).
+      // Discovery resolves symlink entries through the security boundary: the
+      // escaping link is reported as DOC-4002 (security-critical, matching
+      // the security-symlink-escape rule) instead of being skipped silently.
+      // The valid skill still loads.
       expect(plugin.skills.map((s) => s.name)).toEqual(['good']);
-      expect(parseDiagnostics).toEqual([]);
+      expect(parseDiagnostics).toHaveLength(1);
+      expect(parseDiagnostics[0].code).toBe('DOC-4002');
+      expect(parseDiagnostics[0].severity).toBe('critical');
+      expect(parseDiagnostics[0].file).toBe('skills/evil');
+      expect(parseDiagnostics[0].message).toContain('skills/evil');
     } finally {
       cleanup(root);
       cleanup(outside);
     }
   });
 
-  test('symlinked SKILL.md file escaping the root is skipped and reported', async () => {
+  test('symlinked SKILL.md file escaping the root is reported as DOC-4002', async () => {
     const root = makeTempDir();
     const outside = makeTempDir();
     try {
@@ -388,9 +392,10 @@ describe('loadPlugin', () => {
       const { plugin, parseDiagnostics } = await loadPlugin(root);
       expect(plugin.skills.map((s) => s.name)).toEqual(['good']);
       expect(parseDiagnostics).toHaveLength(1);
-      expect(parseDiagnostics[0].code).toBe('DOC-2099');
+      expect(parseDiagnostics[0].code).toBe('DOC-4002');
+      expect(parseDiagnostics[0].severity).toBe('critical');
       expect(parseDiagnostics[0].file).toBe('skills/evil/SKILL.md');
-      expect(parseDiagnostics[0].message).toContain('Path escapes plugin root');
+      expect(parseDiagnostics[0].message).toContain('skills/evil/SKILL.md');
     } finally {
       cleanup(root);
       cleanup(outside);

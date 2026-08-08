@@ -57,6 +57,26 @@ describe('security/path-traversal (DOC-4001)', () => {
     expect(diagnostics[0].file).toContain('mcp.json');
   });
 
+  test('a traversing stdio command is critical', () => {
+    const plugin = makePlugin({
+      mcpConfig: makeMcp({
+        local: { type: 'stdio', command: '../bin/server' },
+      }),
+    });
+    const diagnostics = checkRule(pathTraversalRule, plugin);
+    expect(byCode(diagnostics, 'DOC-4001')).toHaveLength(1);
+    expect(diagnostics[0].file).toContain('command');
+  });
+
+  test('a plugin-relative stdio command is not traversal', () => {
+    const plugin = makePlugin({
+      mcpConfig: makeMcp({
+        local: { type: 'stdio', command: './server.js' },
+      }),
+    });
+    expect(checkRule(pathTraversalRule, plugin)).toEqual([]);
+  });
+
   test('variable-rooted cwd is not traversal', () => {
     const plugin = makePlugin({
       mcpConfig: makeMcp({

@@ -22,6 +22,8 @@ export const stdioCommandRule: Rule = {
     if (servers === undefined) return [];
     const diagnostics = [];
     for (const [name, server] of Object.entries(servers)) {
+      // A null entry is a server that failed to parse; DOC-3008 reports it.
+      if (server === null) continue;
       if (server.type !== 'stdio') continue;
       const command = server.command;
       if (typeof command !== 'string' || command.trim().length === 0) {

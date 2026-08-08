@@ -1,6 +1,6 @@
 # Rule Reference
 
-Reference for the 29 validation rules, organized by implementation. Where
+Reference for the 30 validation rules, organized by implementation. Where
 [DIAGNOSTICS.md](DIAGNOSTICS.md) documents the user-facing codes, this
 document describes the rule objects themselves: rule IDs, module locations,
 engine behavior, and reachability.
@@ -24,7 +24,7 @@ interface Rule {
 }
 ```
 
-All 29 rules are registered by `createDefaultRegistry()` (in
+All 30 rules are registered by `createDefaultRegistry()` (in
 `packages/rules/src/rules/index.ts`) in category order: manifest → skills →
 mcp → security → structure → compatibility → format. Rule IDs are stable
 kebab-case strings; diagnostic codes are stable `DOC-xxxx` strings (see
@@ -51,12 +51,25 @@ runs**, so they are unreachable from on-disk plugins (the loader rejects or
 isolates the plugin first). They still fire for programmatically-built
 plugins, which is why they exist as rules. Marked **"schema-enforced"**
 below, these are: DOC-1001, DOC-1002, DOC-1003, DOC-1006, DOC-1007, DOC-2002,
-DOC-3001, DOC-3003, DOC-3004, DOC-4002, DOC-6001.
+DOC-3001, DOC-3003, DOC-3004, DOC-6001.
 
-DOC-1005 (non-object `extensions` value) and DOC-3006 (non-string header) are
-partially schema-enforced: their other branches are reachable from disk.
-DOC-4001 and DOC-5002 are fully reachable from disk in both branches.
-DOC-6002 emits nothing under the default (empty) deprecated-fields map.
+DOC-1005 (non-object `extensions` value) is partially schema-enforced: its
+reverse-domain-namespace branch is reachable from disk, and a non-object
+`extensions` field is reported by the parser as `DOC-1009` before the rule
+could see it. DOC-3006 (non-string header) is likewise partially
+schema-enforced. DOC-4001 and DOC-5002 are fully reachable from disk in both
+branches. DOC-4002 is reachable from disk through the parser (the loader
+emits it during discovery for component symlink escapes) and through the rule
+for in-memory plugins. DOC-6002 emits nothing under the default (empty)
+deprecated-fields map.
+
+The schema-enforced MCP conditions (unsupported `type` → DOC-3001, reserved
+env keys → DOC-3003, non-plugin-relative `cwd` → DOC-3004) are **no longer
+silently isolated**: the parser preserves each invalid entry as `null` and
+reports it as `DOC-3008` (parser-level; validation errors exit 1, entries
+whose stdio `command`/`cwd` escapes the plugin root are `critical` and exit
+2), and the `DOC-3008` rule (`mcp-invalid-server-entry`) reports the same
+entries when a `Plugin` is built in memory.
 
 [DIAGNOSTICS.md](DIAGNOSTICS.md#diagnostic-reachability) carries the
 authoritative per-code reachability table.
@@ -77,6 +90,10 @@ Source: `packages/rules/src/rules/manifest/`
 | `manifest-author-strictness` | DOC-1006 | error    | replace (remove member)     | `author` only `name`/`email`/`url`                             |
 | `manifest-schema-match`      | DOC-1007 | error    | replace (rewrite `$schema`) | `$schema` equals the expected plugin schema URL                |
 
+Parser-level manifest codes (no rule): `DOC-1009` (non-object `extensions`
+field, §8.1 — reported and stripped, exit 1) and `DOC-1010` (unsupported
+`$schema` version — exit 1). See [DIAGNOSTICS.md](DIAGNOSTICS.md).
+
 ### Implementation notes
 
 - **Raw-file rules**: `manifest-unknown-fields` and `manifest-author-strictness`
@@ -93,11 +110,13 @@ Source: `packages/rules/src/rules/manifest/`
 - **`manifest-schema-match`** uses `getSpecVersion()` rather than the
   plugin's resolved spec so it also catches version mismatches.
 - **Reachability**: the schema enforces name pattern/length (`pattern` +
-  `maxLength`), `$schema` (`const`), and author shape
-  (`additionalProperties: false` rejects at parse → `DOC-1008`, exit 1).
-  DOC-1002/1003/1007 are therefore mostly reachable through the SDK on
+  `maxLength`) and author shape (`additionalProperties: false` rejects at
+  parse → `DOC-1008`, exit 1). An unsupported `$schema` version is rejected
+  by the parser before validation (`DOC-1010`, exit 1).
+  DOC-1002/1003/1006/1007 are therefore mostly reachable through the SDK on
   programmatic plugins; DOC-1004 and DOC-1005 are the disk-reachable
-  manifest rules.
+  manifest rules (a non-object `extensions` field surfaces as parser-level
+  `DOC-1009`).
 
 ## Skill rules (skills, DOC-2xxx)
 
@@ -135,14 +154,15 @@ Source: `packages/rules/src/rules/skill/`
 
 Source: `packages/rules/src/rules/mcp/`
 
-| Rule id                 | Code     | Severity | Fix                         | Checks                                                              |
-| ----------------------- | -------- | -------- | --------------------------- | ------------------------------------------------------------------- |
-| `mcp-server-type`       | DOC-3001 | error    | —                           | server `type` ∈ {stdio, streamable-http, sse}                       |
-| `mcp-stdio-command`     | DOC-3002 | error    | —                           | stdio `command` is a single token                                   |
-| `mcp-reserved-env-keys` | DOC-3003 | error    | replace (remove member)     | env does not declare `PLUGIN_ROOT`/`PLUGIN_DATA`                    |
-| `mcp-cwd-pattern`       | DOC-3004 | error    | —                           | stdio `cwd` starts with `./`, `${PLUGIN_ROOT}`, or `${PLUGIN_DATA}` |
-| `mcp-url-format`        | DOC-3005 | error    | —                           | remote URL: absolute http/https, no userinfo, no fragment           |
-| `mcp-header-validation` | DOC-3006 | error    | replace (remove duplicates) | headers are strings; names unique case-insensitively                |
+| Rule id                    | Code     | Severity         | Fix                         | Checks                                                              |
+| -------------------------- | -------- | ---------------- | --------------------------- | ------------------------------------------------------------------- |
+| `mcp-server-type`          | DOC-3001 | error            | —                           | server `type` ∈ {stdio, streamable-http, sse}                       |
+| `mcp-stdio-command`        | DOC-3002 | error            | —                           | stdio `command` is a single token                                   |
+| `mcp-reserved-env-keys`    | DOC-3003 | error            | replace (remove member)     | env does not declare `PLUGIN_ROOT`/`PLUGIN_DATA`                    |
+| `mcp-cwd-pattern`          | DOC-3004 | error / critical | —                           | stdio `cwd` starts with `./`, `${PLUGIN_ROOT}`, or `${PLUGIN_DATA}` |
+| `mcp-url-format`           | DOC-3005 | error            | —                           | remote URL: absolute http/https, no userinfo, no fragment           |
+| `mcp-header-validation`    | DOC-3006 | error            | replace (remove duplicates) | headers are strings; names unique case-insensitively                |
+| `mcp-invalid-server-entry` | DOC-3008 | error            | —                           | every server entry parsed; invalid entries reported, never dropped  |
 
 ### Implementation notes
 
@@ -155,12 +175,21 @@ Source: `packages/rules/src/rules/mcp/`
   case-insensitive key.
 - **`mcp-url-format`** validates with the WHATWG `URL` parser: protocol must
   be `http:`/`https:`, no `username`/`password`, no `hash`.
+- **`mcp-invalid-server-entry`** (DOC-3008) reports server entries preserved
+  as `null` by the parser (schema violation, or a stdio `command` escaping
+  the plugin root). From disk the parser emits the precise reason; the rule
+  covers the SDK path where a `Plugin` is built in memory.
+- **`mcp-cwd-pattern`** (DOC-3004) reports a `cwd` that escapes the plugin
+  root (absolute path or `..` traversal) as `critical` — matching DOC-4001 —
+  and any other non-conforming `cwd` as `error`.
 - **Reachability**: the mcp schema enforces `propertyNames.not.enum` for
-  reserved env keys, `cwd`'s pattern, and server `type` — so DOC-3003,
-  DOC-3004, and DOC-3001 are schema-enforced (unreachable from disk for
-  valid-parsing files). DOC-3002 (empty/whitespace command — schema allows
-  it) and DOC-3006 (duplicate JSON keys parse to the last value, schema-valid)
-  are the disk-reachable MCP rules with fixes.
+  reserved env keys, `cwd`'s pattern, and server `type` — but since the
+  parser preserves invalid entries as `null` (reported as DOC-3008), those
+  conditions are no longer silent on disk. DOC-3003, DOC-3004, and DOC-3001
+  remain SDK-only rules for typed in-memory servers; DOC-3002
+  (empty/whitespace command — schema allows it) and DOC-3006 (duplicate JSON
+  keys parse to the last value, schema-valid) are the disk-reachable MCP
+  rules with fixes.
 
 ## Security rules (security, DOC-4xxx)
 
@@ -175,15 +204,19 @@ Source: `packages/rules/src/rules/security/`
 ### Implementation notes
 
 - **No security rule produces fixes.** Nothing destructive is ever applied.
-- **`security-path-traversal`** exports `isTraversalPath(value)`: absolute
-  POSIX paths (`/…`), absolute Windows paths (`C:\…`), and `..` segments are
-  flagged. It checks skill directories, extension paths, and stdio `cwd`.
-  The loader's `resolvePluginPath` already rejects escaping paths, so
-  DOC-4001 is largely schema/loader-enforced on disk; it remains valuable
-  for programmatic plugins.
+- **`security-path-traversal`** checks `isTraversalPath(value)` (absolute
+  POSIX paths (`/…`), absolute Windows paths (`C:\…`), and `..` segments).
+  It checks skill directories, extension paths, and stdio `cwd` and
+  `command`. The shared helper lives in `@agent-plugins-doctor/core` (so the
+  parser's stdio `command` check, DOC-3008, agrees with the rule); the rule
+  module re-exports it. The loader's `resolvePluginPath` already rejects
+  escaping paths, so DOC-4001 is largely schema/loader-enforced on disk; it
+  remains valuable for programmatic plugins.
 - **`security-symlink-escape`** is conservative: only component directories
   that resolve to a real path outside the real plugin root are reported;
-  missing paths and unresolvable roots are skipped silently.
+  missing paths and unresolvable roots are skipped silently. The parser also
+  emits `DOC-4002` during discovery when a skill directory, `SKILL.md`, or
+  extension namespace is a symlink escape, so the finding is CLI-reachable.
 - **`security-secret-detection`** is conservative to avoid false positives:
   strong patterns only (≥ 16 chars; PEM blocks; `AKIA…`; `ghp_…`/`gho_…`/
   `ghu_…`/`ghs_…`/`ghr_…`; `sk-`/`rk-`/`pk-` prefixes with ≥ 20-char values;
@@ -191,8 +224,10 @@ Source: `packages/rules/src/rules/security/`
   placeholder-shaped values (`<…>`, `your-…`, `xxx`, `changeme`, `…`) are
   skipped. Messages redact the detected value.
 - **Reachability**: DOC-4003 is disk-reachable (`embedded-secrets` fixture,
-  exit 2); DOC-4002 requires an escaping symlink at a component path (the
-  loader skips it → often only DOC-5003 fires); DOC-4001 is loader-enforced.
+  exit 2); DOC-4002 is disk-reachable through the parser (the loader emits it
+  for component symlink escapes) and through the rule for in-memory plugins;
+  DOC-4001 is loader/schema-enforced on disk and fires for programmatic
+  plugins.
 
 ## Structure rules (structure, DOC-5xxx)
 

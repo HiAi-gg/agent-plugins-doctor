@@ -129,7 +129,7 @@ they are now locked in by the integration suite.
 
 ## Diagnostic Message Audit
 
-Every diagnostic produced by the 29 rules was reviewed (38 `makeDiagnostic`
+Every diagnostic produced by the 30 rules was reviewed (38 `makeDiagnostic`
 call sites) against the five questions:
 
 - **What is wrong?** Every message states the problem concretely, naming the
@@ -142,7 +142,7 @@ duplicate header "authorization" (case-insensitive)`,
 - **Why does it matter?** Messages include the violated constraint or its
   consequence (limits, spec references, `escapes the plugin root`, `value
 redacted`); the full rationale per code lives in DIAGNOSTICS.md.
-- **How to fix it?** 12 of 29 rules attach an executable `fix`; every other
+- **How to fix it?** 12 of 30 rules attach an executable `fix`; every other
   code documents its manual fix in DIAGNOSTICS.md (e.g. "shorten the
   description", "split the skill").
 - **Source/rule?** Every diagnostic carries `code` (DOC-xxxx), `ruleId`, and

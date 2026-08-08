@@ -31,11 +31,11 @@ Agent Plugin Doctor is the canonical validation, diagnostics, and security-audit
 - **Specification Validation** — Validates plugin.json, mcp.json, and SKILL.md files against the official Agent Plugins v1.0.0 specification
 - **Security Auditing** — Detects embedded secrets, path traversal, and symlink escapes
 - **Compatibility Checking** — Checks compatibility with VS Code, Cursor, GitHub Copilot, ChatGPT & Codex, and Kiro
-- **Safe Auto-Fixes** — Automatically fixes common issues like formatting, missing fields, and naming mismatches
+- **Safe Auto-Fixes** — 12 automatic fixes for common issues like formatting, missing fields, and naming mismatches
 - **Multiple Output Formats** — Human-readable terminal output, JSON for CI, and Markdown for documentation
 - **Self-Hosting** — Doctor validates itself as an Agent Plugin (`check .` exits 0 with zero diagnostics)
 - **Cross-Platform** — CI runs the full suite on Linux, macOS, and Windows (Bun 1.3.14)
-- **Comprehensive Test Suite** — 578 tests across 73 files: unit, integration, E2E (spawns the real binary), fixture-based, and benchmark budgets
+- **Comprehensive Test Suite** — 635 tests across 79 files: unit, integration, E2E (spawns the real binary), fixture-based, and benchmark budgets
 
 ## CLI Commands
 
@@ -94,26 +94,14 @@ Options:
   --json          Output as JSON
 ```
 
-## Public SDK
+## SDK (Library API)
 
-Doctor can be used as a library:
-
-```typescript
-import { loadPlugin } from '@agent-plugins-doctor/parser';
-import { validatePlugin } from '@agent-plugins-doctor/rules';
-import { generateReport } from '@agent-plugins-doctor/report';
-
-const plugin = await loadPlugin('./my-plugin');
-const result = await validatePlugin(plugin);
-const report = generateReport(result, { format: 'json' });
-```
-
-See [docs/SDK.md](docs/SDK.md) for complete API documentation.
-
-All six packages are publishable npm artifacts — the packed tarballs are
-verified end-to-end by the external-install E2E test (`bunx`/`npx` against
-an installed copy outside this repository). They are not on the public
-registry yet; see [PUBLISHING.md](PUBLISHING.md) for the publish procedure.
+The six `@agent-plugins-doctor/*` packages (core, parser, rules,
+compatibility, report, cli) are **not yet published to npm** — SDK
+publication is deferred. Until they are published, use the CLI, or import the
+packages from the monorepo. See [docs/SDK.md](docs/SDK.md) for the complete
+API reference and [PUBLISHING.md](PUBLISHING.md) for the npm publish
+procedure.
 
 ## Supported Specifications
 
@@ -139,7 +127,7 @@ See [docs/BUILDER_INTEGRATION.md](docs/BUILDER_INTEGRATION.md) for integration d
 
 ## Diagnostic Codes
 
-Doctor uses stable diagnostic codes:
+Doctor uses 35 stable diagnostic codes:
 
 - `DOC-1xxx` — Manifest & spec conformance
 - `DOC-2xxx` — Skills
@@ -149,7 +137,12 @@ Doctor uses stable diagnostic codes:
 - `DOC-6xxx` — Compatibility
 - `DOC-7xxx` — Format & quality
 
-See [docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md) for the complete catalog.
+Of the 35 codes, 24 are reachable from the public CLI (7 of them emitted by
+the parser during load), 10 fire only through the SDK, and 1 (`DOC-6002`) is
+intentionally dormant under v1.0.0.
+
+See [docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md) for the complete catalog,
+per-code reachability, and the autofix list.
 
 ## Exit Codes
 
@@ -166,7 +159,7 @@ See [docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md) for the complete catalog.
 # Install dependencies
 bun install
 
-# Run tests (578 tests across 73 files)
+# Run tests (635 tests across 79 files)
 bun test
 
 # Type check

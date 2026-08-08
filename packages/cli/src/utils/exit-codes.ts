@@ -6,10 +6,11 @@
 //
 // Parse errors are diagnostics, not exceptions: the CLI loads plugins via
 // scanPlugin, so malformed input (unparseable plugin.json -> DOC-1008,
-// malformed SKILL.md -> DOC-2099, invalid mcp.json -> DOC-3007) surfaces as
-// parser diagnostics with severity "error" and produces exit 1 (validation
-// error) — never exit 3. Only true tool failures (inaccessible root,
-// internal rule failure DOC-0000) produce exit 3.
+// malformed SKILL.md -> DOC-2099, invalid mcp.json -> DOC-3007, invalid
+// individual MCP server entry -> DOC-3008) surfaces as parser diagnostics
+// with severity "error" and produces exit 1 (validation error) — never exit
+// 3. Only true tool failures (inaccessible root, internal rule failure
+// DOC-0000) produce exit 3.
 
 import type { Diagnostic } from '@agent-plugins-doctor/core';
 import { INTERNAL_ERROR_CODE } from '@agent-plugins-doctor/rules';

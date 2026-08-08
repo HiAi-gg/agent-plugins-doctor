@@ -82,7 +82,7 @@ git commit -m "chore: release v0.1.0"
 git tag -a v0.1.0 -m "Agent Plugin Doctor v0.1.0
 
 - 6-package monorepo (core, parser, rules, compatibility, report, cli)
-- 29 validation rules across 7 categories
+- 30 validation rules across 7 categories
 - ... (summary from CHANGELOG)"
 ```
 

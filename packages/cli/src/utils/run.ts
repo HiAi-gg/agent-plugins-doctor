@@ -1,7 +1,7 @@
 // Shared command pipeline: resolve the plugin directory, scan the plugin,
 // validate it, and attach the compatibility check to the validation result.
 
-import { statSync } from 'node:fs';
+import { readdirSync, statSync } from 'node:fs';
 import type { Stats } from 'node:fs';
 import { resolve } from 'node:path';
 import type {
@@ -30,8 +30,8 @@ export function resolvePluginDir(dir: string): string {
 /**
  * Verify the plugin root is a readable directory before scanning.
  *
- * A missing or non-directory root is a tool failure (exit 3), not a
- * validation error: `scanPlugin` would collect it as a DOC-1008 diagnostic,
+ * A missing, non-directory, or unreadable root is a tool failure (exit 3), not
+ * a validation error: `scanPlugin` would collect it as a DOC-1008 diagnostic,
  * but the CLI keeps tool-failure semantics for an inaccessible root.
  */
 export function assertRootAccessible(rootDir: string): void {
@@ -39,8 +39,13 @@ export function assertRootAccessible(rootDir: string): void {
   try {
     stat = statSync(rootDir);
   } catch (cause) {
+    // An EACCES/EPERM stat failure (an ancestor denies traversal) is a
+    // permission problem, not a missing root — say so instead of blaming the
+    // root itself. Either way it is a tool failure (exit 3).
     throw new LoadError(
-      `Plugin root does not exist: ${rootDir}`,
+      isPermissionError(cause)
+        ? `Permission denied: ${rootDir}`
+        : `Plugin root does not exist: ${rootDir}`,
       rootDir,
       cause,
     );
@@ -48,6 +53,21 @@ export function assertRootAccessible(rootDir: string): void {
   if (!stat.isDirectory()) {
     throw new LoadError(`Plugin root is not a directory: ${rootDir}`, rootDir);
   }
+  // A root that exists but cannot be listed (no read permission) is a tool
+  // failure (exit 3), not a validation error: scanning it would misreport
+  // plugin.json as missing (DOC-1008) or unreadable (EACCES) and exit 1
+  // instead of failing as Doctor.
+  try {
+    readdirSync(rootDir);
+  } catch (cause) {
+    throw new LoadError(`Permission denied: ${rootDir}`, rootDir, cause);
+  }
+}
+
+/** Whether a filesystem error is a permission denial (EACCES/EPERM). */
+function isPermissionError(cause: unknown): boolean {
+  const code = (cause as NodeJS.ErrnoException | null)?.code;
+  return code === 'EACCES' || code === 'EPERM';
 }
 
 /**

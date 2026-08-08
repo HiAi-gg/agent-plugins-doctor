@@ -1,6 +1,7 @@
 // DOC-4001: no path traversal in any file references (skill directories,
-// extension paths, stdio cwd). Critical, no fix.
+// extension paths, stdio cwd/command). Critical, no fix.
 
+import { isTraversalPath } from '@agent-plugins-doctor/core';
 import type { Rule } from '../../rule.js';
 import { makeDiagnostic } from '../../util.js';
 
@@ -12,12 +13,10 @@ interface PathReference {
   file: string;
 }
 
-export function isTraversalPath(value: string): boolean {
-  if (value.startsWith('/')) return true; // absolute POSIX path
-  if (/^[A-Za-z]:[\\/]/.test(value)) return true; // absolute Windows path
-  if (value.split(/[\\/]+/).includes('..')) return true; // parent traversal
-  return false;
-}
+// Re-export for callers that relied on the rule module's helper; the shared
+// definition now lives in @agent-plugins-doctor/core so the parser (mcp.json
+// stdio command validation, DOC-3008) and the security rules agree.
+export { isTraversalPath };
 
 export const pathTraversalRule: Rule = {
   id: ID,
@@ -44,7 +43,16 @@ export const pathTraversalRule: Rule = {
     const servers = ctx.plugin.mcpConfig?.mcpServers;
     if (servers !== undefined) {
       for (const [name, server] of Object.entries(servers)) {
-        if (server.type === 'stdio' && typeof server.cwd === 'string') {
+        // A null entry is a server that failed to parse; DOC-3008 reports it.
+        if (server === null) continue;
+        if (server.type !== 'stdio') continue;
+        if (typeof server.command === 'string') {
+          references.push({
+            value: server.command,
+            file: `./mcp.json (server "${name}" command)`,
+          });
+        }
+        if (typeof server.cwd === 'string') {
           references.push({
             value: server.cwd,
             file: `./mcp.json (server "${name}")`,

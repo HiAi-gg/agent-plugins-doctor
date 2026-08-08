@@ -68,7 +68,7 @@ deliverables; see [docs/ROADMAP.md](ROADMAP.md) for the full list.
 
 - `docs/ARCHITECTURE.md` — Architecture decisions (ADRs)
 - `docs/SDK.md` — Public API reference
-- `docs/DIAGNOSTICS.md` — Diagnostic catalog (29 codes)
+- `docs/DIAGNOSTICS.md` — Diagnostic catalog (30 codes)
 - `docs/RULES.md` — Rule reference
 - `docs/COMPATIBILITY.md` — Client compatibility
 - `docs/SPEC_SUPPORT.md` — Spec support matrix
@@ -226,7 +226,7 @@ deliverables; see [docs/ROADMAP.md](ROADMAP.md) for the full list.
 ### ✅ Documentation
 
 - Every public API documented (SDK.md, pinned by api-stability tests)
-- Every diagnostic code documented (DIAGNOSTICS.md, 29 codes)
+- Every diagnostic code documented (DIAGNOSTICS.md, 30 codes)
 - Architecture decisions recorded (ARCHITECTURE.md ADRs)
 
 ## Areas for Improvement

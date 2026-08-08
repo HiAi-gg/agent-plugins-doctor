@@ -8,7 +8,7 @@
 //   2. all six tarballs are installed with `npm install` into a scratch
 //      directory outside the repo — the @agent-plugins-doctor/* packages are
 //      not on the registry yet, so every tarball must be installed in a single
-//      npm install for their ^0.0.2 inter-package dependencies to resolve
+//      npm install for their ^0.0.3 inter-package dependencies to resolve
 //      locally,
 //   3. the installed artifact (node_modules/@agent-plugins-doctor/cli/dist/bin.js,
 //      the node-targeted file a user gets) is exercised end-to-end.

@@ -24,7 +24,7 @@ found in [docs/ARCHITECTURE.md](ARCHITECTURE.md),
 - Version-isolated spec layer (`spec/v1/`, future `spec/v2/` — ADR-004)
 - Vendored schemas (never fetched at runtime)
 - Rules declare supported spec versions
-- Clear error message for unsupported versions (DOC-1008 diagnostic, exit 1)
+- Clear error message for unsupported versions (DOC-1010 diagnostic, exit 1)
 
 **Status:** ✅ Mitigated
 
@@ -110,7 +110,7 @@ found in [docs/ARCHITECTURE.md](ARCHITECTURE.md),
 
 **Mitigation:**
 
-- 29 rules across 7 categories
+- 30 rules across 7 categories
 - Security-focused rules (DOC-4xxx)
 - Regular rule additions
 - Community feedback

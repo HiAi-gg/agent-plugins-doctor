@@ -4,6 +4,10 @@ Complete reference for the public API of every package in the Agent Plugin
 Doctor monorepo. All packages are ES modules (`"type": "module"`), written in
 TypeScript with strict mode, and export fully typed APIs.
 
+> **Status:** The SDK packages are **not yet published to npm**. Use the CLI
+> (`bunx agent-plugins-doctor` / `npx agent-plugins-doctor`), or import the
+> packages from the monorepo.
+
 The public surface of every package is pinned by
 [`tests/integration/api-stability.test.ts`](../tests/integration/api-stability.test.ts):
 renames or removals fail there first. This document describes the stable
@@ -97,19 +101,19 @@ The `v1` namespace re-exports the v1.0.0 constants directly (see below), and
 
 ### 1.2 Spec constants (v1.0.0)
 
-| Constant                    | Value                                                          |
-| --------------------------- | -------------------------------------------------------------- |
-| `SPEC_VERSION`              | `'1.0.0'`                                                      |
-| `PLUGIN_SCHEMA_URL`         | `'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json'` |
-| `MCP_SCHEMA_URL`            | `'https://agent-plugins.org/schemas/1.0.0/mcp.schema.json'`    |
-| `NAME_PATTERN`              | `/^(?!.*(?:--\|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/`       |
-| `NAME_MAX_LENGTH`           | `64`                                                           |
-| `SKILL_NAME_PATTERN`        | `/^(?!.*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/`                  |
-| `SKILL_NAME_MAX_LENGTH`     | `64`                                                           |
-| `DESCRIPTION_MAX_LENGTH`    | `1024`                                                         |
-| `COMPATIBILITY_MAX_LENGTH`  | `500`                                                          |
-| `SUPPORTED_COMPONENT_TYPES` | `['skills', 'mcp'] as const`                                   |
-| `ComponentType`             | `'skills' \| 'mcp'`                                            |
+| Constant                    | Value                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| `SPEC_VERSION`              | `'1.0.0'`                                                                      |
+| `PLUGIN_SCHEMA_URL`         | `'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json'`                 |
+| `MCP_SCHEMA_URL`            | `'https://agent-plugins.org/schemas/1.0.0/mcp.schema.json'`                    |
+| `NAME_PATTERN`              | `/^(?!.*(?:--\|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/`                       |
+| `NAME_MAX_LENGTH`           | `64`                                                                           |
+| `SKILL_NAME_PATTERN`        | `/^(?!.*(?:--\|[\p{Lu}\p{Lt}]))[\p{L}\p{N}](?:[\p{L}\p{N}-]*[\p{L}\p{N}])?$/u` |
+| `SKILL_NAME_MAX_LENGTH`     | `64`                                                                           |
+| `DESCRIPTION_MAX_LENGTH`    | `1024`                                                                         |
+| `COMPATIBILITY_MAX_LENGTH`  | `500`                                                                          |
+| `SUPPORTED_COMPONENT_TYPES` | `['skills', 'mcp'] as const`                                                   |
+| `ComponentType`             | `'skills' \| 'mcp'`                                                            |
 
 ```ts
 import {
@@ -399,9 +403,15 @@ without executing any plugin code. Malformed input is a validation error
   `plugin` null but scanning continues over the remaining components, so a
   broken manifest does not hide skill or mcp.json problems. Skills that fail
   to load are reported as `DOC-2099`, a top-level `mcp.json` failure as
-  `DOC-3007` (one diagnostic per schema violation), and a manifest failure as
-  `DOC-1008` (one diagnostic per schema violation). All are severity `error`
-  with `ruleId: "parser"`.
+  `DOC-3007` (one diagnostic per schema violation), an invalid individual
+  MCP server entry as `DOC-3008` (preserved as `null` in
+  `mcpConfig.mcpServers`, never silently dropped), a manifest failure as
+  `DOC-1008` (one diagnostic per schema violation), a non-object
+  `extensions` field as `DOC-1009`, an unsupported `$schema` as `DOC-1010`,
+  and a component symlink escape as `DOC-4002`. These are severity
+  `error` — except `DOC-3008` entries whose stdio `command`/`cwd` escapes
+  the plugin root and `DOC-4002`, which are severity `critical`
+  (security-critical findings, exit 2) — with `ruleId: "parser"`.
 
 ```ts
 import { scanPlugin } from '@agent-plugins-doctor/parser';
@@ -425,7 +435,7 @@ for (const d of diagnostics) console.log(d.code, d.message);
 With `scanPlugin()`:
 
 - Malformed user input → exit 1 (validation error)
-- Tool failure (filesystem inaccessible) → exit 3 (tool failure)
+- Tool failure (filesystem inaccessible or permission denied) → exit 3 (tool failure)
 
 This differs from `loadPlugin()`, where malformed input throws and the caller
 must map the exception to a tool failure (exit 3). In the CLI this is
@@ -433,15 +443,21 @@ observable: `check`, `fix`, and `report` load via `scanPlugin`, so a broken
 plugin is a validation error (exit 1), and only an inaccessible root or an
 internal rule failure (`DOC-0000`) is a tool failure (exit 3).
 
-### 2.2 `parsePluginManifest(filePath: string): PluginManifest`
+### 2.2 `parsePluginManifest(filePath: string, diagnostics?: Diagnostic[]): PluginManifest`
 
 Parses and validates a single `plugin.json` file.
 
-- **Throws** `ParseError` (unreadable/invalid JSON) or
-  `SchemaValidationError` (schema violation).
+- **Parameters** `diagnostics` (optional) collects non-fatal parse findings:
+  `DOC-1009` for a non-object `extensions` field (§8.1, reported and
+  stripped) and `DOC-1010` for an unsupported `$schema` version. When
+  omitted these findings are not surfaced.
+- **Throws** `ParseError` (unreadable/invalid JSON),
+  `SchemaValidationError` (schema violation), or `UnsupportedVersionError`
+  (a `SchemaValidationError` subclass) when `$schema` is unsupported.
 - Unknown top-level fields and a non-object `extensions` field are
-  non-fatal per spec §5.2/§8.1: they are reported in the schema errors and
-  stripped from the returned manifest instead of rejecting it.
+  non-fatal per spec §5.2/§8.1: they are reported in the schema errors (and
+  `DOC-1009` for the extensions field) and stripped from the returned
+  manifest instead of rejecting it.
 
 ### 2.3 `parseMcpConfig(filePath: string): McpConfig | undefined`
 
@@ -450,8 +466,11 @@ Parses and validates a single `mcp.json` file.
 - **Returns** `undefined` when the file is absent (mcp.json is optional).
 - **Description** Top-level violations (bad/missing `$schema`, missing or
   non-object `mcpServers`, unknown top-level fields, non-object server
-  entries) throw `SchemaValidationError`; invalid _server objects_ are
-  skipped individually so valid servers survive (§7.2.2).
+  entries) throw `SchemaValidationError`. Invalid _server objects_ are
+  isolated per-server (§7.2.2): each raw entry is preserved in the returned
+  `McpConfig` — valid entries as typed servers, invalid entries as `null`
+  with a `DOC-3008` parser diagnostic in `serverDiagnostics` — so valid
+  servers survive and no invalid server silently disappears.
 - **Throws** `ParseError`, `SchemaValidationError`.
 
 ### 2.4 `parseSkillFrontmatter(content: string, filePath: string): ParsedSkill`
@@ -567,7 +586,7 @@ try {
 
 ## 3. `@agent-plugins-doctor/rules`
 
-The validation engine, rule registry, and auto-fix engine. 29 rules across 7
+The validation engine, rule registry, and auto-fix engine. 30 rules across 7
 categories run by default. See [DIAGNOSTICS.md](DIAGNOSTICS.md) for the rule
 catalog and [RULES.md](RULES.md) for implementation details.
 
@@ -670,7 +689,7 @@ Stores rules by id.
 
 ### 3.5 `createDefaultRegistry(): RuleRegistry`
 
-Returns a registry pre-populated with all 29 shipped rules across the 7
+Returns a registry pre-populated with all 30 shipped rules across the 7
 categories, in manifest → skills → mcp → security → structure → compatibility
 → format order.
 
@@ -678,7 +697,7 @@ categories, in manifest → skills → mcp → security → structure → compat
 import { createDefaultRegistry } from '@agent-plugins-doctor/rules';
 
 const registry = createDefaultRegistry();
-console.log(registry.getAll().length); // 29
+console.log(registry.getAll().length); // 30
 ```
 
 ### 3.6 The `Rule` contract
@@ -766,10 +785,13 @@ Client-compatibility checking against verified Agent Plugins client profiles.
 The default registry is seeded from `src/data/clients.json` (5 verified
 clients: `vscode`, `cursor`, `copilot`, `codex`, `kiro`).
 
-### 4.1 `checkCompatibility(plugin: Plugin, registry?: ClientProfileRegistry): CompatibilityResult`
+### 4.1 `checkCompatibility(plugin: Plugin | null | undefined, registry?: ClientProfileRegistry): CompatibilityResult`
 
 Checks a plugin against every client in the registry.
 
+- **Parameters** `plugin` may be `null`/`undefined` (e.g. when the plugin
+  could not be loaded): the result then carries `plugin: null`, `checks: []`,
+  and a zeroed summary instead of throwing.
 - **Returns** `CompatibilityResult` with one `CompatibilityCheck` per client.
 - **Description** Conservative: a missing client capability produces an
   issue instead of assuming compatibility. Errors are blocking (unsupported
@@ -786,6 +808,9 @@ import { checkCompatibility } from '@agent-plugins-doctor/compatibility';
 
 const compat = checkCompatibility(plugin);
 console.log(compat.summary); // { total: 5, compatible: 4, incompatible: 1 }
+
+const empty = checkCompatibility(null);
+console.log(empty.checks); // [] — never throws on an unloadable plugin
 ```
 
 ### 4.2 `CompatibilityChecker`
@@ -875,7 +900,9 @@ interface CompatibilityIssue {
 }
 
 interface CompatibilityResult {
-  plugin: Plugin;
+  // The plugin that was checked, or null when checkCompatibility received
+  // null/undefined (e.g. an unloadable plugin).
+  plugin: Plugin | null;
   checks: CompatibilityCheck[];
   summary: { total: number; compatible: number; incompatible: number };
 }
@@ -1021,7 +1048,16 @@ export type AllowedToolsValue =
 
 export interface McpConfig {
   $schema: string;
-  mcpServers: Record<string, McpServer>;
+  /**
+   * Every declared server entry is preserved, keyed by name. A `null` value
+   * means the entry was present but invalid (schema violation, or an
+   * escaping stdio `command`) and was not loaded; the reason is recorded as
+   * a DOC-3008 parser diagnostic in `serverDiagnostics` and reported again
+   * by the `mcp-invalid-server-entry` rule.
+   */
+  mcpServers: Record<string, McpServer | null>;
+  /** Per-server parse/schema errors (code DOC-3008, ruleId "parser"). */
+  serverDiagnostics?: Diagnostic[];
 }
 
 export type McpServer = StdioServer | StreamableHttpServer | SseServer;
@@ -1129,7 +1165,12 @@ Doctor distinguishes two kinds of failure:
    frontmatter), and invalid `mcp.json` are also plugin problems: the CLI
    loads via `scanPlugin`, which never throws and returns them as
    `DOC-1008`/`DOC-2099`/`DOC-3007` parser diagnostics, driving exit code `1`
-   (validation error).
+   (validation error). An invalid individual MCP server entry is likewise a
+   plugin problem: the parser preserves it as `null` in
+   `mcpConfig.mcpServers` and reports `DOC-3008`, so it is never silently
+   dropped — validation errors exit `1`, and an entry whose stdio
+   `command`/`cwd` escapes the plugin root is reported at severity `critical`
+   (security-critical finding, exit `2`).
 2. **Tool failures** — thrown by the strict `loadPlugin`/parser APIs for the
    plugin as a whole, and by the CLI only when the plugin root is
    inaccessible (missing directory) or a rule fails internally (`DOC-0000`).

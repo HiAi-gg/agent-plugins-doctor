@@ -210,12 +210,12 @@ done
 
 ## 6. Exit code contract
 
-| Code | Name                | Condition                                                                                                                                                                                     |
-| ---- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `0`  | `SUCCESS`           | No error/critical diagnostics (warnings/info allowed, unless strict)                                                                                                                          |
-| `1`  | `SPEC_ERRORS`       | At least one `error` diagnostic (or a `warning` under `--strict`) — including parser diagnostics (`DOC-1008` unloadable manifest, `DOC-2099` skill load failure, `DOC-3007` invalid mcp.json) |
-| `2`  | `SECURITY_CRITICAL` | At least one `critical` diagnostic                                                                                                                                                            |
-| `3`  | `TOOL_FAILURE`      | `DOC-0000` (internal rule failure), an inaccessible plugin root, or a Builder-side exception                                                                                                  |
+| Code | Name                | Condition                                                                                                                                                                                                                          |
+| ---- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0`  | `SUCCESS`           | No error/critical diagnostics (warnings/info allowed, unless strict)                                                                                                                                                               |
+| `1`  | `SPEC_ERRORS`       | At least one `error` diagnostic (or a `warning` under `--strict`) — including parser diagnostics (`DOC-1008` unloadable manifest, `DOC-2099` skill load failure, `DOC-3007` invalid mcp.json, `DOC-3008` invalid MCP server entry) |
+| `2`  | `SECURITY_CRITICAL` | At least one `critical` diagnostic — including an MCP server entry whose stdio `command`/`cwd` escapes the plugin root (reported as a critical `DOC-3008`)                                                                         |
+| `3`  | `TOOL_FAILURE`      | `DOC-0000` (internal rule failure), an inaccessible plugin root (missing, not a directory, or permission-denied), or a Builder-side exception                                                                                      |
 
 Priority: `3 > 2 > 1 > 0`. When multiple conditions apply the highest code
 wins. The CLI loads plugins via `scanPlugin`, which never throws: malformed
@@ -271,7 +271,7 @@ rest of the plugin still loads (spec §7.2.2).
   `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json`).
 - `resolveSpecVersion(schemaUrl)` returns the spec for known schema URLs and
   `null` for unknown ones; `getCurrentSpecVersion()` returns v1.0.0.
-- Plugins with a `$schema` Doctor does not support surface a `DOC-1008`
+- Plugins with a `$schema` Doctor does not support surface a `DOC-1010`
   parser diagnostic (exit 1) in the CLI — the strict `loadPlugin` API throws
   instead — per the spec's "must not silently ignore" requirement.
 - The vendored schemas are byte-exact official copies; Doctor never fetches
@@ -292,7 +292,7 @@ of using relative paths.
 ### Generated plugin exits 1 (spec errors)
 
 - Skill directory name must equal the skill `name` in frontmatter
-  (`DOC-2001`/`DOC-5002`): lowercase alphanumerics and hyphens, no `--`.
+  (`DOC-2001`/`DOC-5002`): Unicode lowercase alphanumerics and hyphens, no `--`.
 - `allowed-tools` must be a space-separated string (e.g.
   `Bash(git:*) Read`), never a YAML list — the parser preserves any
   non-string value and DOC-2005 diagnoses it (YAML list → warning, any other
@@ -313,8 +313,9 @@ of using relative paths.
 
 - `plugin.json` violates the schema: wrong `$schema`, missing `name`, unknown
   fields beyond the permitted set, invalid `author` shape. These surface as
-  `DOC-1008` parser diagnostics (exit 1) — the CLI loads via `scanPlugin`, so
-  a bad manifest is a validation error, not a tool failure.
+  `DOC-1008` parser diagnostics (exit 1); an unsupported `$schema` version is
+  `DOC-1010` — the CLI loads via `scanPlugin`, so a bad manifest is a
+  validation error, not a tool failure.
 - The generator wrote non-canonical JSON that still parses — that is only an
   informational `DOC-7001`, not exit 1. Unparseable JSON is a `DOC-1008`
   manifest load error (exit 1).

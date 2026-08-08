@@ -30,6 +30,8 @@ export const reservedEnvKeysRule: Rule = {
     if (servers === undefined) return [];
     const diagnostics = [];
     for (const [name, server] of Object.entries(servers)) {
+      // A null entry is a server that failed to parse; DOC-3008 reports it.
+      if (server === null) continue;
       if (server.type !== 'stdio' || server.env === undefined) continue;
       const reserved = Object.keys(server.env).filter((key) =>
         RESERVED_KEYS.has(key),

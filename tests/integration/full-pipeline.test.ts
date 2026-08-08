@@ -29,11 +29,16 @@ const engine = new ValidationEngine(createDefaultRegistry());
 
 /** Run the full CLI pipeline (load -> validate -> compatibility merge). */
 async function fullValidate(fixture: string): Promise<ValidationResult> {
-  const { plugin } = await loadPlugin(fixturePath(fixture));
+  const { plugin, parseDiagnostics } = await loadPlugin(fixturePath(fixture));
   const result = await validatePlugin(plugin);
+  // Mirror the CLI's scan-based pipeline (loadAndValidate), which merges the
+  // parser diagnostics ahead of the rule diagnostics so parser-level findings
+  // (e.g. a critical DOC-3008 traversal) drive the exit code.
+  const diagnostics = [...parseDiagnostics, ...result.diagnostics];
   const compatibility = checkCompatibility(plugin);
   return {
     ...result,
+    diagnostics,
     compatibility: toCoreCompatibility(compatibility.checks),
   };
 }
@@ -45,12 +50,18 @@ const EXPECTED_EXITS: Record<string, number> = {
   'warning-plugin': 0,
   'security-plugin/symlink-escape': 0,
   'security-plugin/embedded-secrets': 2,
-  'security-plugin/path-traversal': 0,
+  // The traversal cwd fails mcp.schema.json's cwd pattern, so the entry is
+  // preserved as invalid and reported as a critical DOC-3008
+  // (security-critical, exit 2) instead of being silently dropped.
+  'security-plugin/path-traversal': 2,
   'edge-cases/empty-plugin': 0,
   'edge-cases/huge-description': 1,
   'edge-cases/max-skills': 0,
   'vendor-extensions/valid-extensions': 0,
-  'vendor-extensions/invalid-extensions': 0,
+  // A non-object `extensions` field is now reported as DOC-1009 (exit 1),
+  // not silently stripped (P1 #6).
+  'vendor-extensions/invalid-extensions': 1,
+  'non-object-extensions': 1,
 };
 
 describe('full validation pipeline', () => {

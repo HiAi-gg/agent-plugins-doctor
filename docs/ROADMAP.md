@@ -45,7 +45,7 @@
 ### Phase 5: Rules Package ✅
 
 - Validation engine
-- 29 rules across 7 categories
+- 30 rules across 7 categories
 - Auto-fix engine (idempotent `applyFixes`)
 - Incremental validation (`validateIncremental`)
 - 178 tests passing

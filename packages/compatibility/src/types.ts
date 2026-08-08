@@ -107,7 +107,8 @@ export interface CompatibilityIssue {
 }
 
 export interface CompatibilityResult {
-  plugin: Plugin;
+  /** The plugin that was checked, or null when no plugin was provided. */
+  plugin: Plugin | null;
   checks: CompatibilityCheck[];
   summary: {
     total: number;

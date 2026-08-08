@@ -146,7 +146,8 @@ export const MCP_SCHEMA_URL =
 export const NAME_PATTERN =
   /^(?!.*(?:--|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/;
 export const NAME_MAX_LENGTH = 64;
-export const SKILL_NAME_PATTERN = /^(?!.*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+export const SKILL_NAME_PATTERN =
+  /^(?!.*(?:--|[\p{Lu}\p{Lt}]))[\p{L}\p{N}](?:[\p{L}\p{N}-]*[\p{L}\p{N}])?$/u;
 export const SKILL_NAME_MAX_LENGTH = 64;
 export const DESCRIPTION_MAX_LENGTH = 2048; // v2 doubled the limit
 export const COMPATIBILITY_MAX_LENGTH = 500;

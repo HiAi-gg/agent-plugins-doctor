@@ -8,19 +8,26 @@ import { fixturePath, REPO_ROOT, runCli } from './helpers.js';
 const FIXTURE_EXITS: Record<string, number> = {
   'minimal-plugin': 0,
   'complex-plugin': 0,
+  'unicode-skill-name': 0,
   // Schema-invalid manifests surface as DOC-1008 parser diagnostics (exit 1),
   // not load failures (exit 3): parse errors are validation errors now.
   'invalid-plugin': 1,
   'warning-plugin': 0,
   'security-plugin/symlink-escape': 0,
   'security-plugin/embedded-secrets': 2,
-  'security-plugin/path-traversal': 0,
+  // The traversal cwd fails the schema's cwd pattern: the entry is preserved
+  // as invalid and reported as a critical DOC-3008 (security-critical, exit 2).
+  'security-plugin/path-traversal': 2,
   'edge-cases/empty-plugin': 0,
   'edge-cases/huge-description': 1,
   'edge-cases/max-skills': 0,
   'edge-cases/unicode-names': 1,
   'vendor-extensions/valid-extensions': 0,
-  'vendor-extensions/invalid-extensions': 0,
+  // A non-object `extensions` field is now reported as DOC-1009 (exit 1),
+  // not silently stripped (P1 #6).
+  'vendor-extensions/invalid-extensions': 1,
+  'non-object-extensions': 1,
+  'unsupported-version': 1,
   'legacy-plugin': 1,
   'future-spec': 1,
   // Phase 12/13: simulated Builder-generated output must validate cleanly.

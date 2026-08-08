@@ -65,7 +65,7 @@ rules → compatibility → core
 **@agent-plugins-doctor/rules**
 
 - Modular validation engine (`ValidationEngine`, `validatePlugin`)
-- 29 rules across 7 categories (spec, skills, mcp, security, structure,
+- 30 rules across 7 categories (spec, skills, mcp, security, structure,
   compatibility, format)
 - Rule registry and execution (`RuleRegistry`, `createDefaultRegistry`)
 - Auto-fix engine (`applyFixes`) — text-based, idempotent, conflict-free
@@ -152,7 +152,9 @@ loadPlugin → parse → discover → run rules → collect diagnostics → repo
 
 1. **load** — verify the root directory exists.
 2. **parse** — read and validate `plugin.json` (fatal on failure), `mcp.json`
-   (isolated), SKILL.md files (isolated), extensions (isolated).
+   (isolated; invalid individual server entries are preserved as `null` and
+   reported as `DOC-3008` — never silently dropped), SKILL.md files
+   (isolated), extensions (isolated).
 3. **discover** — enumerate skills at fixed depth (`skills/*/SKILL.md`) and
    reverse-domain extension directories; every path goes through
    `resolvePluginPath`.
@@ -184,9 +186,10 @@ Spec support is version-isolated:
   time). AJV validators are compiled lazily and cached module-level.
 - `$schema` selection: `loadPlugin` reads `manifest.$schema`, maps it via
   `resolveSpecVersion`, and rejects plugins whose schema URL is unknown —
-  in strict mode (`loadPlugin`) this throws (`LoadError`, exit 3 in the
-  CLI's error path), while `scanPlugin` collects it as a `DOC-1008` parser
-  diagnostic (exit 1) per the spec's "must not silently ignore" requirement.
+  in strict mode (`loadPlugin`) this throws (`LoadError`/`SchemaValidationError`,
+  exit 3 in the CLI's error path), while `scanPlugin` collects it as a
+  `DOC-1010` parser diagnostic (exit 1) per the spec's "must not silently
+  ignore" requirement.
 - Rules declare `supportedSpecVersions`; a rule that applies to all versions
   uses `"*"`. Future spec versions are additive: a new `v<N>` directory, a
   registry entry, and rules declaring the new version.
@@ -235,7 +238,7 @@ collected as a diagnostic instead of aborting at the first failure:
 ```
 filesystem discovery
       ↓
-raw JSON/YAML parse diagnostics (DOC-1008, DOC-2099, DOC-3007)
+raw JSON/YAML parse diagnostics (DOC-1008, DOC-2099, DOC-3007, DOC-3008)
       ↓
 schema diagnostics
       ↓
@@ -251,11 +254,18 @@ compatibility
 This allows maximum useful diagnostics without executing plugin code: a
 broken `plugin.json` (DOC-1008) does not hide a malformed SKILL.md (DOC-2099)
 or an invalid `mcp.json` (DOC-3007), and the components that did load are
-still handed to the rules engine as a partial `Plugin`. The CLI runs this
+still handed to the rules engine as a partial `Plugin`. An invalid individual
+MCP server entry is preserved as `null` in `mcpConfig.mcpServers` and reported
+as `DOC-3008`, so it surfaces as a validation error (exit 1) instead of
+silently disappearing; an entry whose stdio `command`/`cwd` escapes the
+plugin root is reported at severity `critical`, so it is a security-critical
+finding (exit 2). The CLI runs this
 pipeline through `loadAndValidate` (`scanPlugin` → `validatePlugin`, which
 merges the parser diagnostics ahead of the rule diagnostics), so malformed
-input is a validation error (exit 1) and only an inaccessible root or an
-internal rule failure (`DOC-0000`) is a tool failure (exit 3).
+input is a validation error (exit 1), a traversal is security-critical
+(exit 2), and only an inaccessible root (missing, not a directory, or
+permission-denied) or an internal rule failure (`DOC-0000`) is a tool failure
+(exit 3).
 
 ## Data Flow
 
@@ -277,7 +287,7 @@ internal rule failure (`DOC-0000`) is a tool failure (exit 3).
               ▼                        ▼                         ▼
       ┌───────────────┐      ┌──────────────────┐     ┌─────────────────┐
       │ RuleRegistry  │      │ ClientProfile    │     │                 │
-      │ 29 rules, 7   │      │ Registry (5      │     │  ValidationResult│
+      │ 30 rules, 7   │      │ Registry (5      │     │  ValidationResult│
       │ categories    │      │ verified clients)│     │  + Compatibility│
       └───────┬───────┘      └──────────────────┘     └────────┬────────┘
               │ runRules (select → check → fix)               │

@@ -2,9 +2,11 @@ import { describe, expect, test } from 'bun:test';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import type { Diagnostic } from '@agent-plugins-doctor/core';
 import {
   ParseError,
   SchemaValidationError,
+  UnsupportedVersionError,
   parsePluginManifest,
 } from '../src/index.js';
 
@@ -171,6 +173,70 @@ describe('parsePluginManifest', () => {
       const manifest = parsePluginManifest(filePath);
       expect(manifest.name).toBe('my-plugin');
       expect(manifest.extensions).toBeUndefined();
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  test('non-object extensions produces a DOC-1009 diagnostic', () => {
+    const { dir, filePath } = makeTempFile(
+      JSON.stringify({
+        $schema: SCHEMA_URL,
+        name: 'my-plugin',
+        extensions: 'not-an-object',
+      }),
+    );
+    try {
+      const diagnostics: Diagnostic[] = [];
+      parsePluginManifest(filePath, diagnostics);
+      const diag = diagnostics.find((d) => d.code === 'DOC-1009');
+      expect(diag).toBeDefined();
+      expect(diag?.severity).toBe('error');
+      expect(diag?.message).toContain('extensions');
+      expect(diag?.file).toBe('plugin.json');
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  test('a valid extensions object produces no DOC-1009', () => {
+    const { dir, filePath } = makeTempFile(
+      JSON.stringify({
+        $schema: SCHEMA_URL,
+        name: 'my-plugin',
+        extensions: { 'com.example.client': { setting: true } },
+      }),
+    );
+    try {
+      const diagnostics: Diagnostic[] = [];
+      parsePluginManifest(filePath, diagnostics);
+      expect(diagnostics.some((d) => d.code === 'DOC-1009')).toBe(false);
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  test('unsupported $schema throws UnsupportedVersionError with a clear message', () => {
+    const { dir, filePath } = makeTempFile(
+      JSON.stringify({
+        $schema: 'https://agent-plugins.org/schemas/2.0.0/plugin.schema.json',
+        name: 'x',
+      }),
+    );
+    try {
+      let thrown: unknown;
+      try {
+        parsePluginManifest(filePath);
+      } catch (error) {
+        thrown = error;
+      }
+      expect(thrown).toBeInstanceOf(UnsupportedVersionError);
+      // Still a SchemaValidationError subclass (compatible error contract).
+      expect(thrown).toBeInstanceOf(SchemaValidationError);
+      const err = thrown as UnsupportedVersionError;
+      expect(err.schemaUrl).toContain('2.0.0');
+      expect(err.message).toContain('2.0.0');
+      expect(err.message).toContain('1.0.0');
     } finally {
       cleanup(dir);
     }

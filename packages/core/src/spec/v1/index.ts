@@ -14,10 +14,14 @@ export const NAME_PATTERN =
   /^(?!.*(?:--|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/;
 export const NAME_MAX_LENGTH = 64;
 
-// Skill name: 1-64 chars, lowercase alphanumeric + hyphens
-// No consecutive hyphens (--)
-// Must start and end with alphanumeric (no leading/trailing hyphen)
-export const SKILL_NAME_PATTERN = /^(?!.*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+// Skill name: 1-64 chars (Agent Skills specification). May contain Unicode
+// lowercase alphanumeric characters — letters in any script (accented Latin,
+// Cyrillic, CJK, …) plus digits — and hyphens. Uppercase and titlecase
+// letters are not allowed (matching the skills-ref reference validator's
+// Unicode-aware lowercase check). No consecutive hyphens (--); must start and
+// end with an alphanumeric (no leading/trailing hyphen).
+export const SKILL_NAME_PATTERN =
+  /^(?!.*(?:--|[\p{Lu}\p{Lt}]))[\p{L}\p{N}](?:[\p{L}\p{N}-]*[\p{L}\p{N}])?$/u;
 export const SKILL_NAME_MAX_LENGTH = 64;
 
 export const DESCRIPTION_MAX_LENGTH = 1024;
