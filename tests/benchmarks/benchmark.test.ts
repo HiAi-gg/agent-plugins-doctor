@@ -13,8 +13,8 @@
 // its own temporary plugin directory and cleans up after itself.
 
 import { describe, expect, test } from 'bun:test';
+import { loadPlugin, ParsedFileCache } from '@agent-plugins-doctor/parser';
 import {
-  benchmarkCachedReload,
   benchmarkLoadAndValidate,
   generateBenchmarkPlugin,
 } from './benchmark.js';
@@ -58,12 +58,23 @@ describe('performance benchmarks', () => {
     const dir = tempPluginDir();
     try {
       generateBenchmarkPlugin(dir, 50);
-      const first = await benchmarkLoadAndValidate(dir);
-      const cached = await benchmarkCachedReload(dir);
-      expect(cached.skills).toBe(50);
-      // The cached reload must not be slower than the cold pipeline; in
-      // practice it is far faster because parsing is skipped.
-      expect(cached.elapsedMs).toBeLessThanOrEqual(first.elapsedMs);
+      const cache = new ParsedFileCache();
+      // Warm the cache: plugin.json, mcp.json, and every SKILL.md are parsed
+      // exactly once and stored.
+      await loadPlugin(dir, { cache });
+      const missesBefore = cache.misses;
+      const hitsBefore = cache.hits;
+
+      // Reload the same directory. Every file is unchanged, so no parse
+      // happens: the reload is served entirely from the cache. This is
+      // asserted deterministically via the cache hit/miss counters — a
+      // wall-clock comparison is flaky on contended CI runners because the
+      // cold 50-skill pipeline (~6ms) leaves only a few milliseconds of
+      // margin over a cached reload (~2ms).
+      const { plugin } = await loadPlugin(dir, { cache });
+      expect(plugin.skills).toHaveLength(50);
+      expect(cache.misses).toBe(missesBefore); // nothing was re-parsed
+      expect(cache.hits).toBeGreaterThan(hitsBefore); // served from cache
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

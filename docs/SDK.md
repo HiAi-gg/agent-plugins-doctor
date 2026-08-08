@@ -514,6 +514,10 @@ unchanged files across repeated `loadPlugin` calls.
 - `invalidate(filePath: string): void` — drop one entry.
 - `clear(): void` — drop every entry.
 - `size: number` — number of cached entries.
+- `hits: number` — total cache hits since creation (a hit returns a cached
+  value without calling `load`).
+- `misses: number` — total cache misses since creation (a miss calls `load`,
+  including for changed or unreadable files).
 
 ```ts
 import { ParsedFileCache, loadPlugin } from '@agent-plugins-doctor/parser';

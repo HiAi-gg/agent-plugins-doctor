@@ -34,6 +34,25 @@ interface FileIdentity {
  */
 export class ParsedFileCache<T = unknown> {
   private readonly entries = new Map<string, FileIdentity & { value: T }>();
+  private hitCount = 0;
+  private missCount = 0;
+
+  /**
+   * Number of cache hits since the cache was created. A hit means a cached
+   * value was returned without calling `load` (the file was unchanged).
+   */
+  get hits(): number {
+    return this.hitCount;
+  }
+
+  /**
+   * Number of cache misses since the cache was created. A miss means `load`
+   * was called because the file was not cached, had changed, or was
+   * unreadable (unreadable files are never cached).
+   */
+  get misses(): number {
+    return this.missCount;
+  }
 
   /**
    * Return the cached value for `filePath` when the file is unchanged, or
@@ -48,6 +67,7 @@ export class ParsedFileCache<T = unknown> {
       // File is unreadable (missing, permissions, …): never serve a stale
       // entry; drop it and let `load` decide what to do.
       this.entries.delete(filePath);
+      this.missCount++;
       return load();
     }
 
@@ -57,9 +77,11 @@ export class ParsedFileCache<T = unknown> {
       cached.mtimeMs === identity.mtimeMs &&
       cached.size === identity.size
     ) {
+      this.hitCount++;
       return cached.value;
     }
 
+    this.missCount++;
     const value = load();
     this.entries.set(filePath, { ...identity, value });
     return value;

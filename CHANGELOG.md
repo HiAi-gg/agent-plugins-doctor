@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`ParsedFileCache` hit/miss counters —
+  `packages/parser/src/cache.ts`** — the cache now exposes `hits` and
+  `misses` (total cache hits/misses since creation), letting callers measure
+  cache efficiency and verify deterministically that unchanged files are not
+  re-parsed.
+
+### Fixed
+
+- **Flaky benchmark: `cached reload skips re-parsing unchanged files` —
+  `tests/benchmarks/benchmark.test.ts`** — the assertion compared wall-clock
+  timing of a cold load + validate against a warm-cache reload. The margin is
+  only a few milliseconds (~6ms cold vs ~2ms cached for 50 skills), so on a
+  contended CI runner the cached reload could randomly exceed the cold run
+  and fail. The test now asserts the behavior deterministically: after
+  warming the cache, a reload of unchanged files produces zero additional
+  cache misses (nothing is re-parsed) and increases the hit count.
+
 ## [0.0.4] - 2026-08-08
 
 ### Added

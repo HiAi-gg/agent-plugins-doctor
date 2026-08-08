@@ -98,6 +98,41 @@ describe('ParsedFileCache', () => {
       rmSync(dir, { recursive: true, force: true });
     }
   });
+
+  test('tracks hits and misses', () => {
+    const dir = makeTempDir();
+    try {
+      const file = join(dir, 'data.txt');
+      writeFileSync(file, 'v1');
+      const cache = new ParsedFileCache<string>();
+      expect(cache.hits).toBe(0);
+      expect(cache.misses).toBe(0);
+
+      cache.get(file, () => 'a'); // first read is a miss
+      expect(cache.hits).toBe(0);
+      expect(cache.misses).toBe(1);
+
+      cache.get(file, () => 'a'); // unchanged file is a hit
+      expect(cache.hits).toBe(1);
+      expect(cache.misses).toBe(1);
+
+      // Different size guarantees the identity changes, so the next read is
+      // a miss even when the mtime resolution is coarse.
+      writeFileSync(file, 'a much longer content');
+      cache.get(file, () => 'b');
+      expect(cache.hits).toBe(1);
+      expect(cache.misses).toBe(2);
+
+      // Unreadable files are never cached and always count as misses.
+      cache.invalidate(file);
+      rmSync(file);
+      cache.get(file, () => 'c');
+      expect(cache.hits).toBe(1);
+      expect(cache.misses).toBe(3);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
 });
 
 describe('loadPlugin with a shared cache', () => {
