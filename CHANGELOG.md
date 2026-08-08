@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Self-contained npm CLI package `@hiai-gg/agent-plugins-doctor` —
+  `packages/npm/`** — the CLI is now published to npm as a single bundled
+  package (following the [Agent Plugin Builder](https://github.com/HiAi-gg/agent-plugin-builder)
+  pattern): `bun build --target node` bundles the CLI and all five library
+  packages into one `dist/index.js`, with a plain Node `bin/cli.js` entry
+  (Node ≥ 18, no Bun required). The six `@agent-plugins-doctor/*` SDK
+  packages remain unpublished (SDK publication deferred). Publishing commands:
+  `bun run publish:npm:dry-run` / `bun run publish:npm`; see
+  [PUBLISHING.md](PUBLISHING.md).
+
 ## [0.0.3] - 2026-08-07
 
 ### Added

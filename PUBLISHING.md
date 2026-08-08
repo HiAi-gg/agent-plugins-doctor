@@ -1,12 +1,65 @@
 # Publishing Agent Plugin Doctor to npm
 
-This document describes how to build and publish the six
-`@agent-plugins-doctor/*` packages to the npm registry. The full release
-procedure (version bumps, changelog, quality gates, git tagging) lives in
-[docs/RELEASING.md](docs/RELEASING.md); this document covers the publish step
-itself.
+This document describes how to build and publish Agent Plugin Doctor to the
+npm registry. The full release procedure (version bumps, changelog, quality
+gates, git tagging) lives in [docs/RELEASING.md](docs/RELEASING.md); this
+document covers the publish step itself.
 
-## Package layout and dependency order
+## Primary distribution: `@hiai-gg/agent-plugins-doctor` (CLI)
+
+The CLI ships as a single self-contained npm package,
+[`@hiai-gg/agent-plugins-doctor`](https://www.npmjs.com/package/@hiai-gg/agent-plugins-doctor),
+built from `packages/npm/` — the same pattern as
+[Agent Plugin Builder](https://github.com/HiAi-gg/agent-plugin-builder). It
+bundles the CLI and all five library packages into one `dist/index.js`
+(`bun build --target node`), so the only runtime requirement is Node ≥ 18
+(the bin entry, `bin/cli.js`, is a plain `#!/usr/bin/env node` wrapper).
+
+### How to publish
+
+```bash
+# Dry run first (always) — builds, packs, and prints the tarball contents
+# without touching the registry
+bun run publish:npm:dry-run
+
+# Real publish (requires `npm login` first; `prepack` rebuilds the bundle and
+# copies README.md/LICENSE into the package before npm packs it)
+bun run publish:npm
+```
+
+The `prepack` script in `packages/npm/package.json` runs the bundle build and
+copies the repository `README.md` and `LICENSE` into `packages/npm/` (both
+git-ignored, and npm always includes them in the tarball). The published
+tarball contains `bin/cli.js`, `dist/index.js`, `dist/index.d.ts`,
+`README.md`, and `LICENSE`.
+
+### How to verify
+
+```bash
+npm view @hiai-gg/agent-plugins-doctor version
+npx @hiai-gg/agent-plugins-doctor --version
+npx @hiai-gg/agent-plugins-doctor check /path/to/a/plugin
+```
+
+Install into a scratch project and smoke-test the CLI:
+
+```bash
+mkdir -p /tmp/doctor-smoke && cd /tmp/doctor-smoke
+npm init -y
+npm install @hiai-gg/agent-plugins-doctor
+npx agent-plugins-doctor check /path/to/a/plugin
+```
+
+### The six SDK packages (`@agent-plugins-doctor/*`)
+
+The six `@agent-plugins-doctor/*` library packages (core, parser,
+compatibility, report, rules, cli) are **not yet published to npm** — SDK
+publication is deferred until the library API stabilizes. The section below
+documents that publish path for when it is enabled. The CLI package
+(`@hiai-gg/agent-plugins-doctor`) bundles all six, so nothing is blocked on
+them being published separately.
+
+## Package layout and dependency order (SDK packages)
 
 The monorepo publishes six packages. They must be published in dependency
 order — a package's published tarball is installed by dependents, and npm

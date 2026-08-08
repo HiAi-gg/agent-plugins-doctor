@@ -3,24 +3,37 @@
 > Your Agent Plugin doesn't work? Doctor tells you why and fixes what it safely can.
 
 [![CI](https://github.com/HiAi-gg/agent-plugins-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/HiAi-gg/agent-plugins-doctor/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@hiai-gg/agent-plugins-doctor)](https://www.npmjs.com/package/@hiai-gg/agent-plugins-doctor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Quick Start
 
 ```bash
+# Install globally (npm or bun)
+npm install -g @hiai-gg/agent-plugins-doctor
+bun install -g @hiai-gg/agent-plugins-doctor
+
 # Check a plugin
-bunx agent-plugins-doctor check ./my-plugin
+agent-plugins-doctor check ./my-plugin
 
 # Fix issues
-bunx agent-plugins-doctor fix ./my-plugin
+agent-plugins-doctor fix ./my-plugin
 
 # Generate a report
-bunx agent-plugins-doctor report ./my-plugin --format markdown
+agent-plugins-doctor report ./my-plugin --format markdown
 ```
 
-The CLI is available through `bunx` (Bun) or `npx` (npm) once published;
-inside this repository it resolves to the local workspace binary (see
-[Development](#development)).
+Or run without installing:
+
+```bash
+bunx @hiai-gg/agent-plugins-doctor check ./my-plugin
+npx @hiai-gg/agent-plugins-doctor check ./my-plugin
+```
+
+The CLI is published to npm as a single self-contained package,
+[`@hiai-gg/agent-plugins-doctor`](https://www.npmjs.com/package/@hiai-gg/agent-plugins-doctor)
+(runs on Node ≥ 18 — no Bun required); inside this repository it resolves to
+the local workspace binary (see [Development](#development)).
 
 ## What is Agent Plugin Doctor?
 
@@ -96,12 +109,15 @@ Options:
 
 ## SDK (Library API)
 
+The CLI is published as `@hiai-gg/agent-plugins-doctor`, a single bundled
+package that includes everything — no separate library dependencies are
+needed to use it.
+
 The six `@agent-plugins-doctor/*` packages (core, parser, rules,
 compatibility, report, cli) are **not yet published to npm** — SDK
-publication is deferred. Until they are published, use the CLI, or import the
-packages from the monorepo. See [docs/SDK.md](docs/SDK.md) for the complete
-API reference and [PUBLISHING.md](PUBLISHING.md) for the npm publish
-procedure.
+publication is deferred. Until they are published, import them from the
+monorepo. See [docs/SDK.md](docs/SDK.md) for the complete API reference and
+[PUBLISHING.md](PUBLISHING.md) for the npm publish procedure.
 
 ## Supported Specifications
 

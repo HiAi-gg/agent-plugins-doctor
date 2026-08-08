@@ -20,7 +20,7 @@
     },
     "packages/cli": {
       "name": "@agent-plugins-doctor/cli",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "bin": {
         "agent-plugins-doctor": "./dist/bin.js",
       },
@@ -39,7 +39,7 @@
     },
     "packages/compatibility": {
       "name": "@agent-plugins-doctor/compatibility",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "dependencies": {
         "@agent-plugins-doctor/core": "^0.0.2",
       },
@@ -49,14 +49,21 @@
     },
     "packages/core": {
       "name": "@agent-plugins-doctor/core",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "devDependencies": {
         "typescript": "^5.9.0",
       },
     },
+    "packages/npm": {
+      "name": "@hiai-gg/agent-plugins-doctor",
+      "version": "0.0.3",
+      "bin": {
+        "agent-plugins-doctor": "bin/cli.js",
+      },
+    },
     "packages/parser": {
       "name": "@agent-plugins-doctor/parser",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "dependencies": {
         "@agent-plugins-doctor/core": "^0.0.2",
         "ajv": "^8.17.0",
@@ -68,7 +75,7 @@
     },
     "packages/report": {
       "name": "@agent-plugins-doctor/report",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "dependencies": {
         "@agent-plugins-doctor/core": "^0.0.2",
         "chalk": "^5.4.0",
@@ -79,7 +86,7 @@
     },
     "packages/rules": {
       "name": "@agent-plugins-doctor/rules",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "dependencies": {
         "@agent-plugins-doctor/compatibility": "^0.0.2",
         "@agent-plugins-doctor/core": "^0.0.2",
@@ -120,6 +127,8 @@
     "@eslint/object-schema": ["@eslint/object-schema@2.1.7", "", {}, "sha512-VtAOaymWVfZcmZbp6E2mympDIHvyjXs/12LqWYjVw6qjrfF+VK+fyG33kChz3nnK+SU5/NeHOqrTEHS8sXO3OA=="],
 
     "@eslint/plugin-kit": ["@eslint/plugin-kit@0.4.1", "", { "dependencies": { "@eslint/core": "^0.17.0", "levn": "^0.4.1" } }, "sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA=="],
+
+    "@hiai-gg/agent-plugins-doctor": ["@hiai-gg/agent-plugins-doctor@workspace:packages/npm"],
 
     "@humanfs/core": ["@humanfs/core@0.19.2", "", { "dependencies": { "@humanfs/types": "^0.15.0" } }, "sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA=="],
 

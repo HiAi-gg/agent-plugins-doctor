@@ -12,7 +12,7 @@ This skill provides diagnostic and validation capabilities for Agent Plugins.
 ## Runtime Requirements
 
 Installing this skill does **not** install the Doctor CLI. Doctor is a
-separate npm package (`@agent-plugins-doctor/cli`, exposed as the
+separate npm package (`@hiai-gg/agent-plugins-doctor`, exposed as the
 `agent-plugins-doctor` binary) that this skill invokes through the terminal:
 
 - **Bun** — `bunx agent-plugins-doctor check <plugin-directory>`

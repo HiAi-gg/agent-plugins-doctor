@@ -1,0 +1,49 @@
+{
+  "name": "@hiai-gg/agent-plugins-doctor",
+  "version": "0.0.3",
+  "description": "Diagnose and fix Agent Plugins",
+  "type": "module",
+  "license": "MIT",
+  "author": {
+    "name": "HiAI",
+    "url": "https://github.com/HiAi-gg"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HiAi-gg/agent-plugins-doctor.git",
+    "directory": "packages/npm"
+  },
+  "homepage": "https://github.com/HiAi-gg/agent-plugins-doctor#readme",
+  "bugs": {
+    "url": "https://github.com/HiAi-gg/agent-plugins-doctor/issues"
+  },
+  "keywords": [
+    "agent-plugins",
+    "agent-skills",
+    "validation",
+    "diagnostics",
+    "security",
+    "compatibility",
+    "mcp",
+    "cli",
+    "typescript",
+    "bun"
+  ],
+  "bin": {
+    "agent-plugins-doctor": "bin/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "bin/",
+    "dist/"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepack": "bun run --filter '@agent-plugins-doctor/*' build && bun build ../cli/src/index.ts --outdir ./dist --target node && tsc --emitDeclarationOnly --declaration --outDir ./dist --rootDir ../cli/src --target ES2022 --module ES2022 --moduleResolution bundler --esModuleInterop --resolveJsonModule --skipLibCheck --strict ../cli/src/index.ts && cp ../../README.md ./README.md && cp ../../LICENSE ./LICENSE"
+  }
+}

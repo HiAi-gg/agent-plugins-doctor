@@ -6,11 +6,12 @@ procedure. It covers the v0.1.0 release and every future release.
 
 ## 1. Version Bump
 
-All six packages plus the root workspace share the same version. Update every
-`package.json`:
+All six packages, the root workspace, and the `packages/npm` umbrella CLI
+package share the same version. Update every `package.json`:
 
 - `package.json` (root)
 - `packages/{core,parser,rules,compatibility,report,cli}/package.json`
+- `packages/npm/package.json` (`@hiai-gg/agent-plugins-doctor`)
 
 Bump to the next version per [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The API-stability contract in `tests/integration/api-stability.test.ts` means
@@ -99,9 +100,20 @@ git push origin v0.1.0
 
 ## 7. Publish to npm (when ready)
 
-The packages are published from the `packages/*` workspaces. Doctor is not yet
-published; when it is, use the publish automation
-([PUBLISHING.md](../PUBLISHING.md)):
+The CLI is published as a single bundled package,
+[`@hiai-gg/agent-plugins-doctor`](https://www.npmjs.com/package/@hiai-gg/agent-plugins-doctor),
+from `packages/npm/` (see [PUBLISHING.md](../PUBLISHING.md)):
+
+```bash
+# Build the bundle and show exactly what would be published (safe)
+bun run publish:npm:dry-run
+
+# Build the bundle and publish (requires `npm login`)
+bun run publish:npm
+```
+
+The six `@agent-plugins-doctor/*` SDK packages are not yet published (SDK
+publication is deferred). When they are, use the multi-package automation:
 
 ```bash
 # Build all packages and show exactly what would be published (safe)
@@ -119,11 +131,11 @@ run mode). Each package's `prepublishOnly` runs `bun run build` again as a
 safety net, so the tarball always matches the source on disk.
 
 The CLI package's `bin` field (`agent-plugins-doctor`) makes it available via
-`bunx agent-plugins-doctor` once published.
+`bunx agent-plugins-doctor` (or `npx`) once published.
 
 ## Verification Checklist
 
-- [ ] Version bumped in all 7 `package.json` files
+- [ ] Version bumped in all 8 `package.json` files
 - [ ] `CHANGELOG.md` updated with the release entry
 - [ ] `bun test` passes
 - [ ] `bun run typecheck` passes
