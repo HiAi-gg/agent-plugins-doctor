@@ -1,0 +1,447 @@
+tests/fixtures/unsupported-version/plugin.json
+  s_f6edb43ee44a61::t_1aa95d45a13594 1-4
+tests/fixtures/mcp-per-server/command-traversal/mcp.json
+  s_e227f4409f3487::t_2fef11650a1072 1-9
+packages/rules/tests/rules/mcp/cwd-pattern.test.ts
+  s_b3905c6509145a::t_7df1a99791dcbf 22,30,34-42
+  s_b3905c6509145a::t_7b08a91b9cf3aa 43-44
+packages/rules/src/rules/security/path-traversal.ts
+  s_e227f4409f3487::t_e276c6db17e16c 2,4,16-19
+  s_e227f4409f3487::t_22b73c5d2e0a06 46-55
+packages/core/src/path.ts
+  s_e227f4409f3487::t_5a09e6358d502d 115-129
+docs/DIAGNOSTICS.md
+  s_f6edb43ee44a61::t_aa906450beeab0 380
+  s_f6edb43ee44a61::t_57c04d6823d25a 106-107
+  s_b3905c6509145a::t_6657d7471ac692 122
+  s_f6edb43ee44a61::t_5bd9298f8d96d8 124
+  s_f6edb43ee44a61::t_5d6cdc2f36ba89 271-273
+  s_f6edb43ee44a61::t_c1477d0a125367 888,903
+  s_b3905c6509145a::t_9f5e4aefae3352 722,725-726,730-733,748-749,755-758,761
+  s_e227f4409f3487::t_39a64f1ea347f4 772-773
+  s_e227f4409f3487::t_28d80b182964e6 712-713,720-721,723-724,727-729,734-747,750-754,759-760
+  s_f6edb43ee44a61::t_b58b27f05decbd 348-351,373-379,381-418,420,763
+  s_b3905c6509145a::t_6b6c597a21df80 96-103,105,108-121,123,125-128,130-132
+  s_f6edb43ee44a61::t_5daa4f63ed75cb 7-9
+  s_e227f4409f3487::t_e6d8107dfaf6e8 566,613,632
+  s_ae3693132d4499::t_b80bfda53aeea0 849-850
+  s_f6edb43ee44a61::t_386a1a3d6cea0e 964,971,973-977,979
+  s_e227f4409f3487::t_f994c111d75a4e 966
+  s_e227f4409f3487::t_c1a75284b6385e 5,44
+  s_f6edb43ee44a61::t_a49cec1efbfbcc 104
+  s_f6edb43ee44a61::t_be3021f64c4f78 536-540
+  s_f6edb43ee44a61::t_940ed7a399e22f 74-79,81-83
+  s_f6edb43ee44a61::t_c2f3d8fc81e303 323
+  s_f6edb43ee44a61::t_7df9d1a672cc91 789,793-797
+  s_f6edb43ee44a61::t_1213fe28c5496d 136-139,143-145,150,158,162
+  s_f6edb43ee44a61::t_6c7e475ecf8d77 129
+  s_f6edb43ee44a61::t_e2f7da293835ca 419
+  s_f6edb43ee44a61::t_2004acbd1feb7c 421
+  s_f6edb43ee44a61::t_a256f65395dd0e 764
+docs/RULES.md
+  s_e227f4409f3487::t_1b695adae44750 66-68
+  s_b3905c6509145a::t_6b6c597a21df80 157-161,163-165
+  s_e227f4409f3487::t_79f32fd793b7e0 207-214
+  s_b3905c6509145a::t_2f2bb14456e42a 69-72
+  s_f6edb43ee44a61::t_ae9f107ba60c05 54-64
+  s_f6edb43ee44a61::t_5a8ad5c88d9ff1 113-116,118-119
+  s_e227f4409f3487::t_92e1a3f1f7dc5f 178-181,186-192
+  s_b3905c6509145a::t_30dd9a307618af 182-184
+  s_e227f4409f3487::t_c1a75284b6385e 27
+  s_e227f4409f3487::t_5b7b4b56213202 3
+  s_f6edb43ee44a61::t_c962695d068773 93-96
+  s_f6edb43ee44a61::t_aa28dad98181a4 217-219
+  s_f6edb43ee44a61::t_cdc1f03cf2e8b9 227-230
+  s_b3905c6509145a::t_4e53511411080f 162
+tests/fixtures/unicode-skill-name/plugin.json
+  s_ae3693132d4499::t_34c96320d4a56b 1-4
+tests/fixtures/non-object-extensions/README.md
+  s_f6edb43ee44a61::t_0d249868871a44 1-32
+tests/integration/p1-fixes.test.ts
+  s_f6edb43ee44a61::t_78c7b794936ef5 1-118
+tests/integration/full-pipeline.test.ts
+  s_b3905c6509145a::t_6f358133c3f052 32,34-37,41,54-56
+  s_e227f4409f3487::t_81dfca61233438 53
+  s_f6edb43ee44a61::t_46e1d302b5df1f 61-64
+docs/RISK_ASSESSMENT.md
+  s_e227f4409f3487::t_c1a75284b6385e 113
+  s_f6edb43ee44a61::t_01a292fedbcbaf 27
+tests/fixtures/legacy-plugin/README.md
+  s_f6edb43ee44a61::t_6fc2e1ed4842a8 7-11,24,26,31-33
+tests/integration/diagnostic-scanning.test.ts
+  s_e227f4409f3487::t_3be69e3deba99b 280,299-301,305,307-325
+tests/fixtures/mcp-per-server/mixed-valid-invalid/plugin.json
+  s_e227f4409f3487::t_915a86c5911b66 1-4
+docs/AUTOFIX_AUDIT.md
+  s_e227f4409f3487::t_c1a75284b6385e 132,145
+docs/BUILDER_REAL_INTEGRATION.md
+  s_e227f4409f3487::t_c1a75284b6385e 64
+tests/e2e/check.test.ts
+  s_e227f4409f3487::t_222ad1f2d1f10c 18
+  s_f6edb43ee44a61::t_3457b23ad0b0b5 26-30
+  s_b3905c6509145a::t_372b92f9a01247 19-20
+  s_ae3693132d4499::t_b141fdf0317a3d 11
+skills/doctor/SKILL.md
+  s_9111cd0890a8ca::t_c5e704abf50cc1 15-16,21-25
+  s_9111cd0890a8ca::t_729f22e5255d96 38
+package.json
+  s_b1bc3c32c6a1e9::t_10ffb53d3fac7b 3
+packages/rules/tests/rules/mcp/invalid-server-entry.test.ts
+  s_e227f4409f3487::t_2fb57350fcab97 3-8
+  s_e227f4409f3487::t_cb2a0a47199d9f 1-2,9-42
+packages/rules/tests/rules/structure/skill-directory-name.test.ts
+  s_ae3693132d4499::t_4f51e173ba0571 20-39
+packages/compatibility/src/checker.ts
+  s_f6edb43ee44a61::t_75c51fc954e3b5 262-267,269,272-282
+  s_e227f4409f3487::t_4e1665403d4654 58-62
+  s_e227f4409f3487::t_6070aec6928456 172-174
+tests/fixtures/mcp-per-server/cwd-traversal/plugin.json
+  s_e227f4409f3487::t_5105629a0e5a9a 1-4
+docs/EXTENSIBILITY.md
+  s_ae3693132d4499::t_e43b61bfb2e2c6 149-150
+docs/BUILDER_INTEGRATION.md
+  s_e227f4409f3487::t_ea2c4c1477dbd1 216
+  s_9e1f1d9611516e::t_7a881983d0b6b7 218
+  s_f6edb43ee44a61::t_3faf14a86d33c7 274
+  s_ae3693132d4499::t_62743586a75630 295
+  s_f6edb43ee44a61::t_cff08eb9a6b846 316-318
+  s_e227f4409f3487::t_2fb57350fcab97 213-215
+  s_b3905c6509145a::t_6b6c597a21df80 217
+packages/rules/tests/rules/security/path-traversal.test.ts
+  s_e227f4409f3487::t_a8a9ea69c01e3a 60-79
+tests/fixtures/mcp-per-server/reserved-env/plugin.json
+  s_e227f4409f3487::t_73939d8890856a 1-4
+tests/fixtures/mcp-per-server/README.md
+  s_e227f4409f3487::t_e0b840cd39e443 1-11,14-17
+  s_b3905c6509145a::t_ebf9e92eb3ee14 12-13,18-22
+docs/ARCHITECTURE.md
+  s_b3905c6509145a::t_8030b06311831b 259-262,265
+  s_f6edb43ee44a61::t_13fb24ab124839 189-192
+  s_e227f4409f3487::t_5f3862930f4c1f 241,257-258
+  s_9e1f1d9611516e::t_f21568d777ae20 266-268
+  s_e227f4409f3487::t_c1a75284b6385e 68,290
+  s_e227f4409f3487::t_6fdd8e016d388e 155-157
+packages/cli/src/utils/exit-codes.ts
+  s_e227f4409f3487::t_f125e02e1a5d12 9-13
+packages/compatibility/src/types.ts
+  s_f6edb43ee44a61::t_3eb2927234cc23 110-111
+tests/e2e/exit-codes-v003.test.ts
+  s_9e1f1d9611516e::t_591888756a6aac 1-87
+docs/RULE_ENGINE.md
+  s_e227f4409f3487::t_c1a75284b6385e 78,336
+packages/rules/src/rules/mcp/server-type.ts
+  s_e227f4409f3487::t_fcb3be5dceb50e 26-27
+packages/parser/src/plugin-loader.ts
+  s_9e1f1d9611516e::t_5aa70a880d78d6 195-200
+  s_f6edb43ee44a61::t_cfc0bf2640c294 611-614
+  s_f6edb43ee44a61::t_2288ee6028c081 650,658-668
+  s_f6edb43ee44a61::t_6bee74a1dcb9fa 557
+  s_e227f4409f3487::t_979dde80fd5a67 68-70
+  s_f6edb43ee44a61::t_aa906450beeab0 1-7
+  s_f6edb43ee44a61::t_7760af56372bea 128-130,139-140
+  s_f6edb43ee44a61::t_749c386babf81c 419-431
+  s_f6edb43ee44a61::t_264d6a5cc92cfe 395
+  s_e227f4409f3487::t_c9b0a621626c2e 374-377,382-385
+  s_f6edb43ee44a61::t_ae85f3bcf994ee 533-546,550-556
+  s_f6edb43ee44a61::t_f1a069ec55bf6f 729-733,735-738,759-761,788-816
+  s_f6edb43ee44a61::t_b1b66ef1721c7c 743-749
+  s_e227f4409f3487::t_54a30bbbc9638b 92-94
+  s_f6edb43ee44a61::t_50319103a16553 339-343
+  s_f6edb43ee44a61::t_f8b45f57644d38 622-623,628-637
+  s_f6edb43ee44a61::t_234dc7b4495200 20,30
+  s_9e1f1d9611516e::t_70ed8a0ba4f803 269-271,276-278,280,282
+packages/core/src/spec/v1/index.ts
+  s_ae3693132d4499::t_54c3339203b7d1 17-24
+tests/fixtures/vendor-extensions/invalid-extensions/README.md
+  s_f6edb43ee44a61::t_074f5c384f5d2b 11-17,25,27-33
+packages/parser/tests/plugin-manifest.test.ts
+  s_f6edb43ee44a61::t_53a1476f259330 5,9
+  s_f6edb43ee44a61::t_5537f6205ffc7c 181-244
+README.md
+  s_9111cd0890a8ca::t_6abd2c47974e36 34
+  s_9111cd0890a8ca::t_afe4c43306b09e 97,99-104
+  s_9111cd0890a8ca::t_9532ad21e74807 38
+  s_9111cd0890a8ca::t_8f7955efaa1433 162
+  s_9111cd0890a8ca::t_9522a7f08a961c 130,140-145
+packages/cli/package.json
+  s_b1bc3c32c6a1e9::t_10ffb53d3fac7b 3
+  s_b1bc3c32c6a1e9::t_99f8d243bb3f31 37-41
+packages/core/package.json
+  s_b1bc3c32c6a1e9::t_10ffb53d3fac7b 3
+packages/rules/src/rules/mcp/url-format.ts
+  s_e227f4409f3487::t_bca76f21170bdb 26-27
+tests/integration/mcp-per-server.test.ts
+  s_b3905c6509145a::t_855f4bfa4bda55 84-85,98-99
+  s_e227f4409f3487::t_671385a4a9a748 1-37,41-53,57-83,86-97,100-120,124-127
+  s_e227f4409f3487::t_2fb57350fcab97 38-40,54-56,121-123
+packages/rules/src/rules/mcp/reserved-env-keys.ts
+  s_e227f4409f3487::t_d993be31463141 33-34
+packages/rules/src/rules/mcp/index.ts
+  s_e227f4409f3487::t_2e443229f185d2 9
+tests/fixtures/security-plugin/README.md
+  s_e227f4409f3487::t_3ef663c01bad1f 9
+tests/fixtures/security-plugin/path-traversal/README.md
+  s_b3905c6509145a::t_0fd3808a91970d 12-15,23,25,27-33
+packages/parser/src/mcp-config.ts
+  s_b3905c6509145a::t_d70b34f86f60f0 21-30
+  s_e227f4409f3487::t_fd3cd734939688 3-8,19-20,31-33,43-46,104-107,113-114,132-134,138-139,141,143-144,152,178-179,185-186,188-205,208-259,261-278,297-298
+  s_e227f4409f3487::t_21b3dddfec6515 112,116-131
+  s_e227f4409f3487::t_5af230f4df01e6 12
+  s_e227f4409f3487::t_63952b0a775a8c 207
+  s_e227f4409f3487::t_1f3ca88f90afbf 84-87,89-101,155-159
+  s_b3905c6509145a::t_291cca8d7a9b53 180-184,187
+  s_e227f4409f3487::t_ad541a2068b174 206
+  s_e227f4409f3487::t_2fb57350fcab97 260
+  s_b3905c6509145a::t_b2d65c962966cf 135-137,145-151
+  s_b3905c6509145a::t_59e25047dde9ed 279-296,299
+tests/integration/unicode-skill-names.test.ts
+  s_ae3693132d4499::t_c3242eeb9d0de1 12-18,38-40
+  s_ae3693132d4499::t_f7f988e9b266b4 20-23
+  s_ae3693132d4499::t_d521f94c1743e0 1-11,19,24-37,41-203
+tests/fixtures/non-object-extensions/plugin.json
+  s_f6edb43ee44a61::t_7d7d70ff328bd5 1-5
+tests/fixtures/vendor-extensions/README.md
+  s_f6edb43ee44a61::t_5015cb3e8c01bc 8
+tests/fixtures/unsupported-version/README.md
+  s_f6edb43ee44a61::t_949512a0f1b806 1-30
+tests/fixtures/mcp-per-server/reserved-env/mcp.json
+  s_e227f4409f3487::t_4b80d24d41e109 1-12
+tests/fixtures/mcp-per-server/cwd-traversal/mcp.json
+  s_e227f4409f3487::t_1efb84cdeedc13 1-10
+packages/parser/src/plugin-manifest.ts
+  s_f6edb43ee44a61::t_33c49198a4e241 2-7,9-13
+  s_f6edb43ee44a61::t_923b60187df579 101,177-191
+  s_f6edb43ee44a61::t_1f7fa84eb0aa0b 36-39,43,45-48,73-91,94-99
+  s_f6edb43ee44a61::t_ec6fa9ff003a6f 92-93
+  s_f6edb43ee44a61::t_944a3f3da19dbb 100
+  s_f6edb43ee44a61::t_8c6b8512ad5259 102
+packages/parser/tests/plugin-loader.test.ts
+  s_f6edb43ee44a61::t_43f2ec287102a7 344,358-361,363-367,374,395-396,398
+packages/parser/package.json
+  s_b1bc3c32c6a1e9::t_10ffb53d3fac7b 3
+  s_b1bc3c32c6a1e9::t_99f8d243bb3f31 34
+tests/integration/exit-codes-mcp.test.ts
+  s_b3905c6509145a::t_338aa7098dbf93 1-89
+packages/rules/src/rules/mcp/cwd-pattern.ts
+  s_b3905c6509145a::t_a8a8e762c13f2e 3-5,7,37-39,45
+  s_e227f4409f3487::t_47a9bc340c2efe 33-34
+docs/PUBLICATION.md
+  s_8cc8ec6bcff77a::t_9a2c3a949d7cb5 24,34,53,60,67,77
+  s_8cc8ec6bcff77a::t_9858640f537445 1-23,25-33,35-52,54-59,61-66,68-76,78-81
+plugin.json
+  s_b1bc3c32c6a1e9::t_10ffb53d3fac7b 4
+packages/cli/src/index.ts
+  s_b1bc3c32c6a1e9::t_298dea8732fea7 30
+packages/compatibility/package.json
+  s_b1bc3c32c6a1e9::t_99f8d243bb3f31 34
+  s_b1bc3c32c6a1e9::t_10ffb53d3fac7b 3
+scripts/publish-v003.sh
+  s_8cc8ec6bcff77a::t_769ff87d2dc524 1-44
+packages/rules/package.json
+  s_b1bc3c32c6a1e9::t_99f8d243bb3f31 34-36
+  s_b1bc3c32c6a1e9::t_10ffb53d3fac7b 3
+packages/core/src/types.ts
+  s_e227f4409f3487::t_387ccc7e396eec 71-86
+  s_e227f4409f3487::t_7e7641b4b15b97 3-4
+packages/parser/src/errors.ts
+  s_f6edb43ee44a61::t_7bc4a340aa9928 36-59
+tests/fixtures/unicode-skill-name/skills/café/SKILL.md
+  s_ae3693132d4499::t_577de52cfd7027 1-8
+tests/fixtures/mcp-per-server/command-traversal/plugin.json
+  s_e227f4409f3487::t_7966d10fb5e928 1-4
+tests/fixtures/mcp-per-server/mixed-valid-invalid/mcp.json
+  s_e227f4409f3487::t_ff2d4ce0ab4f2a 1-17
+packages/parser/tests/mcp-config.test.ts
+  s_e227f4409f3487::t_2a404dc6aadf80 157-164,166-222
+packages/compatibility/tests/checker.test.ts
+  s_f6edb43ee44a61::t_a43c2550ff3596 405-426
+tests/integration/core-parser.test.ts
+  s_b1bc3c32c6a1e9::t_dc59469125fecd 167
+packages/cli/src/utils/run.ts
+  s_9e1f1d9611516e::t_5700c2f61f63e8 33-34,42-44,46-48,56-70
+  s_9e1f1d9611516e::t_ea2a8be31c4df4 4
+CHANGELOG.md
+  s_f6edb43ee44a61::t_75c6aaf9631d61 12-43
+  s_ae3693132d4499::t_1080384e1f7bb2 75-87
+  s_9e1f1d9611516e::t_9e8363e0213cd0 112-114,120-126,128
+  s_9111cd0890a8ca::t_07cda9a6155c60 187-189
+  s_9111cd0890a8ca::t_b89e999762d6f7 196
+  s_9e1f1d9611516e::t_b50a78b5083756 67-72
+  s_9e1f1d9611516e::t_7a881983d0b6b7 127
+  s_9111cd0890a8ca::t_116b6b744f35ce 190-195,197-212
+  s_e227f4409f3487::t_b3496ae517f0fd 101-111,115-119,129
+  s_b1bc3c32c6a1e9::t_ef1328a45bfe58 8
+  s_b3905c6509145a::t_4f584ab43e18d7 88-100
+packages/core/tests/spec.test.ts
+  s_ae3693132d4499::t_1df29943e1a3ed 110-118,132-135,139-140
+AGENTS.md
+  s_e227f4409f3487::t_c1a75284b6385e 15
+tests/fixtures/README.md
+  s_e227f4409f3487::t_40f806fabc6af9 68-73
+  s_b3905c6509145a::t_866220303f9480 21,24-25
+  s_ae3693132d4499::t_45826725b33f13 13
+  s_e227f4409f3487::t_c6ccf8919fc717 22-23
+  s_f6edb43ee44a61::t_c3390a66bab592 31-35
+  s_9e1f1d9611516e::t_625b3d3a406fcd 56-58
+  s_e227f4409f3487::t_79d601df40c588 51-52
+  s_b3905c6509145a::t_9564aac2951961 53-55
+tests/fixtures/unicode-skill-name/README.md
+  s_ae3693132d4499::t_e37131f103117e 1-28
+packages/rules/src/rules/structure/skill-directory-name.ts
+  s_ae3693132d4499::t_337d645e579e32 41
+packages/rules/src/rules/mcp/header-validation.ts
+  s_e227f4409f3487::t_2187b89716097b 36-37
+docs/SDK.md
+  s_e227f4409f3487::t_d789cb5a9eb0c0 1051-1060
+  s_e227f4409f3487::t_58670110c6b9b0 469-473
+  s_e227f4409f3487::t_e8aa6ddba2a3d0 406-407
+  s_ae3693132d4499::t_c3242eeb9d0de1 104-110,112-116
+  s_b3905c6509145a::t_7669b7b89e1865 1171-1173
+  s_e227f4409f3487::t_958b76b628e664 1168-1170
+  s_9111cd0890a8ca::t_620e187883ec7a 7-10
+  s_ae3693132d4499::t_f7ddce7a547625 111
+  s_f6edb43ee44a61::t_61407b048d4a17 788,792-794,811-813
+  s_f6edb43ee44a61::t_3c37dcbe6f55bb 903-905
+  s_f6edb43ee44a61::t_cf03c7d1148f6b 408-414
+  s_f6edb43ee44a61::t_9df96a1e1d78f7 446,450-456,458-460
+  s_9e1f1d9611516e::t_b38b8b4c21b920 438
+  s_e227f4409f3487::t_c1a75284b6385e 589,692
+  s_e227f4409f3487::t_5b7b4b56213202 700
+docs/ROADMAP.md
+  s_e227f4409f3487::t_c1a75284b6385e 48
+docs/RELEASING.md
+  s_e227f4409f3487::t_5b7b4b56213202 85
+packages/rules/src/rules/security/secret-detection.ts
+  s_e227f4409f3487::t_89adae047086d2 69-70
+docs/REPOSITORY_AUDIT.md
+  s_e227f4409f3487::t_5b7b4b56213202 71,229
+packages/parser/src/validation.ts
+  s_e227f4409f3487::t_6fefe9a7a4f8d3 19-21,57-76
+  s_dc4f14621061a7::t_58150d4ad5cc22 77-78
+tests/fixtures/security-plugin/symlink-escape/README.md
+  s_f6edb43ee44a61::t_c4ccc64a0b18f7 12-15,36-37,39-42
+scripts/verify-publication.sh
+  s_8cc8ec6bcff77a::t_1557a95e69126a 1-53
+tests/e2e/external-install.test.ts
+  s_b1bc3c32c6a1e9::t_2a3187a250cfb0 11
+docs/SPEC_SUPPORT.md
+  s_e227f4409f3487::t_2fb57350fcab97 63-73
+  s_f6edb43ee44a61::t_aa906450beeab0 9-11
+  s_f6edb43ee44a61::t_4970a95111244b 124,130-132
+  s_e227f4409f3487::t_ce742d33a08af0 128-129
+  s_f6edb43ee44a61::t_0b961341d1de0c 174
+  s_f6edb43ee44a61::t_5010232b7c75df 12
+  s_ae3693132d4499::t_30c9be152cf1cc 48
+tests/fixtures/future-spec/README.md
+  s_f6edb43ee44a61::t_258a5858f9205d 7-12,25,27,31-33
+docs/V0_0_3_RELEASE_BLOCKERS.md
+  s_9a94152b190884::t_a67def51dd0b60 50-52
+  s_b1bc3c32c6a1e9::t_111be7b3e9a17e 7-21,58
+  s_b1bc3c32c6a1e9::t_39a4df16ba8924 1-6,22-49,53-57,59-62
+tests/integration/v003-release-blockers.test.ts
+  s_cd26e056880e67::t_96beb235efabbe 93
+  s_cd26e056880e67::t_fc29761aaa57cd 1-92,94-170
+packages/rules/src/rules/mcp/stdio-command.ts
+  s_e227f4409f3487::t_ee011b63d4c52a 25-26
+packages/report/package.json
+  s_b1bc3c32c6a1e9::t_10ffb53d3fac7b 3
+  s_b1bc3c32c6a1e9::t_99f8d243bb3f31 34
+packages/rules/src/rules/mcp/invalid-server-entry.ts
+  s_e227f4409f3487::t_1fa33d9ccf431e 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "3230d415df86a4cfd4cd87624b2d499adf8d247a",
+  "prompts": {},
+  "sessions": {
+    "s_8cc8ec6bcff77a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_021796672ffelrJPpRIYJj4VRS",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_9111cd0890a8ca": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02183edcaffeRMsdhqvZqjIIgk",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_9a94152b190884": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01f314476ffedqYxQqLt0SQn7U",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_9e1f1d9611516e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_021bd1724ffe15H2xWZT90kYSB",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_ae3693132d4499": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_021b47c27ffeJfNsjFbLGTEHHg",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_b1bc3c32c6a1e9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_021751c98ffePx4Y0SGlna5QiJ",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_b3905c6509145a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_021bd942cffeoPeFUvu8Moa1gQ",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_cd26e056880e67": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0217cd5d5ffebRWwyV8ecyJmBs",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_dc4f14621061a7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_021cc15d0ffekLSfObYr9du2pT",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_e227f4409f3487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_021d17e72ffeW6jyOHaKyIPMZS",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    },
+    "s_f6edb43ee44a61": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_021ad3bd2ffeADHfQAbGcFs5vv",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
