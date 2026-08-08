@@ -8,19 +8,11 @@
 //   - valid SKILL.md (with a Markdown horizontal rule) -> exit 0, no findings
 
 import { describe, expect, test } from 'bun:test';
-import { execSync } from 'node:child_process';
-import {
-  canonicalJson,
-  cleanup,
-  makeTempDir,
-  REPO_ROOT,
-  writeTree,
-} from './helpers.js';
-
-const CLI = './packages/cli/bin/agent-plugins-doctor';
+import { runCli } from '../e2e/helpers.js';
+import { canonicalJson, cleanup, makeTempDir, writeTree } from './helpers.js';
 
 describe('ECO-002: Duplicate Frontmatter E2E', () => {
-  test('duplicated-frontmatter SKILL.md → DOC-7003 → exit 1', () => {
+  test('duplicated-frontmatter SKILL.md → DOC-7003 → exit 1', async () => {
     const dir = makeTempDir();
     try {
       writeTree(dir, {
@@ -40,25 +32,19 @@ description: Second block
 `,
       });
 
-      try {
-        execSync(`${CLI} check ${dir} --no-color`, {
-          cwd: REPO_ROOT,
-          encoding: 'utf-8',
-          stdio: 'pipe',
-        });
-        throw new Error('Should have exited with code 1');
-      } catch (error) {
-        const err = error as { status?: number; stdout?: string | Buffer };
-        expect(err.status).toBe(1);
-        expect(String(err.stdout)).toContain('DOC-7003');
-        expect(String(err.stdout)).toContain('duplicate frontmatter');
-      }
+      // runCli executes the shipped binary via Bun.spawn with an absolute path
+      // (bun <bin>), so it works identically on Windows and POSIX — unlike
+      // executing the shebang file directly.
+      const result = await runCli(['check', dir, '--no-color']);
+      expect(result.exitCode).toBe(1);
+      expect(result.stdout).toContain('DOC-7003');
+      expect(result.stdout).toContain('duplicate frontmatter');
     } finally {
       cleanup(dir);
     }
   });
 
-  test('valid SKILL.md with Markdown horizontal rule → exit 0', () => {
+  test('valid SKILL.md with Markdown horizontal rule → exit 0', async () => {
     const dir = makeTempDir();
     try {
       writeTree(dir, {
@@ -79,12 +65,9 @@ Some text after horizontal rule.
 `,
       });
 
-      const result = execSync(`${CLI} check ${dir} --no-color`, {
-        cwd: REPO_ROOT,
-        encoding: 'utf-8',
-        stdio: 'pipe',
-      });
-      expect(String(result)).toContain('No issues found');
+      const result = await runCli(['check', dir, '--no-color']);
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('No issues found');
     } finally {
       cleanup(dir);
     }

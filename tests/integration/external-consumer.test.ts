@@ -18,6 +18,7 @@
 
 import { $ } from 'bun';
 import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
+import { spawnSync } from 'node:child_process';
 import {
   existsSync,
   mkdtempSync,
@@ -34,6 +35,9 @@ import { join, resolve, sep } from 'node:path';
 const REPO_ROOT = resolve(import.meta.dir, '..', '..');
 const NPM_PKG_DIR = join(REPO_ROOT, 'packages', 'npm');
 const NPM_PACKAGE_NAME = '@hiai-gg/agent-plugins-doctor';
+
+/** npm executable name per platform (.cmd shim on Windows). */
+const NPM_EXE = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 /** Every .d.ts file under a directory, recursively. */
 function collectDts(dir: string): string[] {
@@ -97,7 +101,23 @@ describe('external TypeScript consumer', () => {
   beforeAll(async () => {
     // 1. Pack the umbrella package. prepack rebuilds every SDK package,
     //    bundles the CLI, emits declarations, and vendors the SDK type graph.
-    await $`npm pack --silent`.cwd(NPM_PKG_DIR).quiet();
+    //    npm is invoked via a raw spawn (not the Bun shell) with the package
+    //    directory passed as an absolute argument and an explicit pack
+    //    destination, so the invocation is portable to Windows where the Bun
+    //    shell's cwd handling is unreliable. The tarball still lands in
+    //    NPM_PKG_DIR, exactly as before.
+    const pack = spawnSync(
+      NPM_EXE,
+      ['pack', '--silent', '--pack-destination', NPM_PKG_DIR, NPM_PKG_DIR],
+      { cwd: REPO_ROOT, encoding: 'utf-8' },
+    );
+    if (pack.status !== 0) {
+      throw new Error(
+        `npm pack failed (exit ${pack.status ?? 'null'}): ${
+          pack.stderr || pack.stdout
+        }`,
+      );
+    }
     const packed = readdirSync(NPM_PKG_DIR).filter((file) =>
       file.endsWith('.tgz'),
     );
