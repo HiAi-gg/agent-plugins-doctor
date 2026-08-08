@@ -35,6 +35,14 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      # Node 24 bundles npm >= 11.5.1, which is required for npm Trusted
+      # Publisher (OIDC). setup-node's registry-url configures npm so the CLI
+      # can auto-detect the OIDC environment and exchange the token.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false # never use caching in release builds
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.14
