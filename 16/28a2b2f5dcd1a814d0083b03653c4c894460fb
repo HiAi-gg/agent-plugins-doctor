@@ -1,0 +1,32 @@
+tests/integration/duplicate-frontmatter-e2e.test.ts
+  s_0566d33dfbaa45::t_56bbb88601d258 12
+  s_0566d33dfbaa45::t_d053e606d01b6d 11,15,35-41,47,68-70
+tests/integration/external-consumer.test.ts
+  s_0566d33dfbaa45::t_0cb0799a378f7b 21,39-40
+  s_0566d33dfbaa45::t_fc7b5a7005b1db 104-120
+  s_62574e4100204f::t_82cf74db25d637 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1628a2b2f5dcd1a814d0083b03653c4c894460fb",
+  "prompts": {},
+  "sessions": {
+    "s_0566d33dfbaa45": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01db45b88ffeJ6cu91weQKBsdD",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": null
+    },
+    "s_62574e4100204f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01db082b6ffeAnrMVUWFB4PTzX",
+        "model": "cline-pass/mimo-v2.5-pro"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
