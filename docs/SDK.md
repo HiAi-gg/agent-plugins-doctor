@@ -23,7 +23,7 @@ on.
 | `@agent-plugins-doctor/rules`         | Validation engine, rule registry, auto-fixes                | `validatePlugin`, `applyFixes`, `createDefaultRegistry`, `ValidationEngine`                                 |
 | `@agent-plugins-doctor/compatibility` | Client-compatibility checking                               | `checkCompatibility`, `createDefaultClientRegistry`, `CompatibilityChecker`, `CompatibilityLevel`           |
 | `@agent-plugins-doctor/report`        | Report rendering                                            | `generateReport`, `getFormatter` (`human` \| `json` \| `markdown`)                                          |
-| `@agent-plugins-doctor/cli`           | CLI wrapper and the exit-code contract                      | `createProgram`, `main`, `computeExitCode`, `EXIT_CODES`                                                    |
+| `@agent-plugins-doctor/cli`           | CLI wrapper and the exit-code contract                      | `createProgram`, `main`, `computeExitCode`, `EXIT_CODES`, `isPluginLoadError`                               |
 
 The typical pipeline:
 
@@ -1151,7 +1151,30 @@ state never leaks.
 
 The singleton program instance used by the binary.
 
-### 7.6 `main(): Promise<void>`
+### 7.6 `isPluginLoadError(error: unknown): boolean`
+
+True when `error` is a parser load/parse error (`LoadError`, `ParseError`,
+`SchemaValidationError`, or `UnsupportedVersionError`) — i.e. the plugin
+could not be loaded or parsed and the failure is a tool failure (exit 3),
+not a validation error. Classification uses `instanceof` when the error comes
+from the same module instance and falls back to the error's `name`, so it
+also works for errors from a different module instance of
+`@agent-plugins-doctor/parser` (e.g. the bundled npm dist, which carries its
+own copies of the parser classes).
+
+```ts
+import { isPluginLoadError } from '@agent-plugins-doctor/cli';
+
+try {
+  await loadPlugin(dir);
+} catch (error) {
+  if (isPluginLoadError(error)) {
+    process.exitCode = 3; // tool failure
+  }
+}
+```
+
+### 7.7 `main(): Promise<void>`
 
 Parses `process.argv` and runs the CLI, setting `process.exitCode` after the
 async handlers complete. Invoked by `bin/agent-plugins-doctor`.
@@ -1218,9 +1241,9 @@ try {
 }
 ```
 
-The CLI exports `isPluginLoadError(error): boolean` from
-`packages/cli/src/utils/run.ts` to classify thrown errors (importable for
-consumers that want the same classification).
+The CLI exports `isPluginLoadError(error): boolean` (§7.6) to classify thrown
+errors (importable from the package entry point for consumers that want the
+same classification).
 
 ## 9. Examples
 

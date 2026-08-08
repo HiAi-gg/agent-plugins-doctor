@@ -27,11 +27,22 @@ bun run publish:npm:dry-run
 bun run publish:npm
 ```
 
-The `prepack` script in `packages/npm/package.json` runs the bundle build and
-copies the repository `README.md` and `LICENSE` into `packages/npm/` (both
-git-ignored, and npm always includes them in the tarball). The published
-tarball contains `bin/cli.js`, `dist/index.js`, `dist/index.d.ts`,
-`README.md`, and `LICENSE`.
+The `prepack` script in `packages/npm/package.json` runs the bundle build,
+emits `.d.ts` declarations, vendors the five SDK packages' declaration trees
+into `dist/vendor/` (see `scripts/vendor-dts.ts`), and copies the repository
+`README.md` and `LICENSE` into `packages/npm/` (both git-ignored, and npm
+always includes them in the tarball). The published tarball contains
+`bin/cli.js`, `dist/index.js`, `dist/index.d.ts`, `README.md`, and `LICENSE`.
+
+The vendoring step makes the tarball **type-self-contained**: the public
+`.d.ts` graph references types from the unpublished `@agent-plugins-doctor/*`
+packages (e.g. `Diagnostic` via `computeExitCode`), and every
+`@agent-plugins-doctor/*` import is rewritten to a relative path into
+`dist/vendor/`. An external TypeScript consumer only needs the declared
+`commander` peer dependency to type-check the package (verified by
+`tests/integration/external-consumer.test.ts`). When the SDK packages are
+eventually published, the vendoring can be dropped in favor of real
+dependencies.
 
 ### How to verify
 

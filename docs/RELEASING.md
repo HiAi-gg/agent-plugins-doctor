@@ -48,8 +48,15 @@ bun test               # full suite: unit + integration + E2E + benchmarks
 bun run typecheck      # strict-mode TS, all packages
 bun run lint           # oxlint (eslint config)
 bunx prettier --check . # formatting
+bun run check:versions # version integrity: every version source agrees
 ./packages/cli/bin/agent-plugins-doctor check .  # self-hosting: exit 0
 ```
+
+`bun run check:versions` verifies that the version in every `package.json`
+(root + all 7 workspaces), `plugin.json`, the top released `CHANGELOG.md`
+entry, the CLI source (`pkg.version` from `../package.json`), the git tag
+(when HEAD is tagged), and — with `--published` — the npm registry all agree.
+It exits 1 with a mismatch report; see `scripts/check-version-integrity.ts`.
 
 ## 4. Build All Packages
 
@@ -141,6 +148,7 @@ The CLI package's `bin` field (`agent-plugins-doctor`) makes it available via
 - [ ] `bun run typecheck` passes
 - [ ] `bun run lint` passes
 - [ ] `bunx prettier --check .` passes
+- [ ] `bun run check:versions` passes (all version sources agree)
 - [ ] `./packages/cli/bin/agent-plugins-doctor check .` exits 0
 - [ ] `bun run build` exits 0 for all packages
 - [ ] Documentation updated (SDK/DIAGNOSTICS/ARCHITECTURE/COMPATIBILITY as

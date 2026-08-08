@@ -2,6 +2,7 @@
 // The agent-plugins-doctor command-line tool: a thin wrapper around the core,
 // parser, rules, compatibility, and report packages.
 
+import pkg from '../package.json';
 import { Command } from 'commander';
 import { checkCommand } from './commands/check.js';
 import { fixCommand } from './commands/fix.js';
@@ -18,16 +19,22 @@ export {
   type ExitCodeOptions,
 } from './utils/exit-codes.js';
 
+// Error classification: distinguishes plugin load/parse errors (which the CLI
+// reports as tool failures, exit 3) from any other failure. Importable by
+// programmatic consumers that want the same classification the CLI uses.
+export { isPluginLoadError } from './utils/run.js';
+
 /**
  * Build a fresh program. Tests create a new instance per run so option state
  * never leaks between invocations; the exported `program` singleton is used
- * by the bin.
+ * by the bin. The version is read from package.json so `--version` can never
+ * drift from the published artifact.
  */
 export function createProgram(): Command {
   return new Command()
     .name('agent-plugins-doctor')
     .description('Diagnose and fix Agent Plugins')
-    .version('0.0.4')
+    .version(pkg.version)
     .addCommand(checkCommand)
     .addCommand(fixCommand)
     .addCommand(reportCommand)

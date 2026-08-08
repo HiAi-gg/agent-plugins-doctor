@@ -125,13 +125,34 @@ export function toCoreCompatibility(
   }));
 }
 
-/** Errors that mean the plugin could not be loaded or parsed. */
+/**
+ * Errors that mean the plugin could not be loaded or parsed.
+ *
+ * The parser error classes (LoadError, ParseError, SchemaValidationError,
+ * UnsupportedVersionError) each set an explicit `name`, so classification
+ * works both for same-module errors (`instanceof` fast path) and for errors
+ * from a different module instance of @agent-plugins-doctor/parser — e.g. a
+ * consumer that imports the CLI from its bundled dist, where the bundle
+ * carries its own inlined copies of the parser classes and `instanceof`
+ * cannot match.
+ */
 export function isPluginLoadError(error: unknown): boolean {
-  return (
+  if (
     error instanceof LoadError ||
     error instanceof ParseError ||
     error instanceof SchemaValidationError
-  );
+  ) {
+    return true;
+  }
+  if (error instanceof Error) {
+    return (
+      error.name === 'LoadError' ||
+      error.name === 'ParseError' ||
+      error.name === 'SchemaValidationError' ||
+      error.name === 'UnsupportedVersionError'
+    );
+  }
+  return false;
 }
 
 export function errorMessage(error: unknown): string {

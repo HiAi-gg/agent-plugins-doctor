@@ -41,9 +41,12 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "peerDependencies": {
+    "commander": "^13.0.0"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "prepack": "bun run --filter '@agent-plugins-doctor/*' build && bun build ../cli/src/index.ts --outdir ./dist --target node && tsc --emitDeclarationOnly --declaration --outDir ./dist --rootDir ../cli/src --target ES2022 --module ES2022 --moduleResolution bundler --esModuleInterop --resolveJsonModule --skipLibCheck --strict ../cli/src/index.ts && cp ../../README.md ./README.md && cp ../../LICENSE ./LICENSE"
+    "prepack": "bun run --filter '@agent-plugins-doctor/*' build && bun build ../cli/src/index.ts --outdir ./dist --target node && tsc --emitDeclarationOnly --declaration --outDir ./dist --rootDir ../cli/src --target ES2022 --module ES2022 --moduleResolution bundler --esModuleInterop --resolveJsonModule --skipLibCheck --strict ../cli/src/index.ts && bun run ../../scripts/vendor-dts.ts && cp ../../README.md ./README.md && cp ../../LICENSE ./LICENSE"
   }
 }

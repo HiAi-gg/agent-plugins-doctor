@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Version-integrity gate — `scripts/check-version-integrity.ts`**
+  (`bun run check:versions`) — verifies every version source agrees: all
+  eight `package.json` files (root + the 7 workspaces), `plugin.json`, the
+  top released `CHANGELOG.md` entry, the CLI source (which must read
+  `pkg.version` from `../package.json`, never a hardcoded literal), the git
+  tag when HEAD is tagged, and — with `--published` — the npm registry.
+  Exits 1 with a mismatch report; wired into
+  [docs/RELEASING.md](docs/RELEASING.md) §3 as a quality gate.
+
+- **Self-contained declarations for the npm umbrella package —
+  `scripts/vendor-dts.ts`** — the `@hiai-gg/agent-plugins-doctor` prepack now
+  vendors the five SDK packages' `dist/` declaration trees into
+  `dist/vendor/` and rewrites every `@agent-plugins-doctor/*` import in the
+  emitted `.d.ts` files to a relative path. The published tarball previously
+  referenced the unpublished SDK packages (TS2307 in an external consumer);
+  it now type-checks with only the `commander` peer dependency installed.
+
+- **External TypeScript consumer integration test —
+  `tests/integration/external-consumer.test.ts`** — packs the npm umbrella,
+  installs it into a scratch project outside the monorepo, and proves the
+  documented exports resolve, the `.d.ts` graph type-checks with
+  `skipLibCheck` disabled (no missing workspace aliases), the declarations
+  carry no monorepo-only imports, and the installed CLI reports the package
+  version.
+
 - **Duplicate frontmatter detection — DOC-7003 —
   `packages/rules/src/rules/format/duplicate-frontmatter.ts`** — new
   `format-duplicate-frontmatter` rule (error): a SKILL.md may contain only one
@@ -28,6 +53,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   re-parsed.
 
 ### Fixed
+
+- **`isPluginLoadError` exported from the CLI (ECO-010) —
+  `packages/cli/src/index.ts`** — the documented error classifier was
+  reachable only via `packages/cli/src/utils/run.ts`, not from the package
+  entry. It is now re-exported from `@agent-plugins-doctor/cli`, and it
+  classifies by error `name` in addition to `instanceof`, so it works across
+  module instances (the bundled npm dist carries its own copies of the parser
+  error classes). Pinned by `tests/integration/api-stability.test.ts`.
+
+- **CLI version no longer hardcoded — `packages/cli/src/index.ts`** —
+  `createProgram()` reads the version from `../package.json`
+  (`pkg.version`), so `--version` always matches the published artifact and
+  the version-integrity gate can verify the source.
+
+- **npm umbrella declares its `commander` peer dependency —
+  `packages/npm/package.json`** — the shipped `.d.ts` references
+  commander's `Command` type (`createProgram(): Command`), so TypeScript
+  consumers must be able to resolve commander.
 
 - **Flaky benchmark: `cached reload skips re-parsing unchanged files` —
   `tests/benchmarks/benchmark.test.ts`** — the assertion compared wall-clock
