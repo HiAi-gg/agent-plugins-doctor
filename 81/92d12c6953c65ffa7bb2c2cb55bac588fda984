@@ -1,0 +1,28 @@
+tests/benchmarks/benchmark.test.ts
+  s_45ee52f934e0af::t_a3695a9403c2d8 61-77
+  s_45ee52f934e0af::t_59cb75ce8013cb 16
+docs/SDK.md
+  s_45ee52f934e0af::t_da4298bc2e52df 517-520
+packages/parser/tests/cache.test.ts
+  s_45ee52f934e0af::t_3709b11d62897b 101-135
+packages/parser/src/cache.ts
+  s_45ee52f934e0af::t_9640b8c158b67e 37-55,70,80,84
+CHANGELOG.md
+  s_45ee52f934e0af::t_95edcfdc71217e 8-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "8192d12c6953c65ffa7bb2c2cb55bac588fda984",
+  "prompts": {},
+  "sessions": {
+    "s_45ee52f934e0af": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01ecced3bffepL7iKbFgPA1nw7",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
