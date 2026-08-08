@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.0.4] - 2026-08-08
 
 ### Added
 
@@ -18,6 +18,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   packages remain unpublished (SDK publication deferred). Publishing commands:
   `bun run publish:npm:dry-run` / `bun run publish:npm`; see
   [PUBLISHING.md](PUBLISHING.md).
+
+- **GitHub Actions publish workflow — `.github/workflows/publish.yml`** —
+  automatic npm publishing via Trusted Publisher (OIDC): triggered on
+  `release: published` (or manual `workflow_dispatch` with a `dry_run`
+  toggle), builds all packages with Bun, runs the test suite, and publishes
+  `packages/npm` to the npm registry with `npm publish --access public`.
+
+### Changed
+
+- **Prepared for public npm release** — all package versions bumped to
+  0.0.4; the npm package `@hiai-gg/agent-plugins-doctor` is the release
+  artifact published from the `packages/npm` workspace.
 
 ## [0.0.3] - 2026-08-07
 

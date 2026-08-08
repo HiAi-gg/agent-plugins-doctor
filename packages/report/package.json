@@ -1,6 +1,6 @@
 {
   "name": "@agent-plugins-doctor/report",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Report generation (human, JSON, Markdown) for Agent Plugin Doctor",
   "type": "module",
   "main": "./dist/index.js",
@@ -31,7 +31,7 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@agent-plugins-doctor/core": "^0.0.3",
+    "@agent-plugins-doctor/core": "^0.0.4",
     "chalk": "^5.4.0"
   },
   "devDependencies": {

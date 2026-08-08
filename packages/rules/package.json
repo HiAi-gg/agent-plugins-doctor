@@ -1,6 +1,6 @@
 {
   "name": "@agent-plugins-doctor/rules",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Validation rules engine for Agent Plugin Doctor",
   "type": "module",
   "main": "./dist/index.js",
@@ -31,9 +31,9 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@agent-plugins-doctor/core": "^0.0.3",
-    "@agent-plugins-doctor/parser": "^0.0.3",
-    "@agent-plugins-doctor/compatibility": "^0.0.3"
+    "@agent-plugins-doctor/core": "^0.0.4",
+    "@agent-plugins-doctor/parser": "^0.0.4",
+    "@agent-plugins-doctor/compatibility": "^0.0.4"
   },
   "devDependencies": {
     "typescript": "^5.9.0"

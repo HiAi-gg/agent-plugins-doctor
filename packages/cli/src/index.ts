@@ -27,7 +27,7 @@ export function createProgram(): Command {
   return new Command()
     .name('agent-plugins-doctor')
     .description('Diagnose and fix Agent Plugins')
-    .version('0.0.3')
+    .version('0.0.4')
     .addCommand(checkCommand)
     .addCommand(fixCommand)
     .addCommand(reportCommand)

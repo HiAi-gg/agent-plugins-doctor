@@ -15,8 +15,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Required for OIDC
-      contents: read   # Required to checkout code
+      id-token: write # Required for OIDC
+      contents: read # Required to checkout code
 
     steps:
       - name: Checkout code
