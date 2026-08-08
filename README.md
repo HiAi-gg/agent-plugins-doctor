@@ -35,6 +35,23 @@ The CLI is published to npm as a single self-contained package,
 (runs on Node ≥ 18 — no Bun required); inside this repository it resolves to
 the local workspace binary (see [Development](#development)).
 
+### Collection CI
+
+Validate plugins in CI with a single command:
+
+```bash
+npx @hiai-gg/agent-plugins-doctor check plugins/<plugin-name>
+```
+
+The npm package is self-contained (no Bun required, Node ≥ 18).
+
+Exit codes:
+
+- `0` — valid
+- `1` — spec errors
+- `2` — security-critical
+- `3` — tool failure
+
 ## What is Agent Plugin Doctor?
 
 Agent Plugin Doctor is the canonical validation, diagnostics, and security-auditing tool for the [Agent Plugins](https://agent-plugins.org/) ecosystem. It validates plugins against the official specification, checks compatibility with verified clients, and provides safe automatic fixes.
