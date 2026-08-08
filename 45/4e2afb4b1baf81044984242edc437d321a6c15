@@ -1,0 +1,21 @@
+packages/npm/package.json
+  s_0b0dcd2ab7a8a1::t_49ebb9ce63f4b6 50
+scripts/prepack-build.ts
+  s_0b0dcd2ab7a8a1::t_234d7e436ec502 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "454e2afb4b1baf81044984242edc437d321a6c15",
+  "prompts": {},
+  "sessions": {
+    "s_0b0dcd2ab7a8a1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01d8bbb70ffeAYoxdF2t6I9YFE",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
