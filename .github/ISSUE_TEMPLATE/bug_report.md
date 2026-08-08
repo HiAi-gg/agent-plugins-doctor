@@ -30,7 +30,7 @@ What actually happened.
 
 - OS: [e.g. macOS 14.0, Ubuntu 22.04]
 - Bun version: [e.g. 1.3.14]
-- Doctor version: [e.g. 0.1.0]
+- Doctor version: [e.g. 0.0.6]
 
 ## Example Plugin
 

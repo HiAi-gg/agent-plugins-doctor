@@ -368,7 +368,7 @@ Every extension must keep the quality gates green:
 ```bash
 bun test                 # unit + integration + E2E + benchmarks
 bun run typecheck        # strict-mode TS across all packages
-bun run lint             # oxlint via eslint
+bun run lint             # eslint
 bunx prettier --check .  # formatting
 ./packages/cli/bin/agent-plugins-doctor check .   # self-hosting: exit 0
 ```

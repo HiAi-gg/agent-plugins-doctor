@@ -2,7 +2,7 @@
 name: doctor
 description: Diagnose and fix Agent Plugins. Use when users ask to check, validate, fix, or audit an Agent Plugin, or when they need compatibility information.
 license: MIT
-compatibility: Requires a client that supports Agent Skills and terminal command execution. Doctor CLI is invoked through Bun (bunx agent-plugins-doctor) or npm (npx agent-plugins-doctor).
+compatibility: Requires a client that supports Agent Skills and terminal command execution. Doctor CLI is invoked through Bun (bunx @hiai-gg/agent-plugins-doctor) or npm (npx @hiai-gg/agent-plugins-doctor).
 ---
 
 # Agent Plugin Doctor Skill
@@ -15,8 +15,8 @@ Installing this skill does **not** install the Doctor CLI. Doctor is a
 separate npm package (`@hiai-gg/agent-plugins-doctor`, exposed as the
 `agent-plugins-doctor` binary) that this skill invokes through the terminal:
 
-- **Bun** — `bunx agent-plugins-doctor check <plugin-directory>`
-- **npm** — `npx agent-plugins-doctor check <plugin-directory>`
+- **Bun** — `bunx @hiai-gg/agent-plugins-doctor check <plugin-directory>`
+- **npm** — `npx @hiai-gg/agent-plugins-doctor check <plugin-directory>`
 
 `bunx`/`npx` fetch the CLI from the npm registry on first use and run it —
 no source checkout, workspace build, or global install is required. At
@@ -41,19 +41,19 @@ Run the Doctor CLI to validate plugins:
 
 ```bash
 # Check a plugin
-bunx agent-plugins-doctor check <plugin-directory>
+bunx @hiai-gg/agent-plugins-doctor check <plugin-directory>
 
 # Apply safe fixes
-bunx agent-plugins-doctor fix <plugin-directory>
+bunx @hiai-gg/agent-plugins-doctor fix <plugin-directory>
 
 # Generate a report
-bunx agent-plugins-doctor report <plugin-directory> --format markdown
+bunx @hiai-gg/agent-plugins-doctor report <plugin-directory> --format markdown
 
 # Check compatibility
-bunx agent-plugins-doctor compatibility <plugin-directory>
+bunx @hiai-gg/agent-plugins-doctor compatibility <plugin-directory>
 ```
 
-(`npx agent-plugins-doctor ...` works identically under npm.)
+(`npx @hiai-gg/agent-plugins-doctor ...` works identically under npm.)
 
 ## What It Checks
 
@@ -80,14 +80,14 @@ Doctor provides:
 
 ```bash
 # Validate the current directory
-bunx agent-plugins-doctor check .
+bunx @hiai-gg/agent-plugins-doctor check .
 
 # Fix issues in a plugin
-bunx agent-plugins-doctor fix ./my-plugin
+bunx @hiai-gg/agent-plugins-doctor fix ./my-plugin
 
 # Generate a markdown report
-bunx agent-plugins-doctor report ./my-plugin --format markdown > report.md
+bunx @hiai-gg/agent-plugins-doctor report ./my-plugin --format markdown > report.md
 
 # Check compatibility with a specific client
-bunx agent-plugins-doctor compatibility ./my-plugin --client cursor
+bunx @hiai-gg/agent-plugins-doctor compatibility ./my-plugin --client cursor
 ```

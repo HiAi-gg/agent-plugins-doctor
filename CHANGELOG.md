@@ -45,6 +45,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   warming the cache, a reload of unchanged files produces zero additional
   cache misses (nothing is re-parsed) and increases the hit count.
 
+### Changed
+
+- **Launch documentation polish (docs-only)** — README gained a launch screen
+  (validate / diagnose / safely fix, install, `check`, `fix --dry-run`, exit
+  codes, and links to Builder and the collection) and ecosystem navigation
+  that positions Doctor as standalone tooling — not one of the 13 product
+  plugins in the collection. README test-count claims updated to the verified
+  673 tests / 83 files. SECURITY.md now lists the supported 0.0.x line
+  (current 0.0.6) instead of the never-released 0.1.x; the issue template's
+  example version is 0.0.6. `docs/RELEASING.md` and `docs/EXTENSIBILITY.md`
+  comments corrected (eslint, not oxlint) and RELEASING examples updated from
+  0.1.0 to 0.0.6. `docs/BUILDER_INTEGRATION.md` dependency example and
+  `docs/RULE_ENGINE.md` test-count reference updated to current values.
+  Unscoped `bunx`/`npx agent-plugins-doctor` invocations in public docs
+  (README, PUBLISHING.md, docs/SDK.md, skills/doctor/SKILL.md) now use the
+  scoped `@hiai-gg/agent-plugins-doctor` package. The obsolete v0.0.3
+  publication runbook (`docs/PUBLICATION.md`) and scripts
+  (`scripts/publish-v003.sh`, `scripts/verify-publication.sh`) are marked
+  obsolete and superseded — kept for history, not deleted. Pre-release
+  planning docs (ROADMAP, RISK_ASSESSMENT, REPOSITORY_AUDIT,
+  DUPLICATION_ANALYSIS) are flagged as historical records of the v0.1.0-era
+  plan. No source, rules, tests, package versions, or architecture changed.
+
 ## [0.0.4] - 2026-08-08
 
 ### Added

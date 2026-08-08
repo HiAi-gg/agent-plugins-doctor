@@ -5,8 +5,8 @@ Doctor monorepo. All packages are ES modules (`"type": "module"`), written in
 TypeScript with strict mode, and export fully typed APIs.
 
 > **Status:** The SDK packages are **not yet published to npm**. Use the CLI
-> (`bunx agent-plugins-doctor` / `npx agent-plugins-doctor`), or import the
-> packages from the monorepo.
+> (`bunx @hiai-gg/agent-plugins-doctor` / `npx @hiai-gg/agent-plugins-doctor`),
+> or import the packages from the monorepo.
 
 The public surface of every package is pinned by
 [`tests/integration/api-stability.test.ts`](../tests/integration/api-stability.test.ts):

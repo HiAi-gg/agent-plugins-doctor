@@ -2,6 +2,11 @@
 
 ## Overview
 
+> **Historical record.** This audit was performed against the pre-release
+> v0.1.0 plan (2026-08-07); Doctor was released as **0.0.6** (see
+> [CHANGELOG.md](../CHANGELOG.md)). The scorecard below is kept intact for
+> reference.
+
 This document audits the quality of the Agent Plugin Doctor repository against
 modern open-source standards. All claims below were verified against the
 repository at v0.1.0 (2026-08-07). This document is one of the 12 Phase 20

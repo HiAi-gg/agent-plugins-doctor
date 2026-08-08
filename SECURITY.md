@@ -4,7 +4,11 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
+| 0.0.x   | :white_check_mark: |
+
+The current release is **0.0.6**. The 0.0.x line is supported; there is no
+0.1.x line (the pre-publication planning version was renumbered to 0.0.x
+before the first npm release).
 
 ## Reporting a Vulnerability
 

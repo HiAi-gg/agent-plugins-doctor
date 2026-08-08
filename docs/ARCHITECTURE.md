@@ -9,7 +9,7 @@ The tool validates plugins against the official
 [Agent Plugins specification](https://agent-plugins.org/) (v1.0.0), checks
 compatibility against verified clients, and provides safe automatic fixes. It
 is built to be consumed both as a CLI and as a library (notably by
-[Agent Plugin Builder](https://github.com/HiAi-gg/agent-plugin-builder), which
+[Agent Plugin Builder](https://github.com/HiAi-gg/agent-plugins-builder), which
 generates plugins and calls Doctor to validate them).
 
 Each package is an ES module (`"type": "module"`) written in strict-mode

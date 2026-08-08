@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# OBSOLETE — historical record (v0.0.3, 2026-08-08). This script was used for
+# the one-time v0.0.3 publication of the six @agent-plugins-doctor/* SDK
+# packages and is kept only for history. It is superseded by scripts/publish.ts
+# (bun run publish:dry-run / bun run publish:all) and by the CLI umbrella
+# package flow (bun run publish:npm:dry-run / bun run publish:npm); see
+# PUBLISHING.md and docs/RELEASING.md. Do not run this script for current
+# releases — the version guard below will fail on any version other than
+# 0.0.3.
+
 # Publish Agent Plugins Doctor v0.0.3 to npm.
 #
 # Usage: ./scripts/publish-v003.sh
@@ -40,5 +49,5 @@ done
 echo "✓ All packages published!"
 echo ""
 echo "Verify with:"
-echo "  npm view @agent-plugins-doctor/cli"
-echo "  bunx agent-plugins-doctor --version"
+echo "  npm view @hiai-gg/agent-plugins-doctor"
+echo "  bunx @hiai-gg/agent-plugins-doctor --version"

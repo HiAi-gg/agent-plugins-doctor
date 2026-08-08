@@ -57,12 +57,12 @@ The CLI package is the source of truth for exit codes: Builder imports
 ```json
 {
   "dependencies": {
-    "@agent-plugins-doctor/core": "^0.1.0",
-    "@agent-plugins-doctor/parser": "^0.1.0",
-    "@agent-plugins-doctor/rules": "^0.1.0",
-    "@agent-plugins-doctor/report": "^0.1.0",
-    "@agent-plugins-doctor/compatibility": "^0.1.0",
-    "@agent-plugins-doctor/cli": "^0.1.0"
+    "@agent-plugins-doctor/core": "^0.0.6",
+    "@agent-plugins-doctor/parser": "^0.0.6",
+    "@agent-plugins-doctor/rules": "^0.0.6",
+    "@agent-plugins-doctor/report": "^0.0.6",
+    "@agent-plugins-doctor/compatibility": "^0.0.6",
+    "@agent-plugins-doctor/cli": "^0.0.6"
   }
 }
 ```
@@ -173,7 +173,7 @@ const parsed = parseSkillFrontmatter(content, filePath);
   frontmatter shape; exit codes map to Builder's expectations
   (0/1/2/3, manifest load errors → 1, inaccessible root → 3).
 - `tests/integration/builder-real.test.ts` — the **real Builder binary's**
-  output (cloned from https://github.com/HiAi-gg/agent-plugin-builder and
+  output (cloned from https://github.com/HiAi-gg/agent-plugins-builder and
   built at commit `7a0b9bd8`, pinned in
   `tests/fixtures/builder-generated/real-builder/`) validates with zero
   error/critical diagnostics and exit 0. See

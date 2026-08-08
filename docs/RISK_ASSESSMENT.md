@@ -246,6 +246,10 @@ found in [docs/ARCHITECTURE.md](ARCHITECTURE.md),
 
 ## Conclusion
 
+> **Historical record.** This risk register was written for the pre-release
+> v0.1.0 plan (2026-08-07); Doctor was released as **0.0.6** (see
+> [CHANGELOG.md](../CHANGELOG.md)).
+
 Agent Plugin Doctor has comprehensive risk mitigation in place. The most
 critical risks (security, schema drift, false positives) are well-mitigated
 through architecture, testing, and documentation. Ongoing attention is needed

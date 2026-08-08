@@ -10,7 +10,7 @@ document covers the publish step itself.
 The CLI ships as a single self-contained npm package,
 [`@hiai-gg/agent-plugins-doctor`](https://www.npmjs.com/package/@hiai-gg/agent-plugins-doctor),
 built from `packages/npm/` — the same pattern as
-[Agent Plugin Builder](https://github.com/HiAi-gg/agent-plugin-builder). It
+[Agent Plugin Builder](https://github.com/HiAi-gg/agent-plugins-builder). It
 bundles the CLI and all five library packages into one `dist/index.js`
 (`bun build --target node`), so the only runtime requirement is Node ≥ 18
 (the bin entry, `bin/cli.js`, is a plain `#!/usr/bin/env node` wrapper).
@@ -58,7 +58,7 @@ Install into a scratch project and smoke-test the CLI:
 mkdir -p /tmp/doctor-smoke && cd /tmp/doctor-smoke
 npm init -y
 npm install @hiai-gg/agent-plugins-doctor
-npx agent-plugins-doctor check /path/to/a/plugin
+npx @hiai-gg/agent-plugins-doctor check /path/to/a/plugin
 ```
 
 ### The six SDK packages (`@agent-plugins-doctor/*`)
@@ -166,7 +166,7 @@ Install into a scratch project and smoke-test the CLI:
 mkdir -p /tmp/doctor-smoke && cd /tmp/doctor-smoke
 npm init -y
 npm install @agent-plugins-doctor/cli
-npx agent-plugins-doctor check /path/to/a/plugin
+npx @hiai-gg/agent-plugins-doctor check /path/to/a/plugin
 ```
 
 TypeScript consumers should be able to `import { ... } from

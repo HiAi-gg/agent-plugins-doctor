@@ -2,7 +2,7 @@
 
 How to cut a release of Agent Plugin Doctor. The checklist in
 [AGENTS.md](../AGENTS.md) is the condensed version; this document is the full
-procedure. It covers the v0.1.0 release and every future release.
+procedure. It covers every release (the current version is 0.0.6).
 
 ## 1. Version Bump
 
@@ -16,12 +16,12 @@ package share the same version. Update every `package.json`:
 Bump to the next version per [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The API-stability contract in `tests/integration/api-stability.test.ts` means
 any breaking change to a public export requires a **major** version bump,
-coordinated with [Agent Plugin Builder](https://github.com/HiAi-gg/agent-plugin-builder).
+coordinated with [Agent Plugin Builder](https://github.com/HiAi-gg/agent-plugins-builder).
 
 ```bash
-# Set the new version everywhere (example: 0.1.0)
+# Set the new version everywhere (example: 0.0.6)
 for f in package.json packages/*/package.json; do
-  sed -i "s/\"version\": \".*\"/\"version\": \"0.1.0\"/" "$f"
+  sed -i "s/\"version\": \".*\"/\"version\": \"0.0.6\"/" "$f"
 done
 ```
 
@@ -46,7 +46,7 @@ Everything must pass before a tag is created:
 bun install            # resolve workspace links (if dependencies changed)
 bun test               # full suite: unit + integration + E2E + benchmarks
 bun run typecheck      # strict-mode TS, all packages
-bun run lint           # oxlint (eslint config)
+bun run lint           # eslint
 bunx prettier --check . # formatting
 bun run check:versions # version integrity: every version source agrees
 ./packages/cli/bin/agent-plugins-doctor check .  # self-hosting: exit 0
@@ -84,25 +84,25 @@ Create an **annotated** git tag with the version and the release notes:
 
 ```bash
 git add -A
-git commit -m "chore: release v0.1.0"
+git commit -m "chore: release v0.0.6"
 
 # Annotated tag (recommended: carries the release message)
-git tag -a v0.1.0 -m "Agent Plugin Doctor v0.1.0
+git tag -a v0.0.6 -m "Agent Plugin Doctor v0.0.6
 
 - 6-package monorepo (core, parser, rules, compatibility, report, cli)
 - 30 validation rules across 7 categories
 - ... (summary from CHANGELOG)"
 ```
 
-Tags are named `v<version>` (e.g. `v0.1.0`) and created from a clean
+Tags are named `v<version>` (e.g. `v0.0.6`) and created from a clean
 checkout of the exact commit being released. Lightweight tags work too
-(`git tag v0.1.0`), but annotated tags record the release message.
+(`git tag v0.0.6`), but annotated tags record the release message.
 
 Push the tag:
 
 ```bash
 git push origin main
-git push origin v0.1.0
+git push origin v0.0.6
 ```
 
 ## 7. Publish to npm (when ready)
@@ -138,7 +138,7 @@ run mode). Each package's `prepublishOnly` runs `bun run build` again as a
 safety net, so the tarball always matches the source on disk.
 
 The CLI package's `bin` field (`agent-plugins-doctor`) makes it available via
-`bunx agent-plugins-doctor` (or `npx`) once published.
+`bunx @hiai-gg/agent-plugins-doctor` (or `npx`) once published.
 
 ## Verification Checklist
 

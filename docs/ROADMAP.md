@@ -1,5 +1,10 @@
 # Implementation Roadmap
 
+> **Historical record (2026-08-07).** This roadmap reflects the pre-release
+> v0.1.0 planning state. Doctor was released as **0.0.6** (see
+> [CHANGELOG.md](../CHANGELOG.md) and [RELEASING.md](RELEASING.md)); the
+> phase-by-phase history below is kept intact for reference.
+
 ## Current Status
 
 **Version:** 0.1.0 (Ready for release)

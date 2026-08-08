@@ -1,5 +1,14 @@
 # Publishing v0.0.3 to npm
 
+> **OBSOLETE — historical record (v0.0.3, 2026-08-08).** This runbook
+> describes the one-time v0.0.3 publication and is kept only for history. It
+> has been superseded: the CLI now ships as the self-contained npm package
+> `@hiai-gg/agent-plugins-doctor` (see [PUBLISHING.md](../PUBLISHING.md) and
+> [RELEASING.md](RELEASING.md)), and the scripts it references
+> (`publish-v003.sh`, `verify-publication.sh`) are obsolete — use
+> `bun run publish:npm:dry-run` / `bun run publish:npm` instead. Do not follow
+> this document for current releases.
+
 This document is the concrete runbook for the v0.0.3 npm publication. The
 generic release procedure lives in [RELEASING.md](RELEASING.md) and the
 publish mechanics (dependency order, package layout, troubleshooting) in

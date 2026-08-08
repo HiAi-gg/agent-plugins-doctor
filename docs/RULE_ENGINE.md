@@ -334,6 +334,6 @@ Every rule has:
 
 The rule engine provides a modular, extensible, and performant validation
 system. It supports 30 rules across 7 categories, with safe auto-fixes and
-comprehensive testing (483 tests across 65 files in the full suite). The
+comprehensive testing (673 tests across 83 files in the full suite). The
 design keeps validation deterministic, error-isolated, and incremental — ready
 for both the CLI and library consumers such as Agent Plugin Builder.

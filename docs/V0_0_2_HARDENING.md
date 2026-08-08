@@ -12,7 +12,7 @@ This document summarizes the hardening work completed for v0.0.2.
 
 3. **Diagnostic scanning missing** — Added `scanPlugin()` API for diagnostic-oriented loading. Malformed input now produces exit 1 (validation error) instead of exit 3 (tool failure).
 
-4. **Public distribution not working** — Prepared all 6 packages for npm publishing. External installation test verifies `bunx agent-plugins-doctor` works.
+4. **Public distribution not working** — Prepared all 6 packages for npm publishing. External installation test verifies `bunx @hiai-gg/agent-plugins-doctor` works.
 
 ### P1 — Hardening
 

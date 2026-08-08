@@ -1,5 +1,10 @@
 # Duplication Analysis
 
+> **Historical record (2026-08-07).** This analysis was written for the
+> pre-release v0.1.0 plan; Doctor was released as **0.0.6** (see
+> [CHANGELOG.md](../CHANGELOG.md)). The analysis and migration timeline below
+> are kept intact for reference.
+
 ## Overview
 
 This document analyzes duplication between Agent Plugin Doctor and Agent Plugin
