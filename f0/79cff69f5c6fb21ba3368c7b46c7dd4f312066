@@ -1,0 +1,19 @@
+.github/workflows/ci.yml
+  s_a56006b8cc0a57::t_da6457e88273e6 8-9,27-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f079cff69f5c6fb21ba3368c7b46c7dd4f312066",
+  "prompts": {},
+  "sessions": {
+    "s_a56006b8cc0a57": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_01ed56d65ffe5gFyioWcleH7HJ",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "vlgalib <vlgalib@users.noreply.github.com>"
+    }
+  }
+}
